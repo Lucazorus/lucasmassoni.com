@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, Mail, Github, Linkedin, Code, Cloud, BarChart, Calendar1 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -90,12 +89,11 @@ const translations = {
 const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [language, setLanguage] = useState('fr'); // Default to French
+  const [language, setLanguage] = useState('fr');
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -109,10 +107,10 @@ const HomePage = () => {
     textHighlight: '#D5FFD9',
     accent: '#70A0AF',
     accentSecondary: '#D5FFD9',
-    gridColor: 'rgba(26,35,39,0.9)'
+    gridColor: 'rgba(26,35,39,0.9)',
+    subtleAccentColor: '#ffcf56',
   };
 
-  // Updated theme with white background colors for the expertise section and below
   const theme = {
     navBg: 'bg-[#1a2327]/70',
     textColor: 'text-[#EAD7D7]',
@@ -137,7 +135,6 @@ const HomePage = () => {
     <Code className="w-16 h-16 mb-4 text-[#70A0AF] group-hover:text-[#D5FFD9] transition-colors duration-300" />
   ];
 
-  // Logo Rive statique pour le header
   const StaticHeaderLogo = () => {
     const { RiveComponent } = useRive({
       src: '/logo.riv',
@@ -157,7 +154,6 @@ const HomePage = () => {
     );
   };
 
-  // Composant RiveLogo corrigé
   const RiveLogo = () => {
     const containerRef = useRef(null);
     const [riveInstance, setRiveInstance] = useState(null);
@@ -172,47 +168,34 @@ const HomePage = () => {
       }),
       backgroundColor: 'transparent',
       onLoad: () => {
-        // Store the Rive instance when loaded
         if (rive) {
           setRiveInstance(rive);
         }
       }
     });
 
-    // This prevents the animation from restarting on scroll
     useEffect(() => {
-      // Create a reference to the current container for cleanup
       const currentContainer = containerRef.current;
-
-      // Function to stop event propagation
       const stopPropagation = (e) => {
         e.stopPropagation();
       };
 
-      // Handle scroll specifically
       const handleScroll = () => {
-        // Prevent the component from re-rendering on scroll
         if (currentContainer) {
           currentContainer.style.willChange = 'transform';
-
-          // If we have the Rive instance, ensure animation continues
           if (riveInstance && riveInstance.isPaused) {
             riveInstance.play();
           }
         }
       };
 
-      // Add event listeners to the container
       if (currentContainer) {
         currentContainer.addEventListener('mousemove', stopPropagation);
         currentContainer.addEventListener('mouseenter', stopPropagation);
         currentContainer.addEventListener('mouseleave', stopPropagation);
-
-        // Add scroll event listener to the window
-        window.addEventListener('scroll', handleScroll, { passive: true });
       }
+      window.addEventListener('scroll', handleScroll, { passive: true });
 
-      // Cleanup function
       return () => {
         if (currentContainer) {
           currentContainer.removeEventListener('mousemove', stopPropagation);
@@ -221,13 +204,10 @@ const HomePage = () => {
         }
         window.removeEventListener('scroll', handleScroll);
       };
-    }, [riveInstance]); // Dependency on riveInstance
+    }, [riveInstance]);
 
     return (
-      <div
-        ref={containerRef}
-        className="w-64 h-64 mx-auto mb-6 relative z-10 mt-24 will-change-transform"
-      >
+      <div ref={containerRef} className="w-64 h-64 mx-auto mb-6 relative z-10 mt-24 will-change-transform">
         <RiveComponent className="w-full h-full" />
       </div>
     );
@@ -235,9 +215,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-[#1a2327] text-white relative overflow-hidden transition-colors duration-500">
-      {/* Vercel Analytics component */}
       <Analytics />
-
       <div className="absolute inset-0 opacity-20 transition-all duration-500" style={{ background: `linear-gradient(${colors.gridColor} 2px,transparent 2px), linear-gradient(90deg, ${colors.gridColor} 2px,transparent 2px)`, backgroundSize: '40px 40px', animation: 'grid 7s linear infinite' }}></div>
 
       <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-[#1a2327] shadow-lg' : 'bg-[#1a2327]'}`}>
@@ -265,7 +243,7 @@ const HomePage = () => {
                 <span className="relative z-10">{t.nav.contact}</span>
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
               </a>
-              <button onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')} className="text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300">
+              <button onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')} className="text-[#EAD7D7] hover:text-[#ffcf56] transition-colors duration-300">
                 {language === 'fr' ? 'EN' : 'FR'}
               </button>
             </div>
@@ -276,25 +254,23 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-
-        {isMenuOpen && (
-          <div className="md:hidden bg-[#1a2327] transition-colors duration-500">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <a href="#accueil" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300">{t.nav.home}</a>
-              <a href="#expertise" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300">{t.nav.expertise}</a>
-              <a href="#contact" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300">{t.nav.contact}</a>
-              <button onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')} className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300">
-                {language === 'fr' ? 'EN' : 'FR'}
-              </button>
-            </div>
-          </div>
-        )}
       </nav>
+
+      {isMenuOpen && (
+        <div className="md:hidden bg-[#1a2327] transition-colors duration-500">
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            <a href="#accueil" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300">{t.nav.home}</a>
+            <a href="#expertise" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300">{t.nav.expertise}</a>
+            <a href="#contact" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300">{t.nav.contact}</a>
+            <button onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')} className="block px-3 py-2 text-[#EAD7D7] hover:text-[#ffcf56] transition-colors duration-300">
+              {language === 'fr' ? 'EN' : 'FR'}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="relative min-h-[100vh] flex items-center justify-center px-4 pb-32 pt-0">
         <div className="absolute inset-0 bg-gradient-radial from-[#243238] to-transparent opacity-50 transition-colors duration-500"></div>
-
-
         <div className="relative z-10 text-center max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -332,17 +308,14 @@ const HomePage = () => {
             <motion.a
               whileHover={{ scale: 1.05 }}
               href="#expertise"
-              className="inline-block px-8 py-4 border border-[#D5FFD9] text-[#D5FFD9] rounded-lg hover:bg-[#D5FFD9]/10 transition-all duration-300 transform font-medium group"
+              className="inline-block px-8 py-4 border border-[#ffcf56] text-[#ffcf56] rounded-lg hover:bg-[#ffcf56]/10 transition-all duration-300 transform font-medium group"
             >
-              <span className="relative z-10 bg-clip-text text-[#D5FFD9] group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-[#679aa9] group-hover:via-[#67a99a] group-hover:to-[#b9f8bf] group-hover:animate-gradient-x transition-all duration-300">
-                {t.hero.exploreServices}
-              </span>
+              <span className="relative z-10">{t.hero.exploreServices}</span>
             </motion.a>
           </div>
         </div>
       </div>
 
-      {/* Expertise section with white background (keeping for context, but styling not touched here) */}
       <div id="expertise" className="pt-32 pb-32 relative bg-white transition-colors duration-500">
         <div className="absolute inset-0 bg-[#1a2327] pointer-events-none h-0 top-0"></div>
         <div className="max-w-full px-6 relative z-10">
@@ -356,7 +329,6 @@ const HomePage = () => {
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="mb-6 transform transition-all duration-300 group-hover:scale-110">
-                    {/* Modified icon colors for white background */}
                     {index === 0 && <Cloud className="w-16 h-16 mb-4 text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300" />}
                     {index === 1 && <BarChart className="w-16 h-16 mb-4 text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300" />}
                     {index === 2 && <Code className="w-16 h-16 mb-4 text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300" />}
@@ -370,15 +342,12 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Tech stack section with macOS 26 widget design */}
       <div className="py-32 relative bg-gradient-to-br from-[#121c22] via-[#0d161d] to-[#1a2327] transition-colors duration-500 overflow-hidden">
-        {/* Subtle background circles for depth */}
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-[#4f3d7a] to-transparent rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
         <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-gradient-to-tl from-[#2d6187] to-transparent rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
 
-
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <h2 className="text-5xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-r from-[#e0f2f7] to-[#d4ebff] [text-shadow:0_0_20px_rgba(212,235,255,0.3)] transition-all duration-500">
+          <h2 className="text-5xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-r from-[#ffcf56] to-[#ffcf56] [text-shadow:0_0_20px_rgba(255,207,86,0.3)] transition-all duration-500">
             {t.techStack.title}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-5xl mx-auto">
@@ -389,22 +358,19 @@ const HomePage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-                // New styling for macOS widget look using template literals
                 className={`
                   macos-widget-badge flex items-center justify-center h-20 px-4 py-3 rounded-2xl
-                  bg-white/10 border border-white/20 backdrop-blur-xl
+                  bg-white/10 border border-[#ffcf56]/20 backdrop-blur-xl
                   text-white text-lg font-medium shadow-xl
                   transition-all duration-300 hover:bg-white/20
                   relative overflow-hidden group cursor-pointer
                 `}
               >
-                {/* Inner shadow for depth */}
                 <div className={`
-                    absolute inset-0 rounded-2xl pointer-events-none
-                    shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.1)]
+                  absolute inset-0 rounded-2xl pointer-events-none
+                  shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.1)]
                 `}></div>
-
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-200 group-hover:from-white group-hover:to-white transition-colors duration-300">
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-200 group-hover:from-[#ffcf56] group-hover:to-[#ffcf56] transition-colors duration-300">
                   {tech}
                 </span>
               </motion.div>
@@ -413,25 +379,23 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Contact section with white background */}
       <div id="contact" className="py-32 relative bg-white transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <h2 className="text-5xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#70A0AF] to-[#3CB371] mb-6 [text-shadow:0_0_20px_rgba(60,179,113,0.3)] transition-all duration-500">{t.contact.title}</h2>
           <p className="text-xl text-center text-gray-700 mb-16 transition-colors duration-500">{t.contact.subtitle}</p>
           <div className="flex justify-center space-x-8">
-            <motion.a whileHover={{ scale: 1.1 }} href="https://calendly.com/lucas-massoni-contact" target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-white shadow-md border border-gray-200 hover:border-[#3CB371]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#3CB371]/10 group">
-              <Calendar1 size={28} className="text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300" />
+            <motion.a whileHover={{ scale: 1.1 }} href="https://calendly.com/lucas-massoni-contact" target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-white shadow-md border border-gray-200 hover:border-[#ffcf56]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#ffcf56]/10 group">
+              <Calendar1 size={28} className="text-[#70A0AF] group-hover:text-[#ffcf56] transition-colors duration-300" />
             </motion.a>
-            <motion.a whileHover={{ scale: 1.1 }} href="https://www.linkedin.com/in/lucas-massoni/" target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-white shadow-md border border-gray-200 hover:border-[#3CB371]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#3CB371]/10 group">
-              <Linkedin size={28} className="text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300" />
+            <motion.a whileHover={{ scale: 1.1 }} href="https://www.linkedin.com/in/lucas-massoni/" target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-white shadow-md border border-gray-200 hover:border-[#ffcf56]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#ffcf56]/10 group">
+              <Linkedin size={28} className="text-[#70A0AF] group-hover:text-[#ffcf56] transition-colors duration-300" />
             </motion.a>
           </div>
         </div>
       </div>
 
-      {/* Footer with white background */}
       <footer className="py-8 relative bg-white border-t border-gray-200 transition-colors duration-500">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#3CB371]/30 to-transparent transition-colors duration-500"></div>
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ffcf56]/30 to-transparent transition-colors duration-500"></div>
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center text-gray-400 relative group transition-colors duration-500">
             <p className="transition-all duration-300 group-hover:text-gray-600">
@@ -446,17 +410,11 @@ const HomePage = () => {
           0%, 100% { transform: translateY(0px) scale(1); }
           50% { transform: translateY(-10px) scale(1.05); }
         }
-        /* Removed original tech-badge animation as it clashes with new design */
-        /* .tech-badge { animation: float 3s ease-in-out infinite; animation-fill-mode: both; transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease; }
-        .tech-badge:hover { animation-play-state: paused; transform: scale(1.1); } */
-
         @keyframes grid { 0% { transform: translateY(0); } 100% { transform: translateY(-40px); } }
         @keyframes gradient-x { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes fade-in { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
         .animate-gradient-x { background-size: 200% 200%; animation: gradient-x 15s ease infinite; }
         .animate-fade-in { animation: fade-in 1s ease-out forwards; }
-
-        /* Blob animation for background circles */
         @keyframes blob {
           0% { transform: translate(0px, 0px) scale(1); }
           33% { transform: translate(30px, -50px) scale(1.1); }
