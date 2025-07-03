@@ -184,7 +184,14 @@ const HomePage = () => {
         <div className="absolute inset-0 bg-gradient-radial from-[#243238] to-transparent opacity-50 transition-colors duration-500"></div>
         <div className="relative z-10 text-center max-w-4xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="mt-0"><RiveLogo /></motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="text-6xl md:text-8xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#679aa9] via-[#67a99a] to-[#b9f8bf] [text-shadow:0_0_30px_rgba(213,255,217,0.3)] animate-gradient-x transition-all duration-500 upper-thin">{t.hero.title}</motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="whitespace-nowrap text-4xl sm:text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#679aa9] via-[#67a99a] to-[#b9f8bf] [text-shadow:0_0_30px_rgba(213,255,217,0.3)] animate-gradient-x transition-all duration-500 upper-thin"
+          >
+            {t.hero.title}
+          </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.5 }} className="text-xl md:text-2xl text-[#EAD7D7] mb-12 leading-relaxed opacity-0 animate-fade-in transition-colors duration-500 whitespace-pre-line">{t.hero.subtitle}</motion.p>
           <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
             <motion.a whileHover={{ scale: 1.05 }} href="#contact"
