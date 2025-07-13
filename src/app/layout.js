@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { Share_Tech_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
@@ -10,6 +11,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// On ajoute Share Tech Mono :
+const shareTechMono = Share_Tech_Mono({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-share-tech-mono",
 });
 
 export const metadata = {
@@ -39,7 +47,7 @@ export default function RootLayout({ children }) {
         </Script>
         {/* End Google Analytics 4 */}
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${shareTechMono.variable} antialiased`}>
         {children}
       </body>
     </html>

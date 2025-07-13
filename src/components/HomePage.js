@@ -1,9 +1,16 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Linkedin, Code, Cloud, BarChart, Calendar1 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
-import { Analytics } from "@vercel/analytics/react";
+import { Menu, X, Linkedin, Code, Cloud, BarChart, Calendar } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRive, Layout, Fit, Alignment } from '@rive-app/react-canvas';
+import { Analytics } from '@vercel/analytics/react';
+
+// Couleurs premium
+const MINT = "#7EBDA3";
+const YELLOW = "#FECF56";
+const GRAY = "#B0B9BB";
+const WHITE = "#EAD7D7";
+const DARK_BG = "#141a1d";
 
 const translations = {
   fr: {
@@ -74,42 +81,49 @@ const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [language, setLanguage] = useState('fr');
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.4]);
+  const heroScale = useTransform(scrollY, [0, 400], [1, 0.9]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
-    return () => { window.removeEventListener('scroll', handleScroll); };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const t = translations[language];
-  const colors = {
-    background: '#1a2327', backgroundSecondary: '#141a1d',
-    text: '#EAD7D7', textHighlight: '#D5FFD9',
-    accent: '#70A0AF', accentSecondary: '#D5FFD9',
-    gridColor: 'rgba(26,35,39,0.9)', subtleAccentColor: '#ffcf56',
-  };
 
+  // LOGOS
   const StaticHeaderLogo = () => {
     const { RiveComponent } = useRive({
-      src: '/logo.riv', stateMachines: 'SMLogoStatic', autoplay: true,
+      src: '/logo.riv',
+      stateMachines: 'SMLogoStatic',
+      autoplay: true,
       layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
       backgroundColor: 'transparent',
     });
-    return (<div className="w-8 h-8 mr-2"><RiveComponent className="w-full h-full" /></div>);
+    return (
+      <div className="w-12 h-12 mr-4 transform transition-transform duration-500 hover:scale-110">
+        <RiveComponent className="w-full h-full" />
+      </div>
+    );
   };
 
   const RiveLogo = () => {
     const containerRef = useRef(null);
     const [riveInstance, setRiveInstance] = useState(null);
     const { RiveComponent, rive } = useRive({
-      src: '/logo.riv', stateMachines: 'SM', autoplay: true,
+      src: '/logo.riv',
+      stateMachines: 'SM',
+      autoplay: true,
       layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
       backgroundColor: 'transparent',
       onLoad: () => { if (rive) setRiveInstance(rive); }
     });
+
     useEffect(() => {
       const currentContainer = containerRef.current;
-      const stopPropagation = (e) => { e.stopPropagation(); };
+      const stopPropagation = (e) => e.stopPropagation();
       const handleScroll = () => {
         if (currentContainer) {
           currentContainer.style.willChange = 'transform';
@@ -131,178 +145,310 @@ const HomePage = () => {
         window.removeEventListener('scroll', handleScroll);
       };
     }, [riveInstance]);
+
     return (
-      <div ref={containerRef} className="w-64 h-64 mx-auto mb-6 relative z-10 mt-24 will-change-transform">
+      <div ref={containerRef} className="w-80 h-80 mx-auto mb-10 relative z-10 mt-28 will-change-transform transform transition-transform duration-700 hover:scale-105">
         <RiveComponent className="w-full h-full" />
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-[#1a2327] text-white relative overflow-hidden transition-colors duration-500 text-[75%]">
+    <div className="min-h-screen bg-[#1a2327] text-white relative overflow-hidden font-tech tracking-tight">
       <Analytics />
-      <div className="absolute inset-0 opacity-20 transition-all duration-500"
-        style={{ background: `linear-gradient(${colors.gridColor} 2px,transparent 2px), linear-gradient(90deg, ${colors.gridColor} 2px,transparent 2px)`, backgroundSize: '40px 40px', animation: 'grid 7s linear infinite' }}></div>
+      <div
+        className="absolute inset-0 opacity-10 transition-all duration-1000"
+        style={{
+          background: `linear-gradient(rgba(26,35,39,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(26,35,39,0.7) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
+          animation: 'grid 12s linear infinite',
+        }}
+      ></div>
 
-      <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-[#1a2327] shadow-lg' : 'bg-[#1a2327]'}`}>
-        <div className="max-w-7xl mx-auto px-6">
+      {/* NAV */}
+      <nav className={`fixed w-full z-50 transition-all duration-700 ${scrolled ? 'bg-[#1a2327]/95 backdrop-blur-xl shadow-2xl' : 'bg-[#1a2327]/80'}`}>
+        <div className="max-w-7xl mx-auto px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
               <StaticHeaderLogo />
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#c3dee6] to-[#d7f3d9] [text-shadow:0_0_20px_rgba(213,255,217,0.5)] upper-thin">{t.name}</span>
+              <span className="text-3xl font-bold font-tech-upper bg-clip-text text-transparent bg-gradient-to-r from-[#b9e2d8] to-[#7ebda3] tracking-tighter">
+                {t.name}
+              </span>
             </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-[#EAD7D7] hover:text-[#D5FFD9] transition-all duration-300 relative group upper-thin">{t.nav.home}</a>
-              <a href="#expertise" className="text-[#EAD7D7] hover:text-[#D5FFD9] transition-all duration-300 relative group upper-thin">{t.nav.expertise}</a>
-              <a href="#contact" className="px-5 py-2 bg-gradient-to-r from-[#679aa9] via-[#67a99a] to-[#b9f8bf] rounded-lg text-black hover:shadow-lg hover:shadow-[#b9f8bf]/20 transition-all duration-300 relative overflow-hidden group animate-gradient-x upper-thin">
-                <span className="relative z-10">{t.nav.contact}</span>
-                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+            <div className="hidden md:flex items-center space-x-12">
+              <a href="#" className="text-[#EAD7D7] hover:text-[#7EBDA3] transition-all duration-500 font-tech-upper relative group text-lg font-medium">
+                {t.nav.home}
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#7EBDA3] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></span>
               </a>
-              <button onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')} className="text-[#EAD7D7] hover:text-[#ffcf56] transition-colors duration-300 upper-thin">
+              <a href="#expertise" className="text-[#EAD7D7] hover:text-[#7EBDA3] transition-all duration-500 font-tech-upper relative group text-lg font-medium">
+                {t.nav.expertise}
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#7EBDA3] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></span>
+              </a>
+              <a
+                href="#contact"
+                className="px-8 py-3 bg-gradient-to-r from-[#7ebda3] to-[#b9e2d8] rounded-full text-black font-bold font-tech-upper hover:shadow-2xl hover:shadow-[#b9e2d8]/40 transition-all duration-500 relative overflow-hidden group animate-gradient-x text-lg"
+              >
+                <span className="relative z-10">{t.nav.contact}</span>
+                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
+              </a>
+              <button
+                onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')}
+                className="text-[#EAD7D7] hover:text-[#7EBDA3] transition-all duration-500 font-tech-upper text-lg font-medium"
+              >
                 {language === 'fr' ? 'EN' : 'FR'}
               </button>
             </div>
             <div className="md:hidden">
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-[#EAD7D7]">{isMenuOpen ? <X size={24} /> : <Menu size={24} />}</button>
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-[#EAD7D7] hover:text-[#7EBDA3] transition-colors duration-500">
+                {isMenuOpen ? <X size={30} /> : <Menu size={30} />}
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
       {isMenuOpen && (
-        <div className="md:hidden bg-[#1a2327] transition-colors duration-500">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            <a href="#" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300 upper-thin">{t.nav.home}</a>
-            <a href="#expertise" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300 upper-thin">{t.nav.expertise}</a>
-            <a href="#contact" className="block px-3 py-2 text-[#EAD7D7] hover:text-[#D5FFD9] transition-colors duration-300 upper-thin">{t.nav.contact}</a>
-            <button onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')} className="block px-3 py-2 text-[#EAD7D7] hover:text-[#ffcf56] transition-colors duration-300 upper-thin">{language === 'fr' ? 'EN' : 'FR'}</button>
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="md:hidden bg-[#1a2327]/95 backdrop-blur-xl shadow-xl"
+        >
+          <div className="px-6 py-8 space-y-6">
+            <a href="#" className="block px-4 py-3 text-[#EAD7D7] hover:text-[#7EBDA3] transition-colors duration-500 font-tech-upper text-xl font-medium">
+              {t.nav.home}
+            </a>
+            <a href="#expertise" className="block px-4 py-3 text-[#EAD7D7] hover:text-[#7EBDA3] transition-colors duration-500 font-tech-upper text-xl font-medium">
+              {t.nav.expertise}
+            </a>
+            <a href="#contact" className="block px-4 py-3 text-[#EAD7D7] hover:text-[#7EBDA3] transition-colors duration-500 font-tech-upper text-xl font-medium">
+              {t.nav.contact}
+            </a>
+            <button
+              onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')}
+              className="block px-4 py-3 text-[#EAD7D7] hover:text-[#7EBDA3] transition-colors duration-500 font-tech-upper text-xl font-medium"
+            >
+              {language === 'fr' ? 'EN' : 'FR'}
+            </button>
           </div>
-        </div>
+        </motion.div>
       )}
 
-      <div className="relative min-h-[100vh] flex items-center justify-center px-4 pb-32 pt-0">
-        <div className="absolute inset-0 bg-gradient-radial from-[#243238] to-transparent opacity-50 transition-colors duration-500"></div>
-        <div className="relative z-10 text-center max-w-4xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="mt-0"><RiveLogo /></motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+      <motion.section
+        style={{ opacity: heroOpacity, scale: heroScale }}
+        className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-40"
+      >
+        <div className="absolute inset-0 bg-gradient-radial from-[#243238]/60 to-transparent opacity-70 transition-colors duration-1000"></div>
+        <div className="relative z-10 text-center max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="whitespace-nowrap text-4xl sm:text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#679aa9] via-[#67a99a] to-[#b9f8bf] [text-shadow:0_0_30px_rgba(213,255,217,0.3)] animate-gradient-x transition-all duration-500 upper-thin"
+            transition={{ duration: 1.5, ease: 'easeOut' }}
+          >
+            <RiveLogo />
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, delay: 0.3, ease: 'easeOut' }}
+            className="text-5xl sm:text-6xl md:text-8xl font-bold mb-10 bg-clip-text text-transparent bg-gradient-to-r from-[#7ebda3] via-[#b9e2d8] to-[#7ebda3] animate-gradient-x font-tech-upper"
           >
             {t.hero.title}
           </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.5 }} className="text-xl md:text-2xl text-[#EAD7D7] mb-12 leading-relaxed opacity-0 animate-fade-in transition-colors duration-500 whitespace-pre-line">{t.hero.subtitle}</motion.p>
-          <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
-            <motion.a whileHover={{ scale: 1.05 }} href="#contact"
-              className="inline-block px-8 py-4 bg-gradient-to-r from-[#679aa9] via-[#67a99a] to-[#b9f8bf] rounded-lg text-black hover:shadow-lg hover:shadow-[#b9f8bf]/20 transition-all duration-300 transform font-medium relative overflow-hidden group animate-gradient-x upper-thin">
+          <motion.p
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, delay: 0.6, ease: 'easeOut' }}
+            className="text-xl md:text-2xl text-[#B0B9BB] mb-16 leading-relaxed whitespace-pre-line max-w-4xl mx-auto font-tech"
+          >
+            {t.hero.subtitle}
+          </motion.p>
+          <div className="flex flex-col md:flex-row justify-center space-y-6 md:space-y-0 md:space-x-8">
+            <motion.a
+              whileHover={{ scale: 1.03, boxShadow: '0 8px 20px rgba(185,226,216,0.2)' }}
+              href="#contact"
+              className="inline-block px-10 py-5 bg-gradient-to-r from-[#7ebda3] to-[#b9e2d8] rounded-full text-black font-bold font-tech-upper hover:shadow-2xl transition-all duration-500 relative overflow-hidden group animate-gradient-x text-lg"
+            >
               <span className="relative z-10">{t.hero.startProject}</span>
-              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
             </motion.a>
-            <motion.a whileHover={{ scale: 1.05 }} href="#expertise"
-              className="inline-block px-8 py-4 border border-[#ffcf56] text-[#ffcf56] rounded-lg hover:bg-[#ffcf56]/10 transition-all duration-300 transform font-medium group upper-thin">
+            <motion.a
+              whileHover={{ scale: 1.03, boxShadow: '0 8px 20px rgba(185, 248, 191, 0.2)' }}
+              href="#expertise"
+              className="inline-block px-10 py-5 border-2 border-[#7EBDA3] text-[#7EBDA3] rounded-full hover:bg-[#7EBDA3]/10 transition-all duration-500 font-bold group font-tech-upper text-lg"
+            >
               <span className="relative z-10">{t.hero.exploreServices}</span>
             </motion.a>
           </div>
         </div>
-      </div>
+      </motion.section>
 
-      <div id="expertise" className="pt-32 pb-32 relative bg-white transition-colors duration-500">
-        <div className="absolute inset-0 bg-[#1a2327] pointer-events-none h-0 top-0"></div>
-        <div className="max-w-full px-6 relative z-10">
-          <h2 className="text-5xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-r from-[#70A0AF] to-[#3CB371] [text-shadow:0_0_20px_rgba(60,179,113,0.3)] transition-all duration-500 upper-thin">{t.expertise.title}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-12 lg:px-24">
+      {/* --------- SECTION EXPERTISE ---------- */}
+      <section id="expertise" className="py-40 relative bg-[#1a2327] transition-colors duration-1000">
+        <div className="max-w-[1800px] mx-auto px-4 relative z-10">
+          <motion.h2
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+            viewport={{ once: true }}
+            className="font-tech-upper text-6xl font-bold text-center mb-24 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
+          >
+            {t.expertise.title}
+          </motion.h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 px-0 md:px-6 lg:px-16">
             {t.expertise.items.map((exp, index) => (
-              <motion.div key={index} whileHover={{ scale: 1.03 }}
-                className="group p-10 md:p-12 min-h-[320px] md:min-h-[380px] rounded-2xl bg-white shadow-lg border border-gray-200 hover:border-[#3CB371]/50 transition-all duration-500 backdrop-blur-sm hover:shadow-lg hover:shadow-[#3CB371]/10 flex flex-col justify-center">
-                <div className="flex flex-col items-center text-center h-full">
-                  <div className="mb-6 transform transition-all duration-300 group-hover:scale-110">
-                    {index === 0 && <Cloud className="w-16 h-16 mb-4 text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300" />}
-                    {index === 1 && <BarChart className="w-16 h-16 mb-4 text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300" />}
-                    {index === 2 && <Code className="w-16 h-16 mb-4 text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300" />}
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: index * 0.2, ease: 'easeOut' }}
+                viewport={{ once: true }}
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: '0 12px 32px rgba(126,189,163,0.09)',
+                  borderColor: "#b9e2d8"
+                }}
+                className="group p-12 rounded-3xl border border-[#7EBDA3] transition-all duration-500 flex flex-col justify-between min-h-[400px] md:min-w-[360px] lg:min-w-[400px] bg-[#141a1d]/96"
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="mb-8">
+                    {index === 0 && <Cloud className="w-20 h-20 text-[#7EBDA3]" />}
+                    {index === 1 && <BarChart className="w-20 h-20 text-[#7EBDA3]" />}
+                    {index === 2 && <Code className="w-20 h-20 text-[#7EBDA3]" />}
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-bold mb-6 text-[#70A0AF] group-hover:text-[#3CB371] transition-colors duration-300 upper-thin">{exp.title}</h3>
-                  <p className="text-gray-700 text-lg md:text-xl group-hover:text-gray-900 transition-colors duration-300 max-w-md mx-auto mb-4">{exp.description}</p>
-                  {index === 1 && (
-                    <a
-                      href="https://www.economytimelapse.com/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block mt-6 px-8 py-4 border border-[#56A990] text-[#56A990] rounded-lg hover:bg-[#56A990]/10 transition-all duration-300 font-medium group upper-thin"
-                      style={{ fontSize: "1.13rem" }}
-                    >
-                      <span className="relative z-10">{t.workExample}</span>
-                    </a>
-                  )}
+                  <h3 className="font-tech-upper text-3xl mb-8 text-[#7EBDA3]">
+                    {exp.title}
+                  </h3>
+                  <p className="font-tech text-[#B0B9BB] text-base group-hover:text-white transition-colors duration-300 leading-relaxed">
+                    {exp.description}
+                  </p>
                 </div>
+                {index === 1 && (
+                  <a
+                    href="https://www.economytimelapse.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-8 py-4 border-2 rounded-full transition-all duration-500 font-tech-upper text-lg text-center mt-8 see-project-btn"
+                    style={{
+                      borderColor: YELLOW,
+                      color: YELLOW,
+                    }}
+                  >
+                    <span className="relative z-10">{t.workExample}</span>
+                  </a>
+                )}
               </motion.div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="py-32 relative bg-gradient-to-br from-[#121c22] via-[#0d161d] to-[#1a2327] transition-colors duration-500 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-[#4f3d7a] to-transparent rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-gradient-to-tl from-[#2d6187] to-transparent rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <h2 className="text-5xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-r from-[#ffcf56] to-[#ffcf56] [text-shadow:0_0_20px_rgba(255,207,86,0.3)] transition-all duration-500 upper-thin">{t.techStack.title}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-5xl mx-auto">
+      {/* --------- TECH STACK ---------- */}
+      <section className="py-40 relative bg-gradient-to-br from-[#121c22] via-[#0d161d] to-[#1a2327] transition-colors duration-1000 overflow-hidden">
+        <div className="absolute top-1/3 left-1/5 w-96 h-96 bg-gradient-to-br from-[#7EBDA3]/40 to-transparent rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob"></div>
+        <div className="absolute bottom-1/3 right-1/5 w-96 h-96 bg-gradient-to-tl from-[#7EBDA3]/20 to-transparent rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+        <div className="max-w-7xl mx-auto px-8 relative z-10">
+          <motion.h2
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+            viewport={{ once: true }}
+            className="font-tech-upper text-6xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
+          >
+            {t.techStack.title}
+          </motion.h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
             {['Salesforce', 'CPQ', 'Apex', 'Flow', 'LWC', 'SQL', 'Tableau', 'CRM Analytics', 'JSON', 'JavaScript'].map((tech, index) => (
-              <motion.div key={index} whileHover={{ scale: 1.05, boxShadow: '0 10px 25px rgba(0,0,0,0.3), 0 5px 10px rgba(0,0,0,0.2)' }}
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-                className={`macos-widget-badge flex items-center justify-center h-20 px-4 py-3 rounded-2xl bg-white/10 border border-[#ffcf56]/20 backdrop-blur-xl text-white text-lg font-medium shadow-xl transition-all duration-300 hover:bg-white/20 relative overflow-hidden group cursor-pointer upper-thin`}>
-                <div className={`absolute inset-0 rounded-2xl pointer-events-none shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.1)]`}></div>
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-200 group-hover:from-[#ffcf56] group-hover:to-[#ffcf56] transition-colors duration-300">{tech}</span>
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.07, boxShadow: '0 10px 30px rgba(126,189,163,0.18)' }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center h-24 px-6 py-4 rounded-3xl bg-[#141a1d]/80 backdrop-blur-xl border border-[#7EBDA3]/30 hover:bg-[#7EBDA3]/7 transition-all duration-500 text-white text-lg font-tech-upper"
+              >
+                <span className="relative z-10 text-[#7EBDA3]">{tech}</span>
               </motion.div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      <div id="contact" className="py-32 relative bg-white transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <h2 className="text-5xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#70A0AF] to-[#3CB371] mb-6 [text-shadow:0_0_20px_rgba(60,179,113,0.3)] transition-all duration-500 upper-thin">{t.contact.title}</h2>
-          <p className="text-xl text-center text-gray-700 mb-16 transition-colors duration-500">{t.contact.subtitle}</p>
-          <div className="flex justify-center space-x-8">
-            <motion.a whileHover={{ scale: 1.1 }} href="https://calendly.com/lucas-massoni-contact" target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-white shadow-md border border-gray-200 hover:border-[#ffcf56]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#ffcf56]/10 group upper-thin">
-              <Calendar1 size={28} className="text-[#70A0AF] group-hover:text-[#ffcf56] transition-colors duration-300" />
+      {/* --------- CONTACT ---------- */}
+      <section id="contact" className="py-40 relative bg-[#1a2327] transition-colors duration-1000">
+        <div className="max-w-7xl mx-auto px-8 relative z-10">
+          <motion.h2
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+            viewport={{ once: true }}
+            className="font-tech-upper text-6xl font-bold text-center mb-10 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
+          >
+            {t.contact.title}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
+            viewport={{ once: true }}
+            className="font-tech text-xl text-center text-[#B0B9BB] mb-16"
+          >
+            {t.contact.subtitle}
+          </motion.p>
+          <div className="flex justify-center space-x-10">
+            <motion.a
+              whileHover={{ scale: 1.09, boxShadow: '0 12px 24px rgba(126,189,163,0.19)' }}
+              href="https://calendly.com/lucas-massoni-contact"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-5 rounded-full bg-[#141a1d]/90 backdrop-blur-xl border border-[#7EBDA3]/40 hover:border-[#7EBDA3]/80 transition-all duration-500 group"
+            >
+              <Calendar size={32} className="text-[#7EBDA3] group-hover:text-[#b9e2d8] transition-colors duration-500" />
             </motion.a>
-            <motion.a whileHover={{ scale: 1.1 }} href="https://www.linkedin.com/in/lucas-massoni/" target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-white shadow-md border border-gray-200 hover:border-[#ffcf56]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#ffcf56]/10 group upper-thin">
-              <Linkedin size={28} className="text-[#70A0AF] group-hover:text-[#ffcf56] transition-colors duration-300" />
+            <motion.a
+              whileHover={{ scale: 1.09, boxShadow: '0 12px 24px rgba(126,189,163,0.19)' }}
+              href="https://www.linkedin.com/in/lucas-massoni/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-5 rounded-full bg-[#141a1d]/90 backdrop-blur-xl border border-[#7EBDA3]/40 hover:border-[#7EBDA3]/80 transition-all duration-500 group"
+            >
+              <Linkedin size={32} className="text-[#7EBDA3] group-hover:text-[#b9e2d8] transition-colors duration-500" />
             </motion.a>
           </div>
         </div>
-      </div>
+      </section>
 
-      <footer className="py-8 relative bg-white border-t border-gray-200 transition-colors duration-500">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ffcf56]/30 to-transparent transition-colors duration-500"></div>
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center text-gray-400 relative group transition-colors duration-500">
-            <p className="transition-all duration-300 group-hover:text-gray-600 upper-thin">{t.footer.replace('{year}', new Date().getFullYear())}</p>
+      {/* --------- FOOTER ---------- */}
+      <footer className="py-12 relative bg-[#1a2327] border-t border-[#7EBDA3]/20 transition-colors duration-1000">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#7EBDA3]/30 to-transparent"></div>
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="text-center text-[#B0B9BB] group transition-colors duration-500">
+            <p className="transition-all duration-500 group-hover:text-[#7EBDA3] font-tech text-lg">
+              {t.footer.replace('{year}', new Date().getFullYear())}
+            </p>
           </div>
         </div>
       </footer>
 
+      {/* --------- STYLES --------- */}
       <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
         html { scroll-behavior: smooth; }
-        @keyframes float { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-10px) scale(1.05); } }
-        @keyframes grid { 0% { transform: translateY(0); } 100% { transform: translateY(-40px); } }
-        @keyframes gradient-x { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes fade-in { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-        .animate-gradient-x { background-size: 200% 200%; animation: gradient-x 15s ease infinite; }
-        .animate-fade-in { animation: fade-in 1s ease-out forwards; }
-        @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
-        .animate-blob { animation: blob 7s infinite cubic-bezier(0.6, 0.4, 0.4, 0.9); }
-        .animation-delay-2000 { animation-delay: 2s; }
-        /* Classe custom upper-thin pour titres & boutons */
-        .upper-thin, .uppercase-thin, .btn-upper-thin {
-          text-transform: uppercase;
-          letter-spacing: -1px;
-          font-weight: 400;
-          font-family: 'Inter', Arial, sans-serif;
-          font-variant: small-caps;
+        body {
+          background: linear-gradient(180deg, #1a2327 0%, #0d161d 100%);
+          font-family: 'Share Tech Mono', Menlo, monospace !important;
         }
+        .font-tech { font-family: 'Share Tech Mono', Menlo, monospace; letter-spacing: 0.11em; font-size: 1.02em; text-transform: none; }
+        .font-tech-upper { font-family: 'Share Tech Mono', Menlo, monospace; text-transform: uppercase; letter-spacing: 0.13em; }
+        .see-project-btn:hover { background: rgba(254,207,86,0.09) !important; color: #FECF56 !important; border-color: #FECF56 !important; }
+        .animate-gradient-x { background-size: 200% 200%; animation: gradient-x 12s ease infinite; }
+        @keyframes gradient-x { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes grid { 0% { transform: translateY(0); } 100% { transform: translateY(-60px); } }
+        @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(40px, -60px) scale(1.2); } 66% { transform: translate(-30px, 30px) scale(0.8); } 100% { transform: translate(0px, 0px) scale(1); } }
+        .animate-blob { animation: blob 8s infinite cubic-bezier(0.6, 0.4, 0.4, 0.9); }
+        .animation-delay-2000 { animation-delay: 2s; }
+        section { scroll-margin-top: 80px; }
       `}</style>
     </div>
   );

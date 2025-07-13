@@ -5,6 +5,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-share-tech-mono: 'Share Tech Mono', Menlo, monospace; /* fallback direct si besoin */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,4 +21,25 @@ body {
   font-family: 'Inter', Arial, Helvetica, sans-serif;
   font-weight: 300;
   letter-spacing: -0.01em;
+}
+
+/* ----------- FONT TECH (Share Tech Mono) ----------- */
+.font-tech {
+  font-family: var(--font-share-tech-mono), 'Share Tech Mono', Menlo, monospace;
+  letter-spacing: 0.13em;
+  /* PAS de text-transform ici ! */
+  font-size: 1.07em; /* Ajuste ici si besoin */
+}
+
+/* Majuscules pour titres, boutons, nav, etc. */
+.font-tech-upper {
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+}
+
+/* (Optionnel) Variante pour petits textes tech */
+.font-tech-sm {
+  font-family: var(--font-share-tech-mono), 'Share Tech Mono', Menlo, monospace;
+  letter-spacing: 0.14em;
+  font-size: 0.97em;
 }
