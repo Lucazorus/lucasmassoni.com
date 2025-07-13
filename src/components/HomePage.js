@@ -150,7 +150,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1a2327] text-white relative overflow-hidden font-tech tracking-tight text-[0.75em]">
+    <div className="min-h-screen bg-[#1a2327] text-white relative overflow-hidden font-tech tracking-tight">
       <Analytics />
       <div
         className="absolute inset-0 opacity-10 transition-all duration-1000"
@@ -283,7 +283,7 @@ const HomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: 'easeOut' }}
             viewport={{ once: true }}
-            className="font-tech-upper text-4xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
+            className="font-tech-upper text-4xl md:text-5xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
           >
             {t.expertise.title}
           </motion.h2>
@@ -308,10 +308,10 @@ const HomePage = () => {
                     {index === 1 && <BarChart className="w-12 h-12 text-[#7EBDA3]" />}
                     {index === 2 && <Code className="w-12 h-12 text-[#7EBDA3]" />}
                   </div>
-                  <h3 className="font-tech-upper text-xl mb-5 text-[#7EBDA3]">
+                  <h3 className="font-tech-upper text-xl md:text-2xl mb-5 text-[#7EBDA3]">
                     {exp.title}
                   </h3>
-                  <p className="font-tech text-[#B0B9BB] text-xs group-hover:text-white transition-colors duration-300 leading-relaxed">
+                  <p className="font-tech text-base text-[#B0B9BB] group-hover:text-white transition-colors duration-300 leading-relaxed">
                     {exp.description}
                   </p>
                 </div>
@@ -344,7 +344,7 @@ const HomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: 'easeOut' }}
             viewport={{ once: true }}
-            className="font-tech-upper text-4xl font-bold text-center mb-10 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
+            className="font-tech-upper text-4xl md:text-5xl font-bold text-center mb-10 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
           >
             {t.techStack.title}
           </motion.h2>
@@ -373,7 +373,7 @@ const HomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: 'easeOut' }}
             viewport={{ once: true }}
-            className="font-tech-upper text-4xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
+            className="font-tech-upper text-4xl md:text-5xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#7EBDA3] to-[#7EBDA3] tracking-tighter"
           >
             {t.contact.title}
           </motion.h2>
@@ -425,10 +425,10 @@ const HomePage = () => {
         body {
           background: linear-gradient(180deg, #1a2327 0%, #0d161d 100%);
           font-family: 'Share Tech Mono', Menlo, monospace !important;
-          font-size: 100% !important;
+          font-size: 50% !important;
         }
-        .font-tech { font-family: 'Share Tech Mono', Menlo, monospace; letter-spacing: 0.11em; font-size: 0.75em; text-transform: none; }
-        .font-tech-upper { font-family: 'Share Tech Mono', Menlo, monospace; text-transform: uppercase; letter-spacing: 0.13em; font-size: 0.75em; }
+        .font-tech { font-family: 'Share Tech Mono', Menlo, monospace; letter-spacing: 0.11em; text-transform: none; }
+        .font-tech-upper { font-family: 'Share Tech Mono', Menlo, monospace; text-transform: uppercase; letter-spacing: 0.13em; }
         .see-project-btn:hover { background: rgba(254,207,86,0.09) !important; color: #FECF56 !important; border-color: #FECF56 !important; }
         .animate-gradient-x { background-size: 200% 200%; animation: gradient-x 12s ease infinite; }
         @keyframes gradient-x { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
