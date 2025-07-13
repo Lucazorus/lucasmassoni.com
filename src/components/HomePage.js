@@ -20,25 +20,26 @@ const translations = {
     name: "Lucas Massoni",
     nav: { home: "Accueil", contact: "Contact" },
     hero: {
-      title: "EXPERT SALESFORCE",
-      subtitle: "Accompagnement complet de la stratégie à l’intégration Salesforce, spécialisé en mission à fort enjeu.",
+      // Sur mobile, forcer le retour à la ligne AVANT Salesforce pour jamais couper le mot
+      title: <>EXPERT <span className="salesforce-word">SALESFORCE</span></>,
+      subtitle: "Accompagnement complet de la stratégie à l’intégration Salesforce, spécialisée en mission à fort enjeu.",
       startProject: "DÉMARRER UN PROJET",
     },
     expertise: {
-      title: "MES EXPERTISES",
+      title: "MES SERVICES",
       items: [
         {
-          title: "SALESFORCE SALES & CPQ",
+          title: "Salesforce Sales & CPQ",
           description: "Configuration avancée et optimisation de processus de vente complexes. Automatisation de vos cycles de devis, prix, workflows adaptés à votre business.",
         },
         {
-          title: "ANALYTICS & TABLEAU",
+          title: "Analytics & Tableau",
           description: "Transformation de vos données en insights concrets. Dashboards, analytics, mais aussi développement custom 100% sur-mesure, même sans Tableau ou CRM Analytics.",
           demoBtn: "EXPLORER UNE DÉMO INTERACTIVE",
           demoUrl: "https://www.economytimelapse.com/",
         },
         {
-          title: "DÉVELOPPEMENT APEX",
+          title: "Développement Apex",
           description: "Intégrations avancées et automatisations robustes sur Salesforce. Développements sur mesure (Apex, Flow, LWC, API…).",
         },
       ],
@@ -58,12 +59,56 @@ const translations = {
         },
         {
           icon: <Brain size={40} style={{ color: ACCENT1 }} />,
-          title: "Profil hybride rare",
+          title: "Profil hybride",
           text: "Double culture business (finance, stratégie) & dev (autodidacte Salesforce, fullstack). Vision globale : métier, tech, et enjeux financiers.",
         },
       ],
     },
-    techStack: { title: "Stack technique" },
+    techStack: {
+      title: "Stack technique",
+      cards: [
+        {
+          tech: "Salesforce",
+          back: "Expertise avancée sur l’ensemble des clouds Salesforce. Maîtrise de l’écosystème, architecture, et déploiement à grande échelle.",
+        },
+        {
+          tech: "CPQ",
+          back: "Mise en place de processus CPQ complexes : règles de prix, configuration de bundles, génération automatisée de devis.",
+        },
+        {
+          tech: "Apex",
+          back: "Développement de logiques métier robustes, automatisations, connecteurs API et gestion de données volumineuses.",
+        },
+        {
+          tech: "Flow",
+          back: "Automatisations d’entreprise par Flow Builder : process, notifications, intégrations, sans code.",
+        },
+        {
+          tech: "LWC",
+          back: "Développement de composants Lightning Web Components performants pour des interfaces utilisateurs sur-mesure.",
+        },
+        {
+          tech: "SQL",
+          back: "Gestion, migration et analyse de données, requêtes optimisées pour la BI et la migration Salesforce.",
+        },
+        {
+          tech: "Tableau",
+          back: "Création de dashboards interactifs, analyses financières et data storytelling pour la direction.",
+        },
+        {
+          tech: "CRM Analytics",
+          back: "Dashboards temps réel, analyses avancées, intégration et exploration de données Salesforce.",
+        },
+        {
+          tech: "JSON",
+          back: "Conception d’API, automatisations d’intégration et transformation de données sur-mesure.",
+        },
+        {
+          tech: "JavaScript",
+          back: "Développements front-end et automatisations personnalisées, maîtrise de l'écosystème moderne.",
+        },
+      ],
+    },
     contact: {
       title: "Travaillons ensemble",
       subtitle: "Expliquez-moi votre besoin en deux phrases (ou plus), je vous réponds sous 24h.",
@@ -76,25 +121,25 @@ const translations = {
     name: "Lucas Massoni",
     nav: { home: "Home", contact: "Contact" },
     hero: {
-      title: "SALESFORCE EXPERT",
-      subtitle: "Complete support from strategy to Salesforce integration, specializing in high-stakes projects.",
+      title: <>SALESFORCE <span className="salesforce-word">EXPERT</span></>,
+      subtitle: "Complete support from strategy to Salesforce integration, specialized in high-stakes missions.",
       startProject: "START A PROJECT",
     },
     expertise: {
-      title: "MY EXPERTISE",
+      title: "MY SERVICES",
       items: [
         {
-          title: "SALESFORCE SALES & CPQ",
+          title: "Salesforce Sales & CPQ",
           description: "Advanced configuration and optimization of complex sales processes. Automation of your quote, pricing, and workflow cycles tailored to your business.",
         },
         {
-          title: "ANALYTICS & TABLEAU",
+          title: "Analytics & Tableau",
           description: "Transform your data into concrete insights. Dashboards, analytics, and fully custom development, even without Tableau or CRM Analytics.",
           demoBtn: "EXPLORE AN INTERACTIVE DEMO",
           demoUrl: "https://www.economytimelapse.com/",
         },
         {
-          title: "APEX DEVELOPMENT",
+          title: "Apex Development",
           description: "Advanced integrations and robust automation on Salesforce. Custom developments (Apex, Flow, LWC, API…).",
         },
       ],
@@ -114,12 +159,56 @@ const translations = {
         },
         {
           icon: <Brain size={40} style={{ color: ACCENT1 }} />,
-          title: "Rare hybrid profile",
+          title: "Hybrid profile",
           text: "Double background in business (finance, strategy) & dev (self-taught Salesforce, fullstack). Global vision: business, tech, financial issues.",
         },
       ],
     },
-    techStack: { title: "Tech stack" },
+    techStack: {
+      title: "Tech stack",
+      cards: [
+        {
+          tech: "Salesforce",
+          back: "Advanced expertise on all Salesforce clouds. Full mastery of architecture and large-scale deployments.",
+        },
+        {
+          tech: "CPQ",
+          back: "Implementation of advanced CPQ processes: pricing rules, bundle configuration, automated quoting.",
+        },
+        {
+          tech: "Apex",
+          back: "Development of robust business logic, automations, API connectors, and large-scale data management.",
+        },
+        {
+          tech: "Flow",
+          back: "Enterprise automation via Flow Builder: processes, notifications, integrations, without code.",
+        },
+        {
+          tech: "LWC",
+          back: "Lightning Web Components for custom UI needs. Clean, efficient, and scalable solutions.",
+        },
+        {
+          tech: "SQL",
+          back: "Data management, migration and analytics. Optimized queries for BI and Salesforce migrations.",
+        },
+        {
+          tech: "Tableau",
+          back: "Interactive dashboards, financial analytics, and tailored data storytelling for management.",
+        },
+        {
+          tech: "CRM Analytics",
+          back: "Real-time dashboards, advanced analytics, and deep Salesforce data integration.",
+        },
+        {
+          tech: "JSON",
+          back: "API design, integration automation, and custom data transformation.",
+        },
+        {
+          tech: "JavaScript",
+          back: "Front-end development and automation, strong command of modern JS ecosystem.",
+        },
+      ],
+    },
     contact: {
       title: "Let's work together",
       subtitle: "Describe your need in two sentences (or more), I'll reply within 24 hours.",
@@ -151,16 +240,23 @@ const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [language, setLanguage] = useState("fr");
-  const [underlineIdx, setUnderlineIdx] = useState(-1);
-  const underlineRefs = useRef([]);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const t = translations[language];
+
+  // Responsive Salesforce title - Forcer le retour à la ligne sur mobile
+  useEffect(() => {
+    // Pour la classe salesforce-word, on ajoute un display block en mobile pour forcer la ligne
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @media (max-width: 620px) {
+        .salesforce-word { display: block !important; }
+      }
+      @media (min-width: 621px) {
+        .salesforce-word { display: inline !important; }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, []);
 
   // Logo animé Rive à utiliser dans la navbar
   const NavLogo = () => {
@@ -195,29 +291,31 @@ const HomePage = () => {
     />
   );
 
-  // HERO + EXPERTISES
+  // HERO + EXPERTISES (100% responsive & stackable)
   const HeroAndExpertise = () => (
     <section
       className="w-full max-w-[1600px] mx-auto flex flex-col md:flex-row items-stretch px-0 md:px-8"
       style={{
         minHeight: `calc(100vh - ${NAV_HEIGHT}px)`,
-        height: `calc(100vh - ${NAV_HEIGHT}px)`,
+        height: "auto",
         alignItems: "stretch",
       }}
     >
-      {/* Col gauche : 33% */}
-      <div className="flex flex-col justify-between w-full md:w-[33%] pl-6 md:pl-10 xl:pl-20 py-0 pt-10 pb-6">
+      {/* Col gauche : 33% (stacké en mobile, col-12) */}
+      <div className="flex flex-col justify-between w-full md:w-[33%] pl-6 md:pl-10 xl:pl-20 py-0 pt-10 pb-6"
+        style={{ minWidth: 0 }}>
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <h1
-            className="font-tech-upper font-bold text-left"
+            className="font-tech-upper font-bold text-left hero-title"
             style={{
-              fontSize: "clamp(2.1rem, 4vw, 2.7rem)",
+              fontSize: "clamp(2.3rem, 5.7vw, 3.1rem)",
               color: TITLES,
               letterSpacing: "0.13em",
               lineHeight: "1.07",
               marginBottom: 0,
               whiteSpace: "normal",
               wordBreak: "break-word",
+              overflowWrap: "break-word"
             }}
           >
             {t.hero.title}
@@ -237,8 +335,8 @@ const HomePage = () => {
                 margin: "0",
                 marginTop: 32,
                 marginBottom: 32,
-                fontSize: "clamp(1.18rem, 2.2vw, 1.55rem)",
-                fontWeight: 600,
+                fontSize: "clamp(1.08rem, 2.2vw, 1.38rem)",
+                fontWeight: 300,
                 lineHeight: 1.5,
                 minHeight: 60,
                 display: "flex",
@@ -256,10 +354,9 @@ const HomePage = () => {
             style={{
               background: ACCENT1,
               color: BG,
-              border: "none",
+              border: `1.5px solid ${ACCENT1}`,
               letterSpacing: ".12em",
               minWidth: 220,
-              transition: "transform .16s cubic-bezier(.4,2,.6,1)",
               boxShadow: "0 2px 16px 0 #7aa59518"
             }}
           >
@@ -267,9 +364,11 @@ const HomePage = () => {
           </a>
         </div>
       </div>
+      {/* Séparateur vertical, caché en mobile */}
       <VerticalDivider />
-      {/* Col droite : 67% */}
-      <div className="w-full md:w-[67%] flex flex-col items-stretch justify-between pr-6 md:pr-10 xl:pr-20 py-0 pt-10 pb-6">
+      {/* Col droite : 67% (stacké en mobile, col-12) */}
+      <div className="w-full md:w-[67%] flex flex-col items-stretch justify-between pr-6 md:pr-10 xl:pr-20 py-0 pt-10 pb-6"
+        style={{ minWidth: 0 }}>
         <h2
           className="font-tech-upper font-bold text-left tracking-wider"
           style={{
@@ -286,74 +385,52 @@ const HomePage = () => {
         </h2>
         <div className="flex flex-col gap-7 w-full justify-center" style={{ flex: 1 }}>
           {t.expertise.items.map((exp, index) => (
-            <div
+            <motion.div
               key={index}
+              whileHover={{ scale: 1.043 }}
+              transition={{ duration: 0.23, ease: [0.28, 1.15, 0.5, 1] }}
               className="flex flex-col bg-white rounded-2xl px-7 py-5 w-full relative group transition-all duration-300"
               style={{
                 boxShadow: "none",
                 border: "none",
                 minHeight: 102,
-                marginTop: index === 0 ? 0 : 0,
               }}
-              onMouseEnter={() => setUnderlineIdx(index)}
-              onMouseLeave={() => setUnderlineIdx(-1)}
             >
-              {/* Titre souligné anim */}
               <div
                 className="flex flex-col items-start w-full mb-2 relative"
                 style={{ position: "relative" }}
               >
                 <span
-                  ref={el => (underlineRefs.current[index] = el)}
                   className="font-tech-upper text-lg md:text-xl mb-1"
-                  style={{ color: ACCENT1, letterSpacing: "0.10em", zIndex: 1, position: "relative" }}
+                  style={{
+                    color: ACCENT1,
+                    letterSpacing: "0.10em",
+                    zIndex: 1,
+                    position: "relative",
+                    display: "inline-block",
+                  }}
                 >
                   {exp.title}
                 </span>
-                {/* Soulignement animé */}
-                <span
-                  className="underline-anim"
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    bottom: 1,
-                    height: 3,
-                    background: ACCENT1,
-                    borderRadius: 2,
-                    opacity: 1,
-                    width:
-                      underlineIdx === index
-                        ? underlineRefs.current[index]
-                          ? underlineRefs.current[index].offsetWidth + "px"
-                          : "0px"
-                        : "0px",
-                    transition: underlineIdx === index
-                      ? "width 0.43s cubic-bezier(.5,.09,.38,1.02)"
-                      : "width 0.16s cubic-bezier(.68,-0.6,.32,1.6)",
-                    zIndex: 0,
-                  }}
-                />
               </div>
               <div className="font-tech text-base text-left" style={{ color: CARD_TEXT, wordBreak: "break-word" }}>
                 {exp.description}
               </div>
-              {/* Demo button pour Analytics : sous le texte, aligné left */}
               {exp.demoBtn && (
                 <div className="pt-4">
                   <a
                     href={exp.demoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-5 py-2 rounded-full font-tech-upper font-bold transition-all duration-200 text-base whitespace-nowrap btn-hover"
+                    className="px-5 py-2 rounded-full font-tech-upper font-bold transition-all duration-200 text-base btn-hover"
                     style={{
                       background: ACCENT2,
                       color: "#fff",
-                      border: "none",
+                      border: `1.5px solid ${ACCENT2}`,
                       letterSpacing: ".11em",
                       fontSize: "1rem",
                       minWidth: 180,
                       textAlign: "center",
-                      transition: "transform .16s cubic-bezier(.4,2,.6,1)",
                       boxShadow: "0 2px 16px 0 #ffcf5614"
                     }}
                   >
@@ -361,10 +438,27 @@ const HomePage = () => {
                   </a>
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
+      <style jsx>{`
+        @media (max-width: 1100px) {
+          section > div {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+        }
+        @media (max-width: 900px) {
+          section {
+            flex-direction: column !important;
+          }
+          .hidden.md\\:flex { display: none !important; }
+        }
+        @media (max-width: 800px) {
+          .hero-title { font-size: 2.09rem !important; }
+        }
+      `}</style>
     </section>
   );
 
@@ -381,19 +475,23 @@ const HomePage = () => {
         <div className="hidden md:flex flex-row items-start justify-between gap-0 relative w-full">
           {t.whyme.steps.map((step, i) => (
             <div key={i} className="flex-1 flex flex-col items-center min-w-[250px]">
-              <div className="mb-4">
+              <motion.div
+                whileHover={{ scale: 1.21 }}
+                transition={{ duration: 0.48, ease: [0.28, 1.15, 0.5, 1] }}
+                className="mb-4"
+                style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
                 <div className="bg-white rounded-full shadow-lg p-4 flex items-center justify-center border-2" style={{ borderColor: ACCENT1 }}>
                   {step.icon}
                 </div>
-              </div>
+              </motion.div>
               <div className="font-tech-upper text-md md:text-lg font-bold mb-1 tracking-widest" style={{ color: ACCENT1 }}>
                 {step.title}
               </div>
             </div>
           ))}
         </div>
-        {/* Barre verte pleine */}
-        <div className="hidden md:block w-full my-2 px-4">
+        <div className="hidden md:block w-full" style={{ margin: "32px 0 28px 0" }}>
           <div className="w-full h-1 mx-auto bg-[#7aa595] rounded-full" style={{ maxWidth: "95%" }}></div>
         </div>
         <div className="hidden md:flex flex-row items-start justify-between gap-0 w-full mt-3">
@@ -405,15 +503,19 @@ const HomePage = () => {
             </div>
           ))}
         </div>
-        {/* Mobile : colonne */}
         <div className="md:hidden flex flex-col items-center gap-14 relative mt-10">
           {t.whyme.steps.map((step, i) => (
             <div key={i} className="flex flex-col items-center relative w-full">
-              <div className="mb-4">
+              <motion.div
+                whileHover={{ scale: 1.21 }}
+                transition={{ duration: 0.48, ease: [0.28, 1.15, 0.5, 1] }}
+                className="mb-4"
+                style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
                 <div className="bg-white rounded-full shadow-lg p-4 flex items-center justify-center border-2" style={{ borderColor: ACCENT1 }}>
                   {step.icon}
                 </div>
-              </div>
+              </motion.div>
               <div className="font-tech-upper text-lg font-bold mb-2 tracking-widest" style={{ color: ACCENT1 }}>{step.title}</div>
               <div className="font-tech text-base text-left mb-2" style={{ color: TEXT, maxWidth: 380, margin: "0 auto" }}>{step.text}</div>
               {i < t.whyme.steps.length - 1 && (
@@ -426,37 +528,103 @@ const HomePage = () => {
     </section>
   );
 
-  // Tech stack
-  const StackSection = () => (
-    <section className="py-20 relative transition-colors duration-1000 overflow-hidden" style={{ background: BG }}>
-      <div className="max-w-6xl mx-auto px-4 relative z-10">
-        <h2
-          className="font-tech-upper text-3xl md:text-4xl font-bold text-center mb-10 tracking-tighter"
-          style={{ color: TITLES }}
-        >
-          {t.techStack.title}
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-5xl mx-auto">
-          {["Salesforce", "CPQ", "Apex", "Flow", "LWC", "SQL", "Tableau", "CRM Analytics", "JSON", "JavaScript"].map(
-            (tech, index) => (
+  // STACK TECHNIQUE GRID FLIP CARDS (super responsive, gap réduit en mobile)
+  const StackSection = () => {
+    const cards = t.techStack.cards;
+    return (
+      <section className="py-20 relative transition-colors duration-1000 overflow-hidden" style={{ background: BG }}>
+        <div className="max-w-6xl mx-auto px-4 relative z-10">
+          <h2
+            className="font-tech-upper text-3xl md:text-4xl font-bold text-center mb-10 tracking-tighter"
+            style={{ color: TITLES }}
+          >
+            {t.techStack.title}
+          </h2>
+          <div
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 place-items-center stack-tech-grid"
+            style={{
+              gap: "2.1vw",
+              transition: "gap .25s"
+            }}
+          >
+            {cards.map((card, idx) => (
               <div
-                key={index}
-                className="flex items-center justify-center h-14 px-4 py-2 rounded-3xl border transition-all duration-200 text-sm font-tech-upper btn-hover"
-                style={{
-                  borderColor: `${ACCENT1}`,
-                  color: ACCENT1,
-                  background: CARD_BG,
-                  transition: "transform .16s cubic-bezier(.4,2,.6,1)",
-                }}
+                key={idx}
+                className="relative stack-card"
+                style={{ width: 220, height: 165, padding: 0 }}
               >
-                <span className="relative z-10" style={{ color: CARD_TEXT }}>{tech}</span>
+                <div className="flip-card w-full h-full">
+                  <div className="flip-card-inner group w-full h-full">
+                    {/* FACE */}
+                    <div className="flip-card-front bg-white rounded-2xl w-full h-full flex flex-col justify-center items-center shadow-xl border" style={{ borderColor: ACCENT1 }}>
+                      <span className="font-tech-upper text-[1.03rem] md:text-lg" style={{ color: ACCENT1 }}>{card.tech}</span>
+                    </div>
+                    {/* BACK */}
+                    <div className="flip-card-back bg-[#f7faf9] rounded-2xl w-full h-full flex flex-col justify-start items-start shadow-xl border" style={{ borderColor: ACCENT1, padding: "18px 16px 14px 17px" }}>
+                      <span className="font-tech text-[0.95rem] md:text-[1.04rem] text-left" style={{ color: CARD_TEXT, fontWeight: 500, lineHeight: 1.37, wordBreak: "break-word", maxWidth: 184, textAlign: "left" }}>
+                        {card.back}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            )
-          )}
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
-  );
+        <style jsx>{`
+          .flip-card {
+            perspective: 900px;
+            width: 100%; height: 100%;
+          }
+          .flip-card-inner {
+            width: 100%; height: 100%;
+            transition: transform 0.65s cubic-bezier(.37,1.6,.24,.99);
+            transform-style: preserve-3d;
+            cursor: pointer;
+          }
+          .flip-card:hover .flip-card-inner, .flip-card:focus-within .flip-card-inner {
+            transform: rotateY(180deg);
+          }
+          .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 4px 28px 0 #7aa59509, 0 1.5px 12px 0 #7aa59518;
+            border-radius: 18px;
+            padding: 0 8px;
+          }
+          .flip-card-back {
+            transform: rotateY(180deg);
+            background: #f7faf9;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+            padding-top: 18px;
+            padding-left: 17px;
+            padding-right: 16px;
+            text-align: left;
+          }
+          /* Responsive stack cards grid */
+          @media (max-width: 1200px) {
+            .stack-tech-grid { gap: 1.5vw !important; }
+            .stack-card { width: 180px !important; height: 128px !important; }
+          }
+          @media (max-width: 900px) {
+            .stack-tech-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 2vw !important; }
+            .stack-card { width: 125px !important; height: 84px !important; }
+            .flip-card-back span, .flip-card-front span { font-size: 0.76rem !important; }
+          }
+          @media (max-width: 600px) {
+            .stack-tech-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 3vw !important; }
+            .stack-card { width: 106px !important; height: 72px !important; }
+          }
+          @media (max-width: 420px) {
+            .stack-tech-grid { gap: 1vw !important; }
+            .stack-card { width: 88px !important; height: 60px !important; }
+            .flip-card-back span, .flip-card-front span { font-size: 0.65rem !important; }
+          }
+        `}</style>
+      </section>
+    );
+  };
 
   // Contact
   const ContactSection = () => (
@@ -484,8 +652,7 @@ const HomePage = () => {
               background: CARD_BG,
               borderColor: `${ACCENT1}`,
               color: ACCENT1,
-              boxShadow: "0 2px 12px 0 #7aa59518",
-              transition: "transform .16s cubic-bezier(.4,2,.6,1)"
+              boxShadow: "0 2px 12px 0 #7aa59518"
             }}
           >
             <Calendar size={22} style={{ color: ACCENT1 }} />
@@ -500,8 +667,7 @@ const HomePage = () => {
               background: CARD_BG,
               borderColor: `${ACCENT1}`,
               color: ACCENT1,
-              boxShadow: "0 2px 12px 0 #7aa59518",
-              transition: "transform .16s cubic-bezier(.4,2,.6,1)"
+              boxShadow: "0 2px 12px 0 #7aa59518"
             }}
           >
             <Linkedin size={22} style={{ color: ACCENT1 }} />
@@ -518,13 +684,20 @@ const HomePage = () => {
       <div className="absolute inset-x-0 top-0 h-px" style={{ background: `${ACCENT1}55` }}></div>
       <div className="max-w-7xl mx-auto px-8">
         <div className="text-center group transition-colors duration-500">
-          <p className="transition-all duration-500 font-tech text-base" style={{ color: TEXT }}>
+          <p className="transition-all duration-500 font-tech text-xs" style={{ color: TEXT, fontSize: "0.89rem", opacity: 0.69 }}>
             {t.footer.replace("{year}", new Date().getFullYear())}
           </p>
         </div>
       </div>
     </footer>
   );
+
+  // Scroll/blur nav
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen text-black relative overflow-hidden font-tech tracking-tight" style={{ background: BG }}>
