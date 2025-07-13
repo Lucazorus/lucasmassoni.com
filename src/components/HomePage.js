@@ -425,7 +425,7 @@ const HomePage = () => {
         body {
           background: linear-gradient(180deg, #1a2327 0%, #0d161d 100%);
           font-family: 'Share Tech Mono', Menlo, monospace !important;
-          font-size: 75% !important;
+          font-size: 100% !important;
         }
         .font-tech { font-family: 'Share Tech Mono', Menlo, monospace; letter-spacing: 0.11em; font-size: 0.75em; text-transform: none; }
         .font-tech-upper { font-family: 'Share Tech Mono', Menlo, monospace; text-transform: uppercase; letter-spacing: 0.13em; font-size: 0.75em; }
