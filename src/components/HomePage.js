@@ -20,7 +20,6 @@ const translations = {
     name: "Lucas Massoni",
     nav: { home: "Accueil", contact: "Contact" },
     hero: {
-      // Sur mobile, forcer le retour à la ligne AVANT Salesforce pour jamais couper le mot
       title: <>EXPERT <span className="salesforce-word">SALESFORCE</span></>,
       subtitle: "Accompagnement complet de la stratégie à l’intégration Salesforce, spécialisée en mission à fort enjeu.",
       startProject: "DÉMARRER UN PROJET",
@@ -220,6 +219,11 @@ const translations = {
 };
 
 const NAV_HEIGHT = 88;
+const CARD_MIN_W = 95;
+const CARD_MIN_H = 62;
+const CARD_MAX_W = 220;
+const CARD_MAX_H = 165;
+const FLIP_BREAKPOINT = 600; // px (désactive le flip sur petits écrans)
 
 const SectionDivider = () => (
   <div className="flex justify-center my-7 md:my-12">
@@ -240,11 +244,20 @@ const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [language, setLanguage] = useState("fr");
+  const [canFlip, setCanFlip] = useState(true);
+
+  // Responsive: disable flip cards below a certain width
+  useEffect(() => {
+    const updateFlip = () => setCanFlip(window.innerWidth >= FLIP_BREAKPOINT);
+    updateFlip();
+    window.addEventListener("resize", updateFlip);
+    return () => window.removeEventListener("resize", updateFlip);
+  }, []);
+
   const t = translations[language];
 
   // Responsive Salesforce title - Forcer le retour à la ligne sur mobile
   useEffect(() => {
-    // Pour la classe salesforce-word, on ajoute un display block en mobile pour forcer la ligne
     const style = document.createElement("style");
     style.innerHTML = `
       @media (max-width: 620px) {
@@ -291,7 +304,7 @@ const HomePage = () => {
     />
   );
 
-  // HERO + EXPERTISES (100% responsive & stackable)
+  // HERO + EXPERTISES (100% responsive & stackable, padding left en mobile)
   const HeroAndExpertise = () => (
     <section
       className="w-full max-w-[1600px] mx-auto flex flex-col md:flex-row items-stretch px-0 md:px-8"
@@ -303,7 +316,7 @@ const HomePage = () => {
     >
       {/* Col gauche : 33% (stacké en mobile, col-12) */}
       <div className="flex flex-col justify-between w-full md:w-[33%] pl-6 md:pl-10 xl:pl-20 py-0 pt-10 pb-6"
-        style={{ minWidth: 0 }}>
+        style={{ minWidth: 0, paddingLeft: '1.6rem', paddingRight: 0 }}>
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <h1
             className="font-tech-upper font-bold text-left hero-title"
@@ -368,7 +381,7 @@ const HomePage = () => {
       <VerticalDivider />
       {/* Col droite : 67% (stacké en mobile, col-12) */}
       <div className="w-full md:w-[67%] flex flex-col items-stretch justify-between pr-6 md:pr-10 xl:pr-20 py-0 pt-10 pb-6"
-        style={{ minWidth: 0 }}>
+        style={{ minWidth: 0, paddingLeft: '1.6rem' }}>
         <h2
           className="font-tech-upper font-bold text-left tracking-wider"
           style={{
@@ -458,13 +471,16 @@ const HomePage = () => {
         @media (max-width: 800px) {
           .hero-title { font-size: 2.09rem !important; }
         }
+        @media (max-width: 640px) {
+          .pl-6 { padding-left: 1.6rem !important; }
+        }
       `}</style>
     </section>
   );
 
   // Pourquoi me choisir
   const WhyMeSection = () => (
-    <section className="py-20 relative transition-colors duration-1000" style={{ background: BG }}>
+    <section className="py-20 relative transition-colors duration-1000 px-6 md:px-0" style={{ background: BG }}>
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <h2
           className="font-tech-upper text-3xl md:text-4xl font-bold text-center mb-14 tracking-tighter"
@@ -528,11 +544,26 @@ const HomePage = () => {
     </section>
   );
 
-  // STACK TECHNIQUE GRID FLIP CARDS (super responsive, gap réduit en mobile)
+  // STACK TECHNIQUE GRID FLIP CARDS (super responsive, constant gap, désactive flip si trop petit, font dynamique)
   const StackSection = () => {
     const cards = t.techStack.cards;
+    // Gère font-size dynamique pour le back texte
+function getFontSize(text, w, h) {
+  if (!text) return "0.83rem";
+  const charCount = text.length;
+  let fs = Math.max(Math.min((w * 0.105) + (h * 0.09) - charCount * 0.013, 0.83), 0.54);
+  return `${fs}rem`;
+}
+
+    // Dimensions responsive, padding constant
+    const gapPx = 14;
+    let colCount = 5;
+    if (typeof window !== "undefined") {
+      if (window.innerWidth < 900) colCount = 3;
+      if (window.innerWidth < 600) colCount = 2;
+    }
     return (
-      <section className="py-20 relative transition-colors duration-1000 overflow-hidden" style={{ background: BG }}>
+      <section className="py-20 relative transition-colors duration-1000 overflow-hidden px-6 md:px-0" style={{ background: BG }}>
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <h2
             className="font-tech-upper text-3xl md:text-4xl font-bold text-center mb-10 tracking-tighter"
@@ -541,9 +572,11 @@ const HomePage = () => {
             {t.techStack.title}
           </h2>
           <div
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 place-items-center stack-tech-grid"
+            className="grid stack-tech-grid"
             style={{
-              gap: "2.1vw",
+              gridTemplateColumns: `repeat(${colCount}, minmax(${CARD_MIN_W}px, ${CARD_MAX_W}px))`,
+              gap: `${gapPx}px`,
+              placeItems: "center",
               transition: "gap .25s"
             }}
           >
@@ -551,17 +584,39 @@ const HomePage = () => {
               <div
                 key={idx}
                 className="relative stack-card"
-                style={{ width: 220, height: 165, padding: 0 }}
+                style={{
+                  width: CARD_MAX_W,
+                  height: CARD_MAX_H,
+                  minWidth: CARD_MIN_W,
+                  minHeight: CARD_MIN_H,
+                  maxWidth: CARD_MAX_W,
+                  maxHeight: CARD_MAX_H,
+                  padding: 0,
+                }}
               >
-                <div className="flip-card w-full h-full">
+                <div className={canFlip ? "flip-card w-full h-full" : "no-flip-card w-full h-full"}>
                   <div className="flip-card-inner group w-full h-full">
                     {/* FACE */}
                     <div className="flip-card-front bg-white rounded-2xl w-full h-full flex flex-col justify-center items-center shadow-xl border" style={{ borderColor: ACCENT1 }}>
                       <span className="font-tech-upper text-[1.03rem] md:text-lg" style={{ color: ACCENT1 }}>{card.tech}</span>
                     </div>
                     {/* BACK */}
-                    <div className="flip-card-back bg-[#f7faf9] rounded-2xl w-full h-full flex flex-col justify-start items-start shadow-xl border" style={{ borderColor: ACCENT1, padding: "18px 16px 14px 17px" }}>
-                      <span className="font-tech text-[0.95rem] md:text-[1.04rem] text-left" style={{ color: CARD_TEXT, fontWeight: 500, lineHeight: 1.37, wordBreak: "break-word", maxWidth: 184, textAlign: "left" }}>
+                    <div className="flip-card-back bg-[#f7faf9] rounded-2xl w-full h-full flex flex-col justify-start items-start shadow-xl border"
+                      style={{
+                        borderColor: ACCENT1,
+                        padding: "14px 14px 11px 15px",
+                        display: canFlip ? "flex" : "none"
+                      }}>
+                      <span className="font-tech text-[0.95rem] md:text-[1.04rem] text-left"
+                        style={{
+                          color: CARD_TEXT,
+                          fontWeight: 500,
+                          lineHeight: 1.34,
+                          wordBreak: "break-word",
+                          maxWidth: 174,
+                          textAlign: "left",
+                          fontSize: getFontSize(card.back, CARD_MAX_W, CARD_MAX_H)
+                        }}>
                         {card.back}
                       </span>
                     </div>
@@ -576,15 +631,20 @@ const HomePage = () => {
             perspective: 900px;
             width: 100%; height: 100%;
           }
+          .no-flip-card {
+            width: 100%; height: 100%;
+          }
           .flip-card-inner {
             width: 100%; height: 100%;
             transition: transform 0.65s cubic-bezier(.37,1.6,.24,.99);
             transform-style: preserve-3d;
             cursor: pointer;
           }
-          .flip-card:hover .flip-card-inner, .flip-card:focus-within .flip-card-inner {
+          .flip-card:hover .flip-card-inner,
+          .flip-card:focus-within .flip-card-inner {
             transform: rotateY(180deg);
           }
+          .no-flip-card .flip-card-inner { transform: none !important; cursor: default; }
           .flip-card-front, .flip-card-back {
             position: absolute; width: 100%; height: 100%;
             backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -597,29 +657,22 @@ const HomePage = () => {
             background: #f7faf9;
             justify-content: flex-start !important;
             align-items: flex-start !important;
-            padding-top: 18px;
-            padding-left: 17px;
-            padding-right: 16px;
+            padding-top: 14px;
+            padding-left: 15px;
+            padding-right: 14px;
             text-align: left;
           }
-          /* Responsive stack cards grid */
+          /* Responsive fix - constant gap & min size */
           @media (max-width: 1200px) {
-            .stack-tech-grid { gap: 1.5vw !important; }
-            .stack-card { width: 180px !important; height: 128px !important; }
+            .stack-card { width: 150px !important; height: 105px !important; min-width: ${CARD_MIN_W}px !important; min-height: ${CARD_MIN_H}px !important;}
           }
           @media (max-width: 900px) {
-            .stack-tech-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 2vw !important; }
-            .stack-card { width: 125px !important; height: 84px !important; }
-            .flip-card-back span, .flip-card-front span { font-size: 0.76rem !important; }
+            .stack-tech-grid { grid-template-columns: repeat(3, 1fr) !important; }
+            .stack-card { width: 110px !important; height: 70px !important; min-width: ${CARD_MIN_W}px !important; min-height: ${CARD_MIN_H}px !important;}
           }
           @media (max-width: 600px) {
-            .stack-tech-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 3vw !important; }
-            .stack-card { width: 106px !important; height: 72px !important; }
-          }
-          @media (max-width: 420px) {
-            .stack-tech-grid { gap: 1vw !important; }
-            .stack-card { width: 88px !important; height: 60px !important; }
-            .flip-card-back span, .flip-card-front span { font-size: 0.65rem !important; }
+            .stack-tech-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .stack-card { width: 95px !important; height: 62px !important; min-width: ${CARD_MIN_W}px !important; min-height: ${CARD_MIN_H}px !important;}
           }
         `}</style>
       </section>
@@ -628,7 +681,7 @@ const HomePage = () => {
 
   // Contact
   const ContactSection = () => (
-    <section id="contact" className="py-28 relative transition-colors duration-1000" style={{ background: BG }}>
+    <section id="contact" className="py-28 relative transition-colors duration-1000 px-6 md:px-0" style={{ background: BG }}>
       <div className="max-w-7xl mx-auto px-8 relative z-10">
         <h2
           className="font-tech-upper text-3xl md:text-4xl font-bold text-center mb-5 tracking-tighter"
@@ -680,7 +733,7 @@ const HomePage = () => {
 
   // FOOTER
   const Footer = () => (
-    <footer className="py-8 relative border-t transition-colors duration-1000" style={{ background: BG, borderColor: `${ACCENT1}33` }}>
+    <footer className="py-8 relative border-t transition-colors duration-1000 px-6 md:px-0" style={{ background: BG, borderColor: `${ACCENT1}33` }}>
       <div className="absolute inset-x-0 top-0 h-px" style={{ background: `${ACCENT1}55` }}></div>
       <div className="max-w-7xl mx-auto px-8">
         <div className="text-center group transition-colors duration-500">
