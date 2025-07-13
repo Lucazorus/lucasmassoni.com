@@ -34,6 +34,7 @@ body {
   font-family: var(--font-share-tech-mono), 'Share Tech Mono', Menlo, monospace;
   letter-spacing: 0.13em;
   text-transform: uppercase;
+  font-weight: 50;
   /* Pas de font-size ici, laisse Tailwind gérer */
 }
 
