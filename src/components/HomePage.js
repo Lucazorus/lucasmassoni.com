@@ -53,7 +53,7 @@ const translations = {
         },
         {
           icon: <Rocket size={40} style={{ color: ACCENT1 }} />,
-          title: "Méthodo startup",
+          title: "Méthodologie startup",
           text: "Agilité, transparence, vitesse d’exécution. Priorité à l'efficacité : focus impact, pas de blabla.",
         },
         {
