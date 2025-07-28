@@ -5,6 +5,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-share-tech: 'Share Tech', 'Share Tech Mono', Menlo, monospace;
   --font-share-tech-mono: 'Share Tech Mono', Menlo, monospace;
 }
 
@@ -24,9 +25,8 @@ body {
 }
 
 .font-tech {
-  font-family: var(--font-share-tech-mono), 'Share Tech Mono', Menlo, monospace;
+  font-family: var(--font-share-tech), 'Share Tech', sans-serif;
   letter-spacing: 0.13em;
-  /* Pas de font-size ici, laisse Tailwind gérer */
   text-transform: none;
 }
 
@@ -35,11 +35,10 @@ body {
   letter-spacing: 0.13em;
   text-transform: uppercase;
   font-weight: 50;
-  /* Pas de font-size ici, laisse Tailwind gérer */
 }
 
 .font-tech-sm {
-  font-family: var(--font-share-tech-mono), 'Share Tech Mono', Menlo, monospace;
+  font-family: var(--font-share-tech), 'Share Tech', sans-serif;
   letter-spacing: 0.14em;
   font-size: 0.97em;
 }

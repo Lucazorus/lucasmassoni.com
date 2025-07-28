@@ -63,6 +63,15 @@ const translations = {
         },
       ],
     },
+    agile: {
+      title: "Accompagnement et Méthodologie Agile",
+      desc: "Mon approche est collaborative et transparente. J'organise des ateliers de cadrage fonctionnel et technique et j’assure un transfert de compétences complet pour garantir l'autonomie de vos équipes.",
+      items: [
+        { title: "ATELIERS DE CADRAGE", desc: "Définition précise des besoins fonctionnels et techniques." },
+        { title: "DELIVERY AGILE", desc: "Mise en œuvre itérative en étroite collaboration avec les équipes client." },
+        { title: "FORMATION ET TRANSFERT", desc: "Documentation, formation et autonomisation de vos équipes." }
+      ]
+    },
     techStack: {
       title: "Stack technique",
       cards: [
@@ -162,6 +171,15 @@ const translations = {
           text: "Double background in business (finance, strategy) & dev (self-taught Salesforce, fullstack). Global vision: business, tech, financial issues.",
         },
       ],
+    },
+    agile: {
+      title: "Agile Support & Methodology",
+      desc: "My approach is collaborative and transparent. I organize scoping workshops (functional & technical) and ensure full knowledge transfer for your teams’ autonomy.",
+      items: [
+        { title: "SCOPING WORKSHOPS", desc: "Precise definition of functional and technical requirements." },
+        { title: "AGILE DELIVERY", desc: "Iterative implementation in close collaboration with your teams." },
+        { title: "TRAINING & TRANSFER", desc: "Documentation, training, and empowering your teams." }
+      ]
     },
     techStack: {
       title: "Tech stack",
@@ -304,7 +322,7 @@ const HomePage = () => {
     />
   );
 
-  // HERO + EXPERTISES (100% responsive & stackable, padding left en mobile)
+  // HERO + EXPERTISES
   const HeroAndExpertise = () => (
     <section
       className="w-full max-w-[1600px] mx-auto flex flex-col md:flex-row items-stretch px-0 md:px-8"
@@ -314,7 +332,7 @@ const HomePage = () => {
         alignItems: "stretch",
       }}
     >
-      {/* Col gauche : 33% (stacké en mobile, col-12) */}
+      {/* Col gauche */}
       <div className="flex flex-col justify-between w-full md:w-[33%] pl-6 md:pl-10 xl:pl-20 py-0 pt-10 pb-6"
         style={{ minWidth: 0, paddingLeft: '1.6rem', paddingRight: 0 }}>
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -379,7 +397,7 @@ const HomePage = () => {
       </div>
       {/* Séparateur vertical, caché en mobile */}
       <VerticalDivider />
-      {/* Col droite : 67% (stacké en mobile, col-12) */}
+      {/* Col droite */}
       <div className="w-full md:w-[67%] flex flex-col items-stretch justify-between pr-6 md:pr-10 xl:pr-20 py-0 pt-10 pb-6"
         style={{ minWidth: 0, paddingLeft: '1.6rem' }}>
         <h2
@@ -544,17 +562,65 @@ const HomePage = () => {
     </section>
   );
 
-  // STACK TECHNIQUE GRID FLIP CARDS (super responsive, constant gap, désactive flip si trop petit, font dynamique)
+  const AgileSection = () => (
+  <section className="py-24 relative transition-colors duration-1000 px-6 md:px-0" style={{ background: BG }}>
+    <div className="max-w-6xl mx-auto px-4 relative z-10 text-center">
+      <h2
+        className="font-tech-upper text-3xl md:text-4xl font-bold tracking-tight mb-8"
+        style={{ color: TITLES }}
+      >
+        {t.agile.title}
+      </h2>
+      <p
+        className="font-tech text-lg md:text-xl leading-relaxed"
+        style={{
+          color: TEXT,
+          maxWidth: 880,
+          margin: "0 auto",
+          marginBottom: "3.5rem" // Espace vertical entre le texte et les cartes
+        }}
+      >
+        {t.agile.desc}
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
+        {t.agile.items.map((item, i) => (
+          <motion.div
+            key={i}
+            whileHover={{ y: -6, boxShadow: "0 12px 28px rgba(0,0,0,0.08)" }}
+            transition={{ duration: 0.3, ease: [0.28, 1.15, 0.5, 1] }}
+            className="relative bg-white rounded-xl p-6 border group transition-all duration-300"
+            style={{ borderColor: ACCENT1 }}
+          >
+            <div
+              className="absolute top-0 left-0 w-full h-[10px] rounded-t-xl"
+              style={{ background: ACCENT1 }}
+            />
+            <div className="pt-5">
+              <h3
+                className="font-tech-upper text-xl font-bold tracking-wide mb-2"
+                style={{ color: TITLES }}
+              >
+                {item.title}
+              </h3>
+              <p className="font-tech text-base" style={{ color: TEXT }}>{item.desc}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+  // STACK TECHNIQUE GRID FLIP CARDS
   const StackSection = () => {
     const cards = t.techStack.cards;
     // Gère font-size dynamique pour le back texte
-function getFontSize(text, w, h) {
-  if (!text) return "0.83rem";
-  const charCount = text.length;
-  let fs = Math.max(Math.min((w * 0.105) + (h * 0.09) - charCount * 0.013, 0.83), 0.54);
-  return `${fs}rem`;
-}
-
+    function getFontSize(text, w, h) {
+      if (!text) return "0.83rem";
+      const charCount = text.length;
+      let fs = Math.max(Math.min((w * 0.105) + (h * 0.09) - charCount * 0.013, 0.83), 0.54);
+      return `${fs}rem`;
+    }
     // Dimensions responsive, padding constant
     const gapPx = 14;
     let colCount = 5;
@@ -834,6 +900,10 @@ function getFontSize(text, w, h) {
       {/* DIVIDER + WHY ME */}
       <SectionDivider />
       <WhyMeSection />
+
+      {/* DIVIDER + AGILE SECTION */}
+      <SectionDivider />
+      <AgileSection />
 
       {/* DIVIDER + STACK */}
       <SectionDivider />
