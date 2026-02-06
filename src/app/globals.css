@@ -2,43 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAF9F5;
+  --foreground: #393E41;
   --font-share-tech: 'Share Tech', 'Share Tech Mono', Menlo, monospace;
   --font-share-tech-mono: 'Share Tech Mono', Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-family: 'Share Tech Mono', Menlo, monospace;
   font-weight: 300;
   letter-spacing: -0.01em;
 }
 
 .font-tech {
-  font-family: var(--font-share-tech), 'Share Tech', sans-serif;
-  letter-spacing: 0.13em;
+  font-family: 'Share Tech Mono', Menlo, monospace;
+  letter-spacing: 0.11em;
   text-transform: none;
 }
 
 .font-tech-upper {
-  font-family: var(--font-share-tech-mono), 'Share Tech Mono', Menlo, monospace;
+  font-family: 'Share Tech Mono', Menlo, monospace;
   letter-spacing: 0.13em;
   text-transform: uppercase;
   font-weight: 50;
 }
 
 .font-tech-sm {
-  font-family: var(--font-share-tech), 'Share Tech', sans-serif;
+  font-family: 'Share Tech Mono', Menlo, monospace;
   letter-spacing: 0.14em;
   font-size: 0.97em;
+}
+
+@keyframes grid {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-60px); }
+}
+
+section {
+  scroll-margin-top: 80px;
+}
+
+.btn-hover {
+  transition: transform .16s cubic-bezier(.4, 2, .6, 1), box-shadow .18s cubic-bezier(.4, 2, .6, 1);
+}
+.btn-hover:hover {
+  transform: scale(1.045);
+  box-shadow: 0 4px 24px 0 rgba(122, 165, 149, 0.16);
 }

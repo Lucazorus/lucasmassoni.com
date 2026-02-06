@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Share_Tech_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import ClientLayout from "@/components/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +14,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// On ajoute Share Tech Mono :
 const shareTechMono = Share_Tech_Mono({
   weight: "400",
   subsets: ["latin"],
@@ -21,18 +21,18 @@ const shareTechMono = Share_Tech_Mono({
 });
 
 export const metadata = {
-  title: "Lucas Massoni",
-  description: "Freelance Salesforce",
+  title: "Lucas Massoni | Expert Salesforce Freelance",
+  description:
+    "Accompagnement complet de la strategie a l'integration Salesforce. CPQ, Analytics, Apex, Data Migration.",
   icons: {
-    icon: '/favicon.png',
+    icon: "/favicon.png",
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <head>
-        {/* Google Analytics 4 */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-VNFLBXFQ88"
           strategy="afterInteractive"
@@ -45,10 +45,11 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-VNFLBXFQ88');
           `}
         </Script>
-        {/* End Google Analytics 4 */}
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${shareTechMono.variable} antialiased`}>
-        {children}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${shareTechMono.variable} antialiased`}
+      >
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
