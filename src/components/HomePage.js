@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, Linkedin, Calendar, Award, Rocket, Brain } from "lucide-react";
+import { Menu, X, Linkedin, Calendar, Award, Rocket, Brain, Database } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
 import { Analytics } from "@vercel/analytics/react";
@@ -41,10 +41,14 @@ const translations = {
           title: "Développement Apex",
           description: "Intégrations avancées et automatisations robustes sur Salesforce. Développements sur mesure (Apex, Flow, LWC, API…).",
         },
+        {
+          title: "Data Migration",
+          description: "Migration de données vers et depuis Salesforce : audit, mapping, nettoyage, transformation et chargement. Stratégie de migration fiable pour garantir l'intégrité et la qualité de vos données.",
+        },
       ],
     },
     whyme: {
-      title: "Pourquoi me choisir ?",
+      title: "Pourquoi me choisir ?",
       steps: [
         {
           icon: <Award size={40} style={{ color: ACCENT1 }} />,
@@ -149,6 +153,10 @@ const translations = {
         {
           title: "Apex Development",
           description: "Advanced integrations and robust automation on Salesforce. Custom developments (Apex, Flow, LWC, API…).",
+        },
+        {
+          title: "Data Migration",
+          description: "Data migration to and from Salesforce: audit, mapping, cleansing, transformation and loading. Reliable migration strategy to ensure your data integrity and quality.",
         },
       ],
     },
