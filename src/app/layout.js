@@ -1,17 +1,12 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Share_Tech_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 const shareTechMono = Share_Tech_Mono({
@@ -23,17 +18,21 @@ const shareTechMono = Share_Tech_Mono({
 export const metadata = {
   title: "Lucas Massoni | Expert Salesforce Freelance",
   description:
-    "Accompagnement complet de la strategie a l'integration Salesforce. CPQ, Analytics, Apex, Data Migration.",
+    "Expert Salesforce freelance : CPQ, Analytics, Apex, Data Migration. Accompagnement complet de la strategie a l'implementation.",
   icons: {
     icon: "/favicon.png",
   },
+};
+
+export const viewport = {
+  themeColor: "#0f1114",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${shareTechMono.variable} antialiased`}
+        className={`${inter.variable} ${shareTechMono.variable} antialiased`}
       >
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-VNFLBXFQ88"

@@ -5,23 +5,20 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/lib/language-context";
-import { BG, ACCENT1, TITLES, NAV_HEIGHT } from "@/lib/constants";
+import { BG, ACCENT1, TITLES, TEXT, BORDER, NAV_HEIGHT } from "@/lib/constants";
 
 export default function Navbar() {
-  console.log("[v0] Navbar rendering");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const pathname = usePathname();
-  console.log("[v0] Navbar pathname:", pathname);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
@@ -42,111 +39,125 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed w-full z-50 transition-all duration-700 ${scrolled ? "backdrop-blur-xl shadow-2xl" : ""}`}
+        className="fixed w-full z-50 transition-all duration-500"
         style={{
-          background: scrolled ? `${BG}e6` : `${BG}cc`,
-          borderBottom: `1px solid ${ACCENT1}33`,
+          background: scrolled ? `rgba(15, 17, 20, 0.9)` : `rgba(15, 17, 20, 0.6)`,
+          backdropFilter: scrolled ? "blur(20px) saturate(1.2)" : "blur(12px)",
+          borderBottom: scrolled ? `1px solid ${BORDER}` : "1px solid transparent",
           height: `${NAV_HEIGHT}px`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="flex justify-between items-center h-[88px]">
-            <Link href="/" className="flex items-center">
-              <div className="w-10 h-10 mr-2 flex items-center justify-center">
-                <span
-                  className="font-tech-upper text-lg font-bold"
-                  style={{ color: ACCENT1 }}
-                >
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
+          <div className="flex justify-between items-center" style={{ height: `${NAV_HEIGHT}px` }}>
+            <Link href="/" className="flex items-center gap-2">
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{
+                  background: `rgba(122, 165, 149, 0.1)`,
+                  border: `1px solid rgba(122, 165, 149, 0.2)`,
+                }}
+              >
+                <span className="font-tech-upper text-xs font-bold" style={{ color: ACCENT1 }}>
                   LM
                 </span>
               </div>
               <span
-                className="text-2xl font-bold font-tech-upper tracking-tighter ml-2"
-                style={{ color: TITLES }}
+                className="text-base font-medium hidden sm:inline-block"
+                style={{ color: TITLES, letterSpacing: "-0.01em" }}
               >
                 {t.name}
               </span>
             </Link>
-            <div className="hidden md:flex items-center gap-8">
+
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="transition-all duration-300 font-tech-upper relative text-base font-medium"
+                  className="relative px-4 py-2 rounded-lg font-tech text-xs transition-all duration-300"
                   style={{
-                    color: isActive(link.href) ? ACCENT1 : TITLES,
+                    color: isActive(link.href) ? ACCENT1 : TEXT,
+                    background: isActive(link.href) ? `rgba(122, 165, 149, 0.08)` : "transparent",
                   }}
                 >
                   {link.label}
                   {isActive(link.href) && (
                     <motion.div
-                      layoutId="nav-underline"
-                      className="absolute -bottom-1 left-0 right-0 h-[2px] rounded-full"
+                      layoutId="nav-active"
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
                       style={{ background: ACCENT1 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
                 </Link>
               ))}
+              <div
+                className="w-px h-5 mx-2"
+                style={{ background: BORDER }}
+              />
               <button
-                onClick={() =>
-                  setLanguage(language === "fr" ? "en" : "fr")
-                }
-                className="transition-all duration-500 font-tech-upper text-base font-medium px-3 py-1 rounded-full border"
+                onClick={() => setLanguage(language === "fr" ? "en" : "fr")}
+                className="font-tech text-xs px-3 py-1.5 rounded-lg transition-all duration-300"
                 style={{
-                  color: TITLES,
-                  borderColor: `${ACCENT1}44`,
+                  color: TEXT,
+                  background: `rgba(122, 165, 149, 0.05)`,
+                  border: `1px solid ${BORDER}`,
                 }}
               >
                 {language === "fr" ? "EN" : "FR"}
               </button>
             </div>
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="transition-colors duration-500"
-                style={{ color: TITLES }}
-                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
+
+            {/* Mobile burger */}
+            <button
+              className="md:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{ color: TITLES }}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -30 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="md:hidden fixed w-full z-40 backdrop-blur-xl shadow-xl"
-            style={{ background: `${BG}f0`, top: `${NAV_HEIGHT}px` }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="md:hidden fixed w-full z-40"
+            style={{
+              background: `rgba(15, 17, 20, 0.95)`,
+              backdropFilter: "blur(20px)",
+              top: `${NAV_HEIGHT}px`,
+              borderBottom: `1px solid ${BORDER}`,
+            }}
           >
-            <div className="px-6 py-8 flex flex-col gap-4">
+            <div className="px-6 py-6 flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block px-4 py-3 font-tech-upper text-base font-medium rounded-lg transition-colors duration-200"
+                  className="px-4 py-3 rounded-lg font-tech text-sm transition-colors duration-200"
                   style={{
-                    color: isActive(link.href) ? ACCENT1 : TITLES,
-                    background: isActive(link.href)
-                      ? `${ACCENT1}11`
-                      : "transparent",
+                    color: isActive(link.href) ? ACCENT1 : TEXT,
+                    background: isActive(link.href) ? `rgba(122, 165, 149, 0.08)` : "transparent",
                   }}
                 >
                   {link.label}
                 </Link>
               ))}
               <button
-                onClick={() =>
-                  setLanguage(language === "fr" ? "en" : "fr")
-                }
-                className="block px-4 py-3 font-tech-upper text-base font-medium text-left"
-                style={{ color: TITLES }}
+                onClick={() => setLanguage(language === "fr" ? "en" : "fr")}
+                className="px-4 py-3 font-tech text-sm text-left rounded-lg"
+                style={{ color: TEXT }}
               >
-                {language === "fr" ? "EN" : "FR"}
+                {language === "fr" ? "Switch to English" : "Passer en Francais"}
               </button>
             </div>
           </motion.div>

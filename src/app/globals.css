@@ -2,13 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --background: #FAF9F5;
-  --foreground: #393E41;
-  --font-share-tech: 'Share Tech', 'Share Tech Mono', Menlo, monospace;
-  --font-share-tech-mono: 'Share Tech Mono', Menlo, monospace;
+  --background: #0f1114;
+  --foreground: #e8eaed;
+  --accent: #7aa595;
+  --accent-light: #5ec2a0;
+  --card: #181b20;
+  --border: #262a30;
+  --muted: #9ca3af;
 }
 
 html {
@@ -18,28 +21,41 @@ html {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Share Tech Mono', Menlo, monospace;
-  font-weight: 300;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
   letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(122, 165, 149, 0.3);
+  color: #e8eaed;
 }
 
 .font-tech {
   font-family: 'Share Tech Mono', Menlo, monospace;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.05em;
   text-transform: none;
 }
 
 .font-tech-upper {
   font-family: 'Share Tech Mono', Menlo, monospace;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-weight: 50;
+  font-weight: 400;
 }
 
 .font-tech-sm {
   font-family: 'Share Tech Mono', Menlo, monospace;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   font-size: 0.97em;
+}
+
+.font-heading {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 @keyframes grid {
@@ -47,14 +63,76 @@ body {
   100% { transform: translateY(-60px); }
 }
 
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
 section {
-  scroll-margin-top: 80px;
+  scroll-margin-top: 72px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0f1114;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-primary:hover {
+  background: var(--accent-light);
+  box-shadow: 0 0 30px rgba(122, 165, 149, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid rgba(122, 165, 149, 0.3);
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-outline:hover {
+  border-color: var(--accent);
+  background: rgba(122, 165, 149, 0.08);
+  transform: translateY(-1px);
 }
 
 .btn-hover {
   transition: transform .16s cubic-bezier(.4, 2, .6, 1), box-shadow .18s cubic-bezier(.4, 2, .6, 1);
 }
 .btn-hover:hover {
-  transform: scale(1.045);
-  box-shadow: 0 4px 24px 0 rgba(122, 165, 149, 0.16);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px 0 rgba(122, 165, 149, 0.15);
+}
+
+.card-glass {
+  background: rgba(24, 27, 32, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.3;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }

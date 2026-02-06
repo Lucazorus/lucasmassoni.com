@@ -1,21 +1,22 @@
 "use client";
 import { motion } from "framer-motion";
-import { BarChart3, Code2, Database, Settings2 } from "lucide-react";
+import Link from "next/link";
+import { BarChart3, Code2, Database, Settings2, ArrowRight, ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
-import { BG, ACCENT1, ACCENT2, TITLES, TEXT, CARD_TEXT } from "@/lib/constants";
+import { BG, BG_CARD, ACCENT1, ACCENT2, TITLES, TEXT, BORDER } from "@/lib/constants";
 import PageWrapper from "@/components/PageWrapper";
 import SectionDivider from "@/components/SectionDivider";
 
 const serviceIcons = [
-  <Settings2 key="cpq" size={32} style={{ color: "#7aa595" }} />,
-  <BarChart3 key="analytics" size={32} style={{ color: "#7aa595" }} />,
-  <Code2 key="apex" size={32} style={{ color: "#7aa595" }} />,
-  <Database key="data" size={32} style={{ color: "#7aa595" }} />,
+  <Settings2 key="cpq" size={28} />,
+  <BarChart3 key="analytics" size={28} />,
+  <Code2 key="apex" size={28} />,
+  <Database key="data" size={28} />,
 ];
 
 const containerVariants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.12 } },
+  visible: { transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
@@ -28,13 +29,14 @@ export default function ServicesPage() {
 
   return (
     <PageWrapper>
-      <section className="py-20 px-6 md:px-0" style={{ background: BG }}>
-        <div className="max-w-5xl mx-auto px-4">
+      {/* Header */}
+      <section className="pt-16 pb-8 px-6 md:px-8">
+        <div className="max-w-5xl mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="font-tech-upper text-4xl md:text-5xl font-bold text-center mb-6 tracking-tight"
+            className="font-heading text-4xl md:text-5xl mb-4"
             style={{ color: TITLES }}
           >
             {t.expertise.title}
@@ -43,99 +45,124 @@ export default function ServicesPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="font-tech text-lg text-center mb-16 leading-relaxed"
-            style={{ color: TEXT, maxWidth: 700, margin: "0 auto 4rem" }}
+            className="text-lg leading-relaxed"
+            style={{ color: TEXT, maxWidth: 600, margin: "0 auto" }}
           >
-            {t.hero.subtitle}
+            {t.expertise.subtitle}
           </motion.p>
+        </div>
+      </section>
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col gap-8"
-          >
-            {t.expertise.items.map((service, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.23, ease: [0.28, 1.15, 0.5, 1] }}
-                className="flex flex-col md:flex-row items-start gap-6 bg-white rounded-2xl px-8 py-8 transition-all duration-300"
+      {/* Services */}
+      <section className="py-12 md:py-16 px-6 md:px-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="max-w-5xl mx-auto flex flex-col gap-5"
+        >
+          {t.expertise.items.map((service, index) => (
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              className="group relative flex flex-col md:flex-row items-start gap-6 rounded-xl p-8 transition-all duration-300"
+              style={{
+                background: BG_CARD,
+                border: `1px solid ${BORDER}`,
+              }}
+              whileHover={{ borderColor: ACCENT1 }}
+            >
+              {/* Number */}
+              <div
+                className="font-heading text-5xl md:text-6xl opacity-20 absolute top-4 right-6 select-none"
+                style={{ color: ACCENT1 }}
+              >
+                {String(index + 1).padStart(2, "0")}
+              </div>
+
+              <div
+                className="flex items-center justify-center rounded-xl w-14 h-14 shrink-0"
                 style={{
-                  boxShadow: "0 2px 20px 0 rgba(122, 165, 149, 0.08)",
+                  background: `rgba(122, 165, 149, 0.1)`,
+                  border: `1px solid rgba(122, 165, 149, 0.15)`,
+                  color: ACCENT1,
                 }}
               >
-                <div
-                  className="flex items-center justify-center rounded-xl p-4 shrink-0"
-                  style={{ background: `${ACCENT1}12` }}
-                >
-                  {serviceIcons[index]}
-                </div>
-                <div className="flex flex-col gap-3 flex-1">
+                {serviceIcons[index]}
+              </div>
+
+              <div className="flex flex-col gap-3 flex-1">
+                <div className="flex items-center gap-3">
                   <h2
-                    className="font-tech-upper text-xl md:text-2xl"
-                    style={{ color: ACCENT1, letterSpacing: "0.10em" }}
+                    className="font-tech-upper text-lg md:text-xl"
+                    style={{ color: TITLES }}
                   >
                     {service.title}
                   </h2>
-                  <p
-                    className="font-tech text-base leading-relaxed"
-                    style={{ color: CARD_TEXT }}
-                  >
-                    {service.description}
-                  </p>
-                  {service.demoBtn && (
-                    <div className="pt-2">
-                      <a
-                        href={service.demoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block px-5 py-2 rounded-full font-tech-upper font-bold transition-all duration-200 text-sm btn-hover"
-                        style={{
-                          background: ACCENT2,
-                          color: "#fff",
-                          border: `1.5px solid ${ACCENT2}`,
-                          letterSpacing: ".11em",
-                        }}
-                      >
-                        {service.demoBtn}
-                      </a>
-                    </div>
+                  {service.tag && (
+                    <span
+                      className="font-tech text-[10px] px-2 py-1 rounded-full hidden sm:inline-block"
+                      style={{
+                        background: `rgba(122, 165, 149, 0.1)`,
+                        color: ACCENT1,
+                        border: `1px solid rgba(122, 165, 149, 0.2)`,
+                      }}
+                    >
+                      {service.tag}
+                    </span>
                   )}
                 </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+                <p
+                  className="text-base leading-relaxed max-w-2xl"
+                  style={{ color: TEXT }}
+                >
+                  {service.description}
+                </p>
+                {service.demoBtn && (
+                  <a
+                    href={service.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 font-tech text-sm mt-2 transition-colors duration-200"
+                    style={{ color: ACCENT1 }}
+                  >
+                    {service.demoBtn}
+                    <ArrowUpRight size={14} />
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </section>
 
       <SectionDivider />
 
-      {/* Agile methodology section */}
-      <section className="py-20 px-6 md:px-0" style={{ background: BG }}>
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <motion.h2
+      {/* Methodology */}
+      <section className="py-16 md:py-24 px-6 md:px-8">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="font-tech-upper text-3xl md:text-4xl font-bold tracking-tight mb-8"
-            style={{ color: TITLES }}
+            className="text-center mb-14"
           >
-            {t.agile.title}
-          </motion.h2>
-          <p
-            className="font-tech text-lg md:text-xl leading-relaxed"
-            style={{
-              color: TEXT,
-              maxWidth: 880,
-              margin: "0 auto 3.5rem",
-            }}
-          >
-            {t.agile.desc}
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
+            <h2
+              className="font-heading text-3xl md:text-4xl mb-4"
+              style={{ color: TITLES }}
+            >
+              {t.agile.title}
+            </h2>
+            <p
+              className="text-base leading-relaxed"
+              style={{ color: TEXT, maxWidth: 700, margin: "0 auto" }}
+            >
+              {t.agile.desc}
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {t.agile.items.map((item, i) => (
               <motion.div
                 key={i}
@@ -143,31 +170,46 @@ export default function ServicesPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.4 }}
-                whileHover={{
-                  y: -6,
-                  boxShadow: "0 12px 28px rgba(0,0,0,0.08)",
+                className="relative rounded-xl p-6 transition-all duration-300"
+                style={{
+                  background: BG_CARD,
+                  border: `1px solid ${BORDER}`,
                 }}
-                className="relative bg-white rounded-xl p-6 border transition-all duration-300"
-                style={{ borderColor: ACCENT1 }}
+                whileHover={{ borderColor: ACCENT1, y: -2 }}
               >
                 <div
-                  className="absolute top-0 left-0 w-full h-[10px] rounded-t-xl"
+                  className="absolute top-0 left-0 right-0 h-[2px] rounded-t-xl"
                   style={{ background: ACCENT1 }}
                 />
-                <div className="pt-5">
-                  <h3
-                    className="font-tech-upper text-xl font-bold tracking-wide mb-2"
-                    style={{ color: TITLES }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p className="font-tech text-base" style={{ color: TEXT }}>
-                    {item.desc}
-                  </p>
-                </div>
+                <h3
+                  className="font-tech-upper text-sm mb-3 mt-2"
+                  style={{ color: ACCENT1 }}
+                >
+                  {item.title}
+                </h3>
+                <p className="text-sm leading-relaxed" style={{ color: TEXT }}>
+                  {item.desc}
+                </p>
               </motion.div>
             ))}
           </div>
+
+          {/* CTA */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="text-center mt-16"
+          >
+            <Link
+              href="/contact"
+              className="btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-full font-tech-upper text-sm"
+            >
+              {t.hero.startProject}
+              <ArrowRight size={16} />
+            </Link>
+          </motion.div>
         </div>
       </section>
     </PageWrapper>
