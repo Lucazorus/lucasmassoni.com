@@ -2,8 +2,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Menu, X, Linkedin, Calendar, Award, Rocket, Brain, Database } from "lucide-react";
 import { motion } from "framer-motion";
-import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
 import { Analytics } from "@vercel/analytics/react";
+
+let useRive, Layout, Fit, Alignment;
+try {
+  const riveModule = require("@rive-app/react-canvas");
+  useRive = riveModule.useRive;
+  Layout = riveModule.Layout;
+  Fit = riveModule.Fit;
+  Alignment = riveModule.Alignment;
+} catch (e) {
+  // Rive not available (SSR or missing dependency)
+}
 
 // ==== COULEURS ====
 const BG = "#FAF9F5";
@@ -299,6 +309,13 @@ const HomePage = () => {
 
   // Logo animé Rive à utiliser dans la navbar
   const NavLogo = () => {
+    if (!useRive || !Layout || !Fit || !Alignment) {
+      return (
+        <div className="w-10 h-10 mr-2 flex items-center justify-center">
+          <span className="font-tech-upper text-lg font-bold" style={{ color: ACCENT1 }}>LM</span>
+        </div>
+      );
+    }
     const { RiveComponent } = useRive({
       src: "/logo.riv",
       stateMachines: "SM",
