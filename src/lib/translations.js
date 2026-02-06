@@ -1,6 +1,3 @@
-import { Award, Rocket, Brain } from "lucide-react";
-import { ACCENT1 } from "./constants";
-
 export const translations = {
   fr: {
     name: "Lucas Massoni",

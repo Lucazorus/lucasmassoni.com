@@ -32,7 +32,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${shareTechMono.variable} antialiased`}
+      >
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-VNFLBXFQ88"
           strategy="afterInteractive"
@@ -45,10 +47,6 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-VNFLBXFQ88');
           `}
         </Script>
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${shareTechMono.variable} antialiased`}
-      >
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

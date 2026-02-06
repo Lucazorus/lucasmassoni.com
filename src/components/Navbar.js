@@ -8,10 +8,12 @@ import { useLanguage } from "@/lib/language-context";
 import { BG, ACCENT1, TITLES, NAV_HEIGHT } from "@/lib/constants";
 
 export default function Navbar() {
+  console.log("[v0] Navbar rendering");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const pathname = usePathname();
+  console.log("[v0] Navbar pathname:", pathname);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);

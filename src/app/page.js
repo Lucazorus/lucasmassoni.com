@@ -25,7 +25,9 @@ const itemVariants = {
 };
 
 export default function HomePage() {
+  console.log("[v0] HomePage rendering");
   const { t } = useLanguage();
+  console.log("[v0] Language context loaded, t:", typeof t, t ? "exists" : "missing");
 
   return (
     <PageWrapper>
