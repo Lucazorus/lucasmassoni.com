@@ -11,8 +11,9 @@ import {
   Database,
   Wrench,
   ArrowRight,
+  Globe,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -26,80 +27,167 @@ const CARD_BG = "#FFFFFF";
 
 const NAV_HEIGHT = 88;
 
-// ================= CONTENT (FR only for now) =================
-const t = {
-  name: "Lucas Massoni",
-  nav: { home: "Accueil", services: "Services", stack: "Stack", contact: "Contact" },
-  hero: {
-    kicker: "Freelance Salesforce",
-    title: (
-      <>
-        EXPERT <span className="salesforce-word">SALESFORCE</span>
-      </>
-    ),
-    subtitle:
-      "Sales, CPQ, Analytics et Data Migration. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
-    ctaPrimary: "DÉMARRER UN PROJET",
-    ctaSecondary: "VOIR MES SERVICES",
-    badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration"],
+// ================= TRANSLATIONS =================
+const translations = {
+  fr: {
+    name: "Lucas Massoni",
+    nav: { home: "Accueil", services: "Services", stack: "Stack", contact: "Contact" },
+    hero: {
+      kicker: "Freelance Salesforce",
+      titleLine1: "EXPERT",
+      titleLine2: "SALESFORCE",
+      subtitle:
+        "Sales, CPQ, Analytics et Data Migration. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
+      ctaPrimary: "DÉMARRER UN PROJET",
+      ctaSecondary: "VOIR MES SERVICES",
+      badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration"],
+    },
+    services: {
+      title: "MES SERVICES",
+      items: [
+        {
+          key: "cpq",
+          title: "Salesforce Sales & CPQ",
+          desc: "Configuration avancée, pricing, bundles, règles CPQ et industrialisation complète du cycle quote-to-cash.",
+        },
+        {
+          key: "analytics",
+          title: "Analytics & Tableau",
+          desc: "Dashboards décisionnels, KPIs fiables, data storytelling orienté direction et opérations.",
+          cta: { label: "DÉMO INTERACTIVE", url: "https://www.economytimelapse.com/" },
+        },
+        {
+          key: "dev",
+          title: "Développement Apex / Flow / LWC",
+          desc: "Automatisations robustes, intégrations API, logique métier complexe et expériences utilisateurs sur-mesure.",
+        },
+        {
+          key: "migration",
+          title: "Data Migration Salesforce",
+          desc: "Audit, mapping, staging SQL, dédoublonnage, chargements batchés et cut-over maîtrisé.",
+        },
+      ],
+    },
+    stack: {
+      title: "STACK TECHNIQUE",
+      items: [
+        "Salesforce",
+        "CPQ",
+        "Data Migration",
+        "Apex",
+        "Flow",
+        "LWC",
+        "SQL",
+        "Tableau",
+        "CRM Analytics",
+        "API / JSON",
+      ],
+    },
+    contact: {
+      title: "Travaillons ensemble",
+      subtitle: "Décrivez votre besoin. Réponse sous 24h.",
+      calendly: "Planifier un appel",
+      linkedin: "LinkedIn",
+    },
+    footer: "© {year} Lucas Massoni · Expert Salesforce Freelance",
   },
-  services: {
-    title: "MES SERVICES",
-    items: [
-      {
-        icon: <Rocket size={22} />,
-        title: "Salesforce Sales & CPQ",
-        desc: "Configuration avancée, pricing, bundles, règles CPQ et industrialisation du quote-to-cash.",
-      },
-      {
-        icon: <Brain size={22} />,
-        title: "Analytics & Tableau",
-        desc: "Dashboards décisionnels, KPI fiables, data storytelling direction.",
-        cta: { label: "DÉMO INTERACTIVE", url: "https://www.economytimelapse.com/" },
-      },
-      {
-        icon: <Wrench size={22} />,
-        title: "Développement Apex / Flow / LWC",
-        desc: "Automatisations robustes, intégrations API, logique métier complexe et UX sur-mesure.",
-      },
-      {
-        icon: <Database size={22} />,
-        title: "Data Migration Salesforce",
-        desc: "Audit, mapping, staging SQL, dédoublonnage, chargements batchés et cut-over maîtrisé.",
-      },
-    ],
+  en: {
+    name: "Lucas Massoni",
+    nav: { home: "Home", services: "Services", stack: "Stack", contact: "Contact" },
+    hero: {
+      kicker: "Freelance Salesforce Consultant",
+      titleLine1: "SALESFORCE",
+      titleLine2: "EXPERT",
+      subtitle:
+        "Sales, CPQ, Analytics & Data Migration. From strategy to delivery — fast, documented, and results-driven.",
+      ctaPrimary: "START A PROJECT",
+      ctaSecondary: "VIEW MY SERVICES",
+      badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration"],
+    },
+    services: {
+      title: "MY SERVICES",
+      items: [
+        {
+          key: "cpq",
+          title: "Salesforce Sales & CPQ",
+          desc: "Advanced configuration, pricing rules, product bundles, and full quote-to-cash process industrialisation.",
+        },
+        {
+          key: "analytics",
+          title: "Analytics & Tableau",
+          desc: "Executive dashboards, reliable KPIs, and data storytelling designed for leadership and operations teams.",
+          cta: { label: "INTERACTIVE DEMO", url: "https://www.economytimelapse.com/" },
+        },
+        {
+          key: "dev",
+          title: "Apex / Flow / LWC Development",
+          desc: "Robust automations, API integrations, complex business logic, and custom user experiences.",
+        },
+        {
+          key: "migration",
+          title: "Salesforce Data Migration",
+          desc: "Audit, field mapping, SQL staging, deduplication, batch loading, and controlled cut-over.",
+        },
+      ],
+    },
+    stack: {
+      title: "TECH STACK",
+      items: [
+        "Salesforce",
+        "CPQ",
+        "Data Migration",
+        "Apex",
+        "Flow",
+        "LWC",
+        "SQL",
+        "Tableau",
+        "CRM Analytics",
+        "API / JSON",
+      ],
+    },
+    contact: {
+      title: "Let's work together",
+      subtitle: "Tell me about your project. I'll get back to you within 24 hours.",
+      calendly: "Schedule a call",
+      linkedin: "LinkedIn",
+    },
+    footer: "© {year} Lucas Massoni · Freelance Salesforce Expert",
   },
-  stack: {
-    title: "STACK TECHNIQUE",
-    items: [
-      "Salesforce",
-      "CPQ",
-      "Data Migration",
-      "Apex",
-      "Flow",
-      "LWC",
-      "SQL",
-      "Tableau",
-      "CRM Analytics",
-      "API / JSON",
-    ],
-  },
-  contact: {
-    title: "Travaillons ensemble",
-    subtitle: "Explique ton besoin. Réponse sous 24h.",
-    calendly: "Planifier un appel",
-    linkedin: "LinkedIn",
-  },
-  footer: "© {year} Lucas Massoni. Expert Salesforce Freelance",
+};
+
+// Icons are outside translations to avoid re-creating JSX on every render
+const SERVICE_ICONS = {
+  cpq: <Rocket size={22} />,
+  analytics: <Brain size={22} />,
+  dev: <Wrench size={22} />,
+  migration: <Database size={22} />,
 };
 
 const Container = ({ children }) => (
   <div className="max-w-7xl mx-auto px-6 md:px-10">{children}</div>
 );
 
+// ================= LANG TOGGLE =================
+function LangToggle({ lang, setLang }) {
+  return (
+    <button
+      onClick={() => setLang((l) => (l === "fr" ? "en" : "fr"))}
+      aria-label="Switch language"
+      className="lang-toggle btn-hover"
+      title={lang === "fr" ? "Switch to English" : "Passer en français"}
+    >
+      <Globe size={14} />
+      <span>{lang === "fr" ? "EN" : "FR"}</span>
+    </button>
+  );
+}
+
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [lang, setLang] = useState("fr");
+
+  const t = translations[lang];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -108,12 +196,12 @@ export default function HomePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Force line break for "SALESFORCE" on mobile like your original
+  // Force line break for the second title word on mobile
   useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
-      @media (max-width: 620px) { .salesforce-word { display:block !important; } }
-      @media (min-width: 621px) { .salesforce-word { display:inline !important; } }
+      @media (max-width: 620px) { .hero-title-line2 { display:block !important; } }
+      @media (min-width: 621px) { .hero-title-line2 { display:inline !important; } }
     `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
@@ -169,10 +257,16 @@ export default function HomePage() {
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-8">
               {navItems.slice(0, 3).map((item) => (
-                <a key={item.href} href={item.href} className="nav-link font-tech-upper" style={{ color: TITLES }}>
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="nav-link font-tech-upper"
+                  style={{ color: TITLES }}
+                >
                   {item.label}
                 </a>
               ))}
+              <LangToggle lang={lang} setLang={setLang} />
               <a
                 href="#contact"
                 className="btn-primary btn-hover"
@@ -182,15 +276,17 @@ export default function HomePage() {
               </a>
             </div>
 
-            {/* Mobile */}
-            <button
-              className="md:hidden"
-              onClick={() => setIsMenuOpen((v) => !v)}
-              aria-label="Open menu"
-              style={{ color: TITLES }}
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            {/* Mobile: lang toggle + hamburger */}
+            <div className="md:hidden flex items-center gap-3">
+              <LangToggle lang={lang} setLang={setLang} />
+              <button
+                onClick={() => setIsMenuOpen((v) => !v)}
+                aria-label="Open menu"
+                style={{ color: TITLES }}
+              >
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
           </div>
         </Container>
 
@@ -229,74 +325,98 @@ export default function HomePage() {
       </nav>
 
       {/* HERO */}
-      <section id="top" style={{ paddingTop: NAV_HEIGHT }} className="pt-14 pb-20">
-        <Container>
-          <div className="max-w-3xl">
-            <div className="flex gap-2 mb-4 flex-wrap">
-              {t.hero.badges.map((b) => (
-                <span key={b} className="badge">
-                  {b}
-                </span>
-              ))}
+      <AnimatePresence mode="wait">
+        <motion.section
+          key={lang + "-hero"}
+          id="top"
+          style={{ paddingTop: NAV_HEIGHT }}
+          className="pt-14 pb-20"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Container>
+            <div className="max-w-3xl">
+              <div className="flex gap-2 mb-4 flex-wrap">
+                {t.hero.badges.map((b) => (
+                  <span key={b} className="badge">
+                    {b}
+                  </span>
+                ))}
+              </div>
+
+              <div className="font-tech-upper text-sm mb-3 opacity-70">{t.hero.kicker}</div>
+
+              <h1 className="hero-title font-tech-upper font-bold">
+                {t.hero.titleLine1}{" "}
+                <span className="hero-title-line2">{t.hero.titleLine2}</span>
+              </h1>
+
+              <p className="font-tech mt-6 text-lg leading-relaxed">{t.hero.subtitle}</p>
+
+              <div className="flex gap-4 mt-8 flex-wrap">
+                <a href="#contact" className="btn-primary btn-hover">
+                  {t.hero.ctaPrimary}
+                  <ArrowRight size={18} />
+                </a>
+                <a href="#services" className="btn-secondary btn-hover">
+                  {t.hero.ctaSecondary}
+                </a>
+              </div>
             </div>
-
-            <div className="font-tech-upper text-sm mb-3 opacity-70">{t.hero.kicker}</div>
-
-            <h1 className="hero-title font-tech-upper font-bold">{t.hero.title}</h1>
-
-            <p className="font-tech mt-6 text-lg leading-relaxed">{t.hero.subtitle}</p>
-
-            <div className="flex gap-4 mt-8 flex-wrap">
-              <a href="#contact" className="btn-primary btn-hover">
-                {t.hero.ctaPrimary}
-                <ArrowRight size={18} />
-              </a>
-              <a href="#services" className="btn-secondary btn-hover">
-                {t.hero.ctaSecondary}
-              </a>
-            </div>
-          </div>
-        </Container>
-      </section>
+          </Container>
+        </motion.section>
+      </AnimatePresence>
 
       {/* SERVICES */}
-      <section id="services" className="py-20">
-        <Container>
-          <h2 className="section-title">{t.services.title}</h2>
+      <AnimatePresence mode="wait">
+        <motion.section
+          key={lang + "-services"}
+          id="services"
+          className="py-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22 }}
+        >
+          <Container>
+            <h2 className="section-title">{t.services.title}</h2>
 
-          <div className="grid md:grid-cols-2 gap-6 mt-10">
-            {t.services.items.map((s) => (
-              <motion.div
-                key={s.title}
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="service-card card-hover"
-              >
-                <div className="icon">{s.icon}</div>
-                <div className="min-w-0">
-                  <div className="service-title">{s.title}</div>
-                  <p className="service-text">{s.desc}</p>
+            <div className="grid md:grid-cols-2 gap-6 mt-10">
+              {t.services.items.map((s) => (
+                <motion.div
+                  key={s.key}
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                  className="service-card card-hover"
+                >
+                  <div className="icon">{SERVICE_ICONS[s.key]}</div>
+                  <div className="min-w-0">
+                    <div className="service-title">{s.title}</div>
+                    <p className="service-text">{s.desc}</p>
 
-                  {s.cta?.url && (
-                    <div className="mt-4">
-                      <a
-                        href={s.cta.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-secondary btn-hover"
-                        style={{ padding: "10px 14px", fontSize: "0.78rem" }}
-                      >
-                        {s.cta.label}
-                        <ArrowRight size={16} />
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
+                    {s.cta?.url && (
+                      <div className="mt-4">
+                        <a
+                          href={s.cta.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-secondary btn-hover"
+                          style={{ padding: "10px 14px", fontSize: "0.78rem" }}
+                        >
+                          {s.cta.label}
+                          <ArrowRight size={16} />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </motion.section>
+      </AnimatePresence>
 
       {/* STACK */}
       <section id="stack" className="py-20">
@@ -313,36 +433,46 @@ export default function HomePage() {
       </section>
 
       {/* CONTACT */}
-      <section id="contact" className="py-24">
-        <Container>
-          <div className="contact-box card-hover">
-            <h2 className="section-title">{t.contact.title}</h2>
-            <p className="font-tech mt-4">{t.contact.subtitle}</p>
+      <AnimatePresence mode="wait">
+        <motion.section
+          key={lang + "-contact"}
+          id="contact"
+          className="py-24"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22 }}
+        >
+          <Container>
+            <div className="contact-box card-hover">
+              <h2 className="section-title">{t.contact.title}</h2>
+              <p className="font-tech mt-4">{t.contact.subtitle}</p>
 
-            <div className="flex gap-4 mt-6 flex-wrap">
-              <a
-                href="https://calendly.com/lucas-massoni-contact"
-                className="btn-primary btn-hover"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Calendar size={18} />
-                {t.contact.calendly}
-              </a>
+              <div className="flex gap-4 mt-6 flex-wrap">
+                <a
+                  href="https://calendly.com/lucas-massoni-contact"
+                  className="btn-primary btn-hover"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Calendar size={18} />
+                  {t.contact.calendly}
+                </a>
 
-              <a
-                href="https://www.linkedin.com/in/lucas-massoni/"
-                className="btn-secondary btn-hover"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Linkedin size={18} />
-                {t.contact.linkedin}
-              </a>
+                <a
+                  href="https://www.linkedin.com/in/lucas-massoni/"
+                  className="btn-secondary btn-hover"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Linkedin size={18} />
+                  {t.contact.linkedin}
+                </a>
+              </div>
             </div>
-          </div>
-        </Container>
-      </section>
+          </Container>
+        </motion.section>
+      </AnimatePresence>
 
       {/* FOOTER */}
       <footer className="py-8 border-t text-center" style={{ borderColor: `${ACCENT1}22` }}>
@@ -385,6 +515,31 @@ export default function HomePage() {
           color: ${TITLES};
         }
 
+        /* Lang toggle */
+        .lang-toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 7px 13px;
+          border-radius: 999px;
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.72rem;
+          letter-spacing: 0.12em;
+          font-weight: 700;
+          color: ${TITLES};
+          background: ${CARD_BG};
+          border: 1px solid ${ACCENT1}44;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          transition: transform 0.16s cubic-bezier(0.4, 2, 0.6, 1),
+            box-shadow 0.18s ease,
+            border-color 0.18s ease;
+        }
+        .lang-toggle:hover {
+          border-color: ${ACCENT1}99;
+          box-shadow: 0 8px 22px rgba(122, 165, 149, 0.2);
+        }
+
         /* Buttons */
         .btn-primary,
         .btn-secondary {
@@ -414,7 +569,6 @@ export default function HomePage() {
           box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
         }
 
-        /* Hover like your old one + extra polish */
         .btn-hover {
           transition: transform 0.16s cubic-bezier(0.4, 2, 0.6, 1),
             box-shadow 0.18s cubic-bezier(0.4, 2, 0.6, 1),
@@ -478,7 +632,7 @@ export default function HomePage() {
 
         .card-hover:hover {
           transform: translateY(-4px);
-          box-shadow: 0 22px 70px rgba(0, 0, 0, 0.10);
+          box-shadow: 0 22px 70px rgba(0, 0, 0, 0.1);
           border-color: ${ACCENT1}66;
         }
 
