@@ -19,7 +19,7 @@ import { Analytics } from "@vercel/analytics/react";
 
 // ================= COLORS =================
 const BG = "#FAF9F5";
-const ACCENT1 = "#7aa595ff";
+const ACCENT1 = "#7aa595";
 const ACCENT2 = "#FECF56";
 const TITLES = "#393E41";
 const TEXT = "#393E41";
@@ -398,16 +398,26 @@ export default function HomePage() {
 
                     {s.cta?.url && (
                       <div className="mt-4">
-                        <a
-                          href={s.cta.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn-secondary btn-hover"
-                          style={{ padding: "10px 14px", fontSize: "0.78rem" }}
-                        >
-                          {s.cta.label}
-                          <ArrowRight size={16} />
-                        </a>
+                        <div className="preview-wrapper">
+                          <a
+                            href={s.cta.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-secondary btn-hover preview-trigger"
+                            style={{ padding: "10px 14px", fontSize: "0.78rem" }}
+                          >
+                            {s.cta.label}
+                            <ArrowRight size={16} />
+                          </a>
+                          <div className="preview-tooltip">
+                            <img
+                              src="/Capture.png"
+                              alt="Aperçu du site"
+                              className="preview-img"
+                            />
+                            <div className="preview-label">economytimelapse.com</div>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -611,6 +621,53 @@ export default function HomePage() {
           box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
         }
 
+        /* Preview tooltip */
+        .preview-wrapper {
+          position: relative;
+          display: inline-block;
+        }
+
+        .preview-tooltip {
+          position: absolute;
+          bottom: calc(100% + 12px);
+          left: 50%;
+          transform: translateX(-50%) translateY(6px);
+          width: 280px;
+          background: ${CARD_BG};
+          border-radius: 14px;
+          border: 1px solid ${ACCENT1}33;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+          overflow: hidden;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1);
+          z-index: 100;
+        }
+
+        .preview-wrapper:hover .preview-tooltip {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+          pointer-events: auto;
+        }
+
+        .preview-img {
+          width: 100%;
+          height: 160px;
+          object-fit: cover;
+          object-position: top;
+          display: block;
+        }
+
+        .preview-label {
+          padding: 8px 12px;
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.68rem;
+          letter-spacing: 0.1em;
+          color: ${TITLES};
+          opacity: 0.6;
+          border-top: 1px solid ${ACCENT1}22;
+        }
+
         /* Flip cards */
         .flip-card {
           height: 100px;
@@ -736,7 +793,7 @@ export default function HomePage() {
           opacity: 0.92;
         }
 
-        /* Nav underline effect */
+        /* Nav underline effect (dark bg) */
         .nav-link {
           position: relative;
           letter-spacing: 0.14em;
@@ -757,6 +814,57 @@ export default function HomePage() {
 
         .nav-link:hover::after {
           width: 100%;
+        }
+
+        /* Nav underline effect (white on green) */
+        .nav-link-white {
+          position: relative;
+          letter-spacing: 0.14em;
+          text-decoration: none;
+          padding: 6px 2px;
+          opacity: 0.9;
+          transition: opacity 0.18s ease;
+        }
+
+        .nav-link-white::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: -2px;
+          width: 0;
+          height: 2px;
+          background: ${BG};
+          transition: width 0.22s ease;
+        }
+
+        .nav-link-white:hover {
+          opacity: 1;
+        }
+
+        .nav-link-white:hover::after {
+          width: 100%;
+        }
+
+        /* Contact button in nav (white outline on green) */
+        .btn-nav-contact {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          border-radius: 999px;
+          font-family: var(--font-share-tech-mono);
+          letter-spacing: 0.12em;
+          font-weight: 700;
+          text-decoration: none;
+          user-select: none;
+          background: rgba(255,255,255,0.18);
+          color: ${BG};
+          border: 1px solid rgba(255,255,255,0.5);
+          box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        }
+
+        .btn-nav-contact:hover {
+          background: rgba(255,255,255,0.28);
+          box-shadow: 0 8px 22px rgba(0,0,0,0.15);
         }
 
         @media (max-width: 640px) {
