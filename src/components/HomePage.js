@@ -71,16 +71,16 @@ const translations = {
     stack: {
       title: "STACK TECHNIQUE",
       items: [
-        "Salesforce",
-        "CPQ",
-        "Data Migration",
-        "Apex",
-        "Flow",
-        "LWC",
-        "SQL",
-        "Tableau",
-        "CRM Analytics",
-        "API / JSON",
+        { name: "Salesforce", desc: "CRM leader mondial. Configuration, administration et personnalisation de la plateforme." },
+        { name: "CPQ", desc: "Configure, Price, Quote. Industrialisation du cycle de vente et des devis complexes." },
+        { name: "Data Migration", desc: "Transfert et transformation de données entre systèmes avec qualité garantie." },
+        { name: "Apex", desc: "Langage back-end natif Salesforce pour la logique métier et les intégrations serveur." },
+        { name: "Flow", desc: "Automatisation no-code/low-code : workflows, écrans guidés et processus métier." },
+        { name: "LWC", desc: "Lightning Web Components : composants UI modernes et performants sur Salesforce." },
+        { name: "SQL", desc: "Requêtes et transformations de données pour le staging, l'audit et la migration." },
+        { name: "Tableau", desc: "Visualisation de données avancée et dashboards décisionnels interactifs." },
+        { name: "CRM Analytics", desc: "Analytics natif Salesforce : exploration de données et rapports embarqués." },
+        { name: "API / JSON", desc: "Intégrations REST/SOAP entre Salesforce et systèmes tiers via échanges JSON." },
       ],
     },
     contact: {
@@ -133,16 +133,16 @@ const translations = {
     stack: {
       title: "TECH STACK",
       items: [
-        "Salesforce",
-        "CPQ",
-        "Data Migration",
-        "Apex",
-        "Flow",
-        "LWC",
-        "SQL",
-        "Tableau",
-        "CRM Analytics",
-        "API / JSON",
+        { name: "Salesforce", desc: "World-leading CRM. Platform configuration, administration and customisation." },
+        { name: "CPQ", desc: "Configure, Price, Quote. Streamlining complex sales cycles and quoting processes." },
+        { name: "Data Migration", desc: "Reliable data transfer and transformation between systems with quality assurance." },
+        { name: "Apex", desc: "Salesforce native back-end language for business logic and server-side integrations." },
+        { name: "Flow", desc: "No-code/low-code automation: workflows, guided screens, and business processes." },
+        { name: "LWC", desc: "Lightning Web Components: modern, high-performance UI components on Salesforce." },
+        { name: "SQL", desc: "Data querying and transformation for staging, auditing, and migration pipelines." },
+        { name: "Tableau", desc: "Advanced data visualisation and interactive executive dashboards." },
+        { name: "CRM Analytics", desc: "Native Salesforce analytics: embedded data exploration and reporting." },
+        { name: "API / JSON", desc: "REST/SOAP integrations between Salesforce and third-party systems via JSON." },
       ],
     },
     contact: {
@@ -424,8 +424,16 @@ export default function HomePage() {
           <h2 className="section-title">{t.stack.title}</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-10">
             {t.stack.items.map((item) => (
-              <div key={item} className="stack-card card-hover">
-                {item}
+              <div key={item.name} className="flip-card">
+                <div className="flip-inner">
+                  <div className="flip-front">
+                    {item.name}
+                  </div>
+                  <div className="flip-back">
+                    <span className="flip-back-name">{item.name}</span>
+                    <p className="flip-back-desc">{item.desc}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -603,16 +611,79 @@ export default function HomePage() {
           box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
         }
 
-        .stack-card {
-          padding: 18px;
-          text-align: center;
+        /* Flip cards */
+        .flip-card {
+          height: 100px;
+          perspective: 900px;
+        }
+
+        .flip-inner {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          transform-style: preserve-3d;
+          transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .flip-card:hover .flip-inner {
+          transform: rotateY(180deg);
+        }
+
+        .flip-front,
+        .flip-back {
+          position: absolute;
+          inset: 0;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
           border-radius: 16px;
-          background: ${CARD_BG};
           border: 1px solid ${ACCENT1}33;
+          box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 14px;
+        }
+
+        .flip-front {
+          background: ${CARD_BG};
           font-family: var(--font-share-tech-mono);
           letter-spacing: 0.12em;
           color: ${TITLES};
-          box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
+          text-align: center;
+          font-size: 0.85rem;
+        }
+
+        .flip-back {
+          background: ${ACCENT1};
+          transform: rotateY(180deg);
+          flex-direction: column;
+          gap: 6px;
+          text-align: center;
+        }
+
+        .flip-back-name {
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.7rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          color: ${BG};
+          opacity: 0.8;
+          text-transform: uppercase;
+        }
+
+        .flip-back-desc {
+          font-size: 0.68rem;
+          line-height: 1.5;
+          color: ${BG};
+          opacity: 0.95;
+          margin: 0;
+        }
+
+        @media (hover: none) {
+          /* Touch devices: tap to flip */
+          .flip-card:active .flip-inner {
+            transform: rotateY(180deg);
+          }
         }
 
         .contact-box {
