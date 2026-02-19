@@ -255,66 +255,115 @@ export default function HomePage() {
   }, []);
 
   const T = tRef.current;
-  // Rule: frequency is FIXED (same for all points in a series) → no speed mismatch between neighbours
-  // Only the phase offset varies per point → smooth spatial wave that flows in time
-  const wave = (freq, amp, base, phase) => base + amp * Math.sin(T * freq + phase);
-  const wave01 = (freq, phase) => (Math.sin(T * freq + phase) + 1) / 2;
 
-  // 1. Line — 3 trending-up sales curves, same frequency per series, phase spread over i
-  const lineData = Array.from({ length: 12 }, (_, i) => {
-    const x = i / 11;
-    return {
-      a: 10 + 75 * x + 5 * Math.sin(T * 0.4 + i * 0.55),
-      b: 5  + 55 * x + 4 * Math.sin(T * 0.35 + i * 0.55 + 1.2),
-      c: 2  + 35 * x + 3 * Math.sin(T * 0.3  + i * 0.55 + 2.5),
-    };
-  });
+  // ── Keyframe interpolation helper ──────────────────────────────────────────
+  // Each chart has N keyframes. We loop through them slowly and lerp between
+  // consecutive frames — no math oscillators, just realistic fictional data.
+  const CYCLE = 12; // seconds for one full loop through all keyframes
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const getFrame = (keyframes) => {
+    const n = keyframes.length;
+    const pos = ((T % CYCLE) / CYCLE) * n;
+    const i0 = Math.floor(pos) % n;
+    const i1 = (i0 + 1) % n;
+    const t = pos - Math.floor(pos);
+    return { k0: keyframes[i0], k1: keyframes[i1], t };
+  };
+  const lerpArr = (a, b, t) => a.map((v, i) => lerp(v, b[i], t));
 
-  // 2. Pie — 4 segments, each oscillates at its own fixed frequency
-  const pieRaw = [
-    20 + 12 * wave01(0.28, 0.0),
-    20 + 12 * wave01(0.35, 1.8),
-    20 + 12 * wave01(0.22, 3.5),
-    20 + 12 * wave01(0.31, 5.2),
+  // 1. Line — 3 sales series over 12 months, trending up with realistic bumps
+  const LINE_KF = [
+    { a:[12,18,22,28,31,38,42,49,55,61,68,74], b:[8,11,15,18,22,24,28,31,35,38,42,46], c:[4,6,8,10,12,14,15,17,19,21,23,25] },
+    { a:[14,19,24,30,34,41,46,52,58,65,71,78], b:[9,12,16,20,24,27,31,34,38,42,46,50], c:[5,7,9,11,13,15,17,19,21,23,25,28] },
+    { a:[11,17,21,27,32,37,43,50,57,63,69,76], b:[7,10,14,17,21,25,29,33,37,40,44,48], c:[4,6,8,10,13,15,16,18,20,22,24,27] },
+    { a:[15,21,26,33,37,44,49,55,60,67,73,80], b:[10,13,17,21,25,28,32,36,40,44,48,52], c:[5,7,10,12,14,16,18,20,22,25,27,30] },
+    { a:[13,18,23,29,33,39,44,51,56,62,70,75], b:[8,11,15,19,23,26,30,33,37,41,45,49], c:[4,6,8,11,13,14,16,18,20,22,24,26] },
   ];
+  const lf = getFrame(LINE_KF);
+  const lineData = lerpArr(lf.k0.a, lf.k1.a, lf.t).map((a, i) => ({
+    a,
+    b: lerp(lf.k0.b[i], lf.k1.b[i], lf.t),
+    c: lerp(lf.k0.c[i], lf.k1.c[i], lf.t),
+  }));
+
+  // 2. Pie — 4 market segments, proportions shift slowly
+  const PIE_KF = [
+    [34, 28, 22, 16],
+    [30, 32, 24, 14],
+    [28, 26, 30, 16],
+    [32, 24, 26, 18],
+    [36, 22, 24, 18],
+    [30, 30, 22, 18],
+  ];
+  const pf = getFrame(PIE_KF);
+  const pieRaw = lerpArr(pf.k0, pf.k1, pf.t);
   const pieSum = pieRaw.reduce((a, b) => a + b, 0);
   const pieData = pieRaw.map((v, i) => ({ name: String(i), value: (v / pieSum) * 100 }));
 
-  // 3. Bars — 8 bars, fixed frequency, phase spread so they form a rolling wave
-  const barData = Array.from({ length: 8 }, (_, i) => ({
-    v: 20 + 60 * wave01(0.4, i * 0.78),
-  }));
+  // 3. Bars — 8 product categories, volumes shift each cycle
+  const BAR_KF = [
+    [72, 45, 88, 33, 61, 79, 52, 40],
+    [68, 50, 82, 38, 65, 74, 58, 44],
+    [75, 42, 91, 30, 58, 83, 49, 37],
+    [70, 48, 85, 35, 63, 77, 55, 42],
+    [65, 55, 78, 42, 70, 71, 62, 48],
+    [73, 44, 89, 32, 60, 81, 51, 39],
+  ];
+  const bf = getFrame(BAR_KF);
+  const barData = lerpArr(bf.k0, bf.k1, bf.t).map((v) => ({ v }));
 
-  // 4. Percent Area — 3 stacked series, each a slow coherent wave
-  const areaData = Array.from({ length: 10 }, (_, i) => {
-    const phase = i * 0.65; // fixed spatial spacing
-    const r0 = 28 + 16 * wave01(0.32, phase);
-    const r1 = 32 + 14 * wave01(0.28, phase + 2.1);
-    const r2 = 28 + 12 * wave01(0.36, phase + 4.2);
-    const total = r0 + r1 + r2;
-    return {
-      a: (r0 / total) * 100,
-      b: (r1 / total) * 100,
-      c: (r2 / total) * 100,
-    };
+  // 4. Percent Area — 3 budget categories always = 100%
+  const AREA_KF = [
+    { a:[38,40,42,38,35,33,36,40,43,41], b:[35,33,30,34,37,38,35,32,30,33], c:[27,27,28,28,28,29,29,28,27,26] },
+    { a:[36,38,40,36,33,31,34,38,41,39], b:[37,35,32,36,39,40,37,34,32,35], c:[27,27,28,28,28,29,29,28,27,26] },
+    { a:[40,42,44,40,37,35,38,42,45,43], b:[33,31,28,32,35,36,33,30,28,31], c:[27,27,28,28,28,29,29,28,27,26] },
+    { a:[35,37,39,35,32,30,33,37,40,38], b:[38,36,33,37,40,41,38,35,33,36], c:[27,27,28,28,28,29,29,28,27,26] },
+    { a:[41,43,45,41,38,36,39,43,46,44], b:[32,30,27,31,34,35,32,29,27,30], c:[27,27,28,28,28,29,29,28,27,26] },
+  ];
+  const af = getFrame(AREA_KF);
+  const areaData = lerpArr(af.k0.a, af.k1.a, af.t).map((a, i) => {
+    const b = lerp(af.k0.b[i], af.k1.b[i], af.t);
+    const c = lerp(af.k0.c[i], af.k1.c[i], af.t);
+    const total = a + b + c;
+    return { a: (a / total) * 100, b: (b / total) * 100, c: (c / total) * 100 };
   });
 
-  // 5. Scatter — two clusters, each point drifts around its own anchor with slow fixed frequency
-  const scatterData1 = Array.from({ length: 10 }, (_, i) => ({
-    x: 15 + (i % 4) * 8 + 6 * Math.sin(T * 0.3 + i * 0.9),
-    y: 15 + Math.floor(i / 4) * 10 + 5 * Math.sin(T * 0.25 + i * 0.9 + 1.0),
+  // 5. Scatter — two product clusters (price vs volume), slowly repositioning
+  const SC1_KF = [
+    [{x:18,y:72},{x:22,y:65},{x:15,y:80},{x:25,y:58},{x:20,y:75},{x:12,y:82},{x:28,y:61},{x:17,y:69},{x:23,y:77},{x:14,y:85}],
+    [{x:20,y:70},{x:24,y:63},{x:17,y:78},{x:27,y:56},{x:22,y:73},{x:14,y:80},{x:30,y:59},{x:19,y:67},{x:25,y:75},{x:16,y:83}],
+    [{x:16,y:74},{x:20,y:67},{x:13,y:82},{x:23,y:60},{x:18,y:77},{x:10,y:84},{x:26,y:63},{x:15,y:71},{x:21,y:79},{x:12,y:87}],
+  ];
+  const SC2_KF = [
+    [{x:62,y:38},{x:68,y:44},{x:74,y:32},{x:58,y:50},{x:65,y:41},{x:72,y:35},{x:60,y:47},{x:76,y:29},{x:55,y:53},{x:70,y:36}],
+    [{x:64,y:36},{x:70,y:42},{x:76,y:30},{x:60,y:48},{x:67,y:39},{x:74,y:33},{x:62,y:45},{x:78,y:27},{x:57,y:51},{x:72,y:34}],
+    [{x:60,y:40},{x:66,y:46},{x:72,y:34},{x:56,y:52},{x:63,y:43},{x:70,y:37},{x:58,y:49},{x:74,y:31},{x:53,y:55},{x:68,y:38}],
+  ];
+  const sf1 = getFrame(SC1_KF);
+  const sf2 = getFrame(SC2_KF);
+  const scatterData1 = sf1.k0.map((p, i) => ({
+    x: lerp(p.x, sf1.k1[i].x, sf1.t),
+    y: lerp(p.y, sf1.k1[i].y, sf1.t),
   }));
-  const scatterData2 = Array.from({ length: 10 }, (_, i) => ({
-    x: 58 + (i % 4) * 7 + 5 * Math.sin(T * 0.28 + i * 0.85 + 0.5),
-    y: 48 + Math.floor(i / 4) * 9 + 5 * Math.sin(T * 0.22 + i * 0.85 + 2.0),
+  const scatterData2 = sf2.k0.map((p, i) => ({
+    x: lerp(p.x, sf2.k1[i].x, sf2.t),
+    y: lerp(p.y, sf2.k1[i].y, sf2.t),
   }));
 
-  // 6. Radar — 5 axes, each axis uses a fixed freq with its own phase
+  // 6. Radar — 5 performance axes, two entities compared
+  const RAD_KF = [
+    { v1:[80,65,72,88,55], v2:[60,78,50,65,82] },
+    { v1:[75,70,68,85,60], v2:[65,72,55,70,78] },
+    { v1:[82,60,75,90,52], v2:[58,80,48,62,85] },
+    { v1:[78,68,70,87,58], v2:[62,75,52,68,80] },
+    { v1:[72,74,65,83,63], v2:[68,70,58,74,75] },
+  ];
   const radarSubjects = ["A", "B", "C", "D", "E"];
+  const rf = getFrame(RAD_KF);
   const radarData = radarSubjects.map((subject, i) => ({
     subject,
-    v1: 30 + 55 * wave01(0.3, i * 1.26),
-    v2: 25 + 50 * wave01(0.25, i * 1.26 + 2.0),
+    v1: lerp(rf.k0.v1[i], rf.k1.v1[i], rf.t),
+    v2: lerp(rf.k0.v2[i], rf.k1.v2[i], rf.t),
   }));
 
   // Force line break for the second title word on mobile
