@@ -319,13 +319,18 @@ export default function HomePage() {
   const bf = getFrame(BAR_KF);
   const barData = lerpArr(bf.k0, bf.k1, bf.t).map((v) => ({ v }));
 
-  // 4. Area Fill By Value — valeurs pos/neg, gradient vert/rouge selon le signe
+  // 4. Area Fill By Value — courbe type P&L fictive, passage naturel autour de zéro
   const AREA_FBV_KF = [
-    [ 120, 80, -40, 200, -150, 60, 300, 180, -80, 250, 100, -20 ],
-    [ 80, 200, -100, 50, 300, -200, 150, 80, 250, -60, 180, 120 ],
-    [ 200, -80, 150, -200, 100, 350, -50, 200, 80, -120, 300, 60 ],
-    [ -100, 150, 300, -50, 200, 100, -150, 250, 50, 300, -80, 200 ],
-    [ 150, 300, -150, 200, -80, 250, 100, -200, 300, 80, 200, -50 ],
+    //  tendance: démarre positif, creuse, remonte, repasse négatif en fin
+    [  80, 120, 160, 140, 100,  40, -20, -60, -30,  30,  90, 130 ],
+    // tendance: part négatif, remonte progressivement, termine bien
+    [ -60, -90, -50,  10,  70, 130, 180, 150, 100,  60,  20, -10 ],
+    // tendance: plateau positif, grosse chute, lente récupération
+    [ 140, 160, 150, 120,  60, -10, -80,-120, -80, -20,  40, 100 ],
+    // tendance: volatil mais globalement positif
+    [  20,  80, 140, 100,  60, 110, 160, 120,  70,  30,  80, 130 ],
+    // tendance: correction puis rebond
+    [ 100,  60,  10, -40, -80, -50,  20,  90, 150, 180, 140, 100 ],
   ];
   const afbv = getFrame(AREA_FBV_KF);
   const areaFBVData = lerpArr(afbv.k0, afbv.k1, afbv.t).map((v, i) => ({ i, v }));
