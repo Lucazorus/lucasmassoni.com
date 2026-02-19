@@ -811,7 +811,7 @@ export default function HomePage() {
 
         /* Titles */
         .hero-title {
-          font-size: clamp(2.4rem, 5vw, 3.2rem);
+          font-size: clamp(1.9rem, 4vw, 2.6rem);
           letter-spacing: 0.13em;
           color: ${TITLES};
           line-height: 1.05;
