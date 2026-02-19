@@ -593,10 +593,10 @@ export default function HomePage() {
                           <AreaChart data={areaFBVData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
                             <defs>
                               <linearGradient id="fbvGrad" x1="0" x2="0" y1="0" y2="1">
-                                <stop offset={0} stopColor={CHART_COLORS[3]} stopOpacity={0.85} />
-                                <stop offset={zeroRatio} stopColor={CHART_COLORS[3]} stopOpacity={0.1} />
-                                <stop offset={zeroRatio} stopColor="#e05c5c" stopOpacity={0.1} />
-                                <stop offset={1} stopColor="#e05c5c" stopOpacity={0.85} />
+                                <stop offset={0} stopColor={ACCENT1} stopOpacity={0.85} />
+                                <stop offset={zeroRatio} stopColor={ACCENT1} stopOpacity={0.1} />
+                                <stop offset={zeroRatio} stopColor={ACCENT2} stopOpacity={0.1} />
+                                <stop offset={1} stopColor={ACCENT2} stopOpacity={0.85} />
                               </linearGradient>
                             </defs>
                             <YAxis domain={[-DOMAIN_MAX, DOMAIN_MAX]} hide={true} />
@@ -604,7 +604,7 @@ export default function HomePage() {
                             <Area
                               type="monotone"
                               dataKey="v"
-                              stroke={CHART_COLORS[3]}
+                              stroke={ACCENT1}
                               strokeWidth={1.5}
                               fill="url(#fbvGrad)"
                               isAnimationActive={false}
