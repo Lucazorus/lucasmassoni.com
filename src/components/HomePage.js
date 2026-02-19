@@ -5,8 +5,8 @@ import {
   LineChart, Line, ResponsiveContainer,
   PieChart, Pie, Cell,
   BarChart, Bar,
-  AreaChart, Area,
-  ScatterChart, Scatter, XAxis, YAxis,
+  ComposedChart, Area,
+  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid,
   RadarChart, Radar, PolarGrid, PolarAngleAxis,
 } from "recharts";
 import {
@@ -319,21 +319,43 @@ export default function HomePage() {
   const bf = getFrame(BAR_KF);
   const barData = lerpArr(bf.k0, bf.k1, bf.t).map((v) => ({ v }));
 
-  // 4. Area Fill By Value — courbe type P&L fictive, passage naturel autour de zéro
-  const AREA_FBV_KF = [
-    //  tendance: démarre positif, creuse, remonte, repasse négatif en fin
-    [  80, 120, 160, 140, 100,  40, -20, -60, -30,  30,  90, 130 ],
-    // tendance: part négatif, remonte progressivement, termine bien
-    [ -60, -90, -50,  10,  70, 130, 180, 150, 100,  60,  20, -10 ],
-    // tendance: plateau positif, grosse chute, lente récupération
-    [ 140, 160, 150, 120,  60, -10, -80,-120, -80, -20,  40, 100 ],
-    // tendance: volatil mais globalement positif
-    [  20,  80, 140, 100,  60, 110, 160, 120,  70,  30,  80, 130 ],
-    // tendance: correction puis rebond
-    [ 100,  60,  10, -40, -80, -50,  20,  90, 150, 180, 140, 100 ],
+  // 4. ComposedChart — Area + Bar + Line + Scatter (données fictives animées)
+  // area = pipeline deals, bar = closed won, line = target, scatter = ops ponctuelles
+  const COMP_AREA_KF = [
+    [420, 580, 750, 620, 890, 740, 960, 830, 710, 950, 1100, 880],
+    [510, 640, 700, 780, 830, 950, 880, 760, 920, 1050, 990, 850],
+    [390, 620, 810, 700, 870, 720, 1010, 880, 750, 900, 1080, 920],
+    [460, 590, 730, 810, 860, 980, 910, 790, 960, 1020, 970, 840],
   ];
-  const afbv = getFrame(AREA_FBV_KF);
-  const areaFBVData = lerpArr(afbv.k0, afbv.k1, afbv.t).map((v, i) => ({ i, v }));
+  const COMP_BAR_KF = [
+    [180, 260, 340, 290, 410, 320, 450, 380, 300, 430, 510, 400],
+    [210, 290, 310, 360, 380, 440, 400, 340, 420, 490, 460, 390],
+    [160, 280, 370, 320, 400, 300, 470, 400, 330, 410, 500, 420],
+    [200, 270, 330, 380, 400, 460, 420, 360, 440, 480, 450, 380],
+  ];
+  const COMP_LINE_KF = [
+    [300, 400, 500, 450, 600, 520, 650, 580, 490, 660, 750, 620],
+    [350, 440, 480, 530, 570, 640, 600, 520, 610, 700, 680, 580],
+    [280, 430, 560, 490, 590, 490, 690, 600, 520, 620, 730, 640],
+    [320, 410, 490, 560, 580, 660, 620, 540, 640, 680, 660, 560],
+  ];
+  const COMP_SCAT_KF = [
+    [80, 140, 200, 170, 240, 190, 280, 230, 180, 260, 320, 250],
+    [110, 160, 180, 210, 230, 280, 250, 200, 260, 310, 290, 240],
+    [70, 150, 220, 190, 250, 170, 300, 240, 200, 250, 310, 260],
+    [100, 155, 195, 230, 240, 290, 260, 215, 270, 300, 280, 230],
+  ];
+  const cf = getFrame(COMP_AREA_KF);
+  const cf2 = getFrame(COMP_BAR_KF);
+  const cf3 = getFrame(COMP_LINE_KF);
+  const cf4 = getFrame(COMP_SCAT_KF);
+  const composedData = lerpArr(cf.k0, cf.k1, cf.t).map((area, i) => ({
+    i,
+    area,
+    bar:  lerp(cf2.k0[i], cf2.k1[i], cf2.t),
+    line: lerp(cf3.k0[i], cf3.k1[i], cf3.t),
+    dot:  lerp(cf4.k0[i], cf4.k1[i], cf4.t),
+  }));
 
   // 5. Scatter — 3 clusters with wide spread and lots of movement
   const SC1_KF = [
@@ -585,42 +607,34 @@ export default function HomePage() {
                     </ResponsiveContainer>
                   </div>
 
-                  {/* 4. Area Fill By Value — vert si positif, rouge si négatif */}
-                  {(() => {
-                    const DOMAIN_MAX = 400;
-                    // ratio = position du zéro dans le domaine [-400, 400]
-                    // y=0 dans domaine [-400,400] → ratio = 400/(400+400) = 0.5
-                    // Si les valeurs bougent le domaine reste fixe donc ratio = 0.5 fixe
-                    const zeroRatio = DOMAIN_MAX / (DOMAIN_MAX * 2);
-                    return (
-                      <div className="chart-bare">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={areaFBVData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
-                            <defs>
-                              <linearGradient id="fbvGrad" x1="0" x2="0" y1="0" y2="1">
-                                <stop offset={0} stopColor={ACCENT1} stopOpacity={0.85} />
-                                <stop offset={zeroRatio} stopColor={ACCENT1} stopOpacity={0.1} />
-                                <stop offset={zeroRatio} stopColor={ACCENT2} stopOpacity={0.1} />
-                                <stop offset={1} stopColor={ACCENT2} stopOpacity={0.85} />
-                              </linearGradient>
-                            </defs>
-                            <YAxis domain={[-DOMAIN_MAX, DOMAIN_MAX]} hide={true} />
-                            <XAxis dataKey="i" hide={true} />
-                            <Area
-                              type="monotone"
-                              dataKey="v"
-                              stroke={ACCENT1}
-                              strokeWidth={1.5}
-                              fill="url(#fbvGrad)"
-                              isAnimationActive={false}
-                              dot={false}
-                              baseValue={0}
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
-                    );
-                  })()}
+                  {/* 4. ComposedChart — Area + Bar + Line + Scatter */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={composedData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+                        <defs>
+                          <linearGradient id="compAreaGrad" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stopColor={ACCENT1} stopOpacity={0.55} />
+                            <stop offset="100%" stopColor={ACCENT1} stopOpacity={0.05} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke={`${ACCENT1}22`} />
+                        <XAxis dataKey="i" hide={true} />
+                        <YAxis domain={[0, 1300]} hide={true} />
+                        <Area
+                          type="monotone"
+                          dataKey="area"
+                          fill="url(#compAreaGrad)"
+                          stroke={ACCENT1}
+                          strokeWidth={1.5}
+                          dot={false}
+                          isAnimationActive={false}
+                        />
+                        <Bar dataKey="bar" barSize={8} fill={CHART_COLORS[1]} radius={[2, 2, 0, 0]} isAnimationActive={false} />
+                        <Line type="monotone" dataKey="line" stroke={ACCENT2} strokeWidth={2} dot={false} isAnimationActive={false} />
+                        <Scatter dataKey="dot" fill={CHART_COLORS[5]} isAnimationActive={false} />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
 
                   {/* 5. Scatter — 3 clusters with wide spread */}
                   <div className="chart-bare">
