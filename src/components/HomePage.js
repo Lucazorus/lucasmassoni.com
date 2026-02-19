@@ -271,21 +271,20 @@ export default function HomePage() {
   };
   const lerpArr = (a, b, t) => a.map((v, i) => lerp(v, b[i], t));
 
-  // 1. Line — 3 series that cross each other at different moments
-  // a=blue, b=green, c=yellow — they swap rankings throughout the cycle
+  // 1. Line — 3 series crossing each other, all values 0–50, fixed Y domain
   const LINE_KF = [
-    // KF0: a leads, b mid, c low — all rising
-    { a:[20,28,36,45,52,60,66,72,76,80,83,85], b:[30,35,38,40,41,39,38,35,32,30,28,26], c:[10,14,20,28,36,44,52,58,63,68,72,76] },
-    // KF1: c catches a, b bottoms out
-    { a:[22,30,38,46,53,58,62,65,66,66,65,63], b:[28,30,30,28,25,22,20,19,18,18,19,20], c:[15,22,30,40,50,58,64,70,74,78,80,82] },
-    // KF2: c leads, a crosses below, b recovers
-    { a:[25,30,34,36,36,34,32,30,28,28,30,33], b:[18,22,28,35,42,50,56,60,62,62,60,58], c:[20,28,38,48,56,63,68,72,74,74,72,70] },
-    // KF3: b surges past both, a and c converge
-    { a:[28,32,35,37,38,37,35,34,34,35,37,40], b:[22,30,40,52,62,70,75,78,79,78,76,74], c:[35,38,40,40,38,36,34,32,32,34,37,40] },
-    // KF4: all three converge in the middle then diverge again
-    { a:[30,36,42,48,52,54,53,50,46,42,38,35], b:[32,35,38,42,46,48,48,46,42,38,34,30], c:[28,34,41,47,50,52,53,52,50,48,46,44] },
-    // KF5: back toward KF0, a resumes lead
-    { a:[18,26,34,43,51,59,65,71,75,79,82,84], b:[32,36,37,37,36,34,32,30,28,27,26,25], c:[12,16,22,30,38,46,54,60,65,70,74,78] },
+    // KF0: a leads top, c rises from below, b flat middle
+    { a:[10,14,18,22,26,30,34,38,41,44,46,48], b:[22,24,25,26,26,25,24,23,22,21,20,19], c:[ 5, 7,10,14,18,23,28,33,37,40,43,45] },
+    // KF1: c catches and crosses a at mid-point
+    { a:[12,16,20,24,27,29,30,30,29,28,26,24], b:[20,21,21,20,19,18,17,16,16,16,17,18], c:[ 8,12,17,22,28,33,37,40,42,43,43,42] },
+    // KF2: c leads, a falls below b
+    { a:[14,16,17,17,16,15,14,13,13,14,16,18], b:[18,20,23,27,31,34,36,37,37,36,34,32], c:[20,25,30,35,39,42,44,45,44,43,41,39] },
+    // KF3: b surges to top, a and c meet in the middle
+    { a:[16,18,20,21,22,22,21,20,19,18,18,19], b:[15,20,27,34,39,43,46,47,47,46,44,42], c:[22,24,25,25,24,23,22,22,22,23,25,27] },
+    // KF4: all three converge around 25 then split
+    { a:[24,26,28,29,29,28,27,25,23,21,19,18], b:[28,27,26,25,24,24,24,25,26,27,28,29], c:[20,22,24,26,28,29,29,28,27,26,25,24] },
+    // KF5: a climbs back to lead, c and b flatten
+    { a:[ 8,12,17,22,27,32,36,40,43,45,47,48], b:[26,25,24,23,22,21,20,20,20,21,22,23], c:[18,20,22,23,23,22,21,20,20,21,22,24] },
   ];
   const lf = getFrame(LINE_KF);
   const lineData = lerpArr(lf.k0.a, lf.k1.a, lf.t).map((a, i) => ({
@@ -540,6 +539,7 @@ export default function HomePage() {
                   <div className="chart-bare">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={lineData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+                        <YAxis domain={[0, 50]} hide={true} />
                         <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
                         <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
                         <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
