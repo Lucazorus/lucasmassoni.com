@@ -175,6 +175,23 @@ const Container = ({ children }) => (
   <div className="max-w-7xl mx-auto px-6 md:px-10">{children}</div>
 );
 
+// ================= NAV LOGO =================
+// Must be defined OUTSIDE HomePage to avoid re-mounting on every re-render
+function NavLogo() {
+  const { RiveComponent } = useRive({
+    src: "/logo.riv",
+    stateMachines: "SM",
+    autoplay: true,
+    layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
+    backgroundColor: "transparent",
+  });
+  return (
+    <div className="w-10 h-10 mr-3 flex items-center justify-center">
+      <RiveComponent className="w-full h-full" />
+    </div>
+  );
+}
+
 // ================= LANG TOGGLE =================
 function LangToggle({ lang, setLang }) {
   return (
@@ -308,20 +325,6 @@ export default function HomePage() {
     return () => document.head.removeChild(style);
   }, []);
 
-  const NavLogo = () => {
-    const { RiveComponent } = useRive({
-      src: "/logo.riv",
-      stateMachines: "SM",
-      autoplay: true,
-      layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
-      backgroundColor: "transparent",
-    });
-    return (
-      <div className="w-10 h-10 mr-3 flex items-center justify-center">
-        <RiveComponent className="w-full h-full" />
-      </div>
-    );
-  };
 
   const navItems = [
     { label: t.nav.home, href: "#top" },
