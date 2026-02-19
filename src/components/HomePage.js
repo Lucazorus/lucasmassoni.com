@@ -705,15 +705,15 @@ export default function HomePage() {
         }
 
         .hero-right {
-          flex: 0 0 400px;
+          flex: 0 0 560px;
           display: flex;
           flex-direction: column;
         }
 
         .charts-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          grid-template-rows: repeat(3, 1fr);
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: 1fr 1fr;
           gap: 10px;
           flex: 1;
         }
