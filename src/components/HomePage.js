@@ -607,7 +607,22 @@ export default function HomePage() {
                     </ResponsiveContainer>
                   </div>
 
-                  {/* 4. ComposedChart — Area + Bar + Line + Scatter */}
+                  {/* 4. Scatter — 3 clusters with wide spread */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ScatterChart margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
+                        <XAxis dataKey="x" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="a" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="b" orientation="right" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="c" orientation="right" type="number" domain={[0, 100]} hide={true} />
+                        <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
+                        <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} isAnimationActive={false} />
+                        <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} isAnimationActive={false} />
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 5. ComposedChart — Area + Bar + Line + Scatter */}
                   <div className="chart-bare">
                     <ResponsiveContainer width="100%" height="100%">
                       <ComposedChart data={composedData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
@@ -633,21 +648,6 @@ export default function HomePage() {
                         <Line type="monotone" dataKey="line" stroke={ACCENT2} strokeWidth={2} dot={false} isAnimationActive={false} />
                         <Scatter dataKey="dot" fill={CHART_COLORS[5]} isAnimationActive={false} />
                       </ComposedChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  {/* 5. Scatter — 3 clusters with wide spread */}
-                  <div className="chart-bare">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <ScatterChart margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
-                        <XAxis dataKey="x" type="number" domain={[0, 100]} hide={true} />
-                        <YAxis dataKey="y" yAxisId="a" type="number" domain={[0, 100]} hide={true} />
-                        <YAxis dataKey="y" yAxisId="b" orientation="right" type="number" domain={[0, 100]} hide={true} />
-                        <YAxis dataKey="y" yAxisId="c" orientation="right" type="number" domain={[0, 100]} hide={true} />
-                        <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
-                        <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} isAnimationActive={false} />
-                        <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} isAnimationActive={false} />
-                      </ScatterChart>
                     </ResponsiveContainer>
                   </div>
 
