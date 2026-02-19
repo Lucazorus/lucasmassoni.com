@@ -5,7 +5,6 @@ import {
   LineChart, Line, ResponsiveContainer,
   PieChart, Pie, Cell,
   BarChart, Bar,
-  AreaChart, Area,
   ScatterChart, Scatter, XAxis, YAxis,
   RadarChart, Radar, PolarGrid, PolarAngleAxis,
 } from "recharts";
@@ -319,43 +318,45 @@ export default function HomePage() {
   const bf = getFrame(BAR_KF);
   const barData = lerpArr(bf.k0, bf.k1, bf.t).map((v) => ({ v }));
 
-  // 4. Percent Area — 3 budget categories always = 100%
-  const AREA_KF = [
-    { a:[38,40,42,38,35,33,36,40,43,41], b:[35,33,30,34,37,38,35,32,30,33], c:[27,27,28,28,28,29,29,28,27,26] },
-    { a:[36,38,40,36,33,31,34,38,41,39], b:[37,35,32,36,39,40,37,34,32,35], c:[27,27,28,28,28,29,29,28,27,26] },
-    { a:[40,42,44,40,37,35,38,42,45,43], b:[33,31,28,32,35,36,33,30,28,31], c:[27,27,28,28,28,29,29,28,27,26] },
-    { a:[35,37,39,35,32,30,33,37,40,38], b:[38,36,33,37,40,41,38,35,33,36], c:[27,27,28,28,28,29,29,28,27,26] },
-    { a:[41,43,45,41,38,36,39,43,46,44], b:[32,30,27,31,34,35,32,29,27,30], c:[27,27,28,28,28,29,29,28,27,26] },
+  // 4. Pie à 3 niveaux (3 donuts concentriques) — chaque anneau a ses propres segments
+  const PIE3_KF = [
+    { r1:[40,35,25], r2:[30,28,22,20], r3:[22,20,18,24,16] },
+    { r1:[35,38,27], r2:[32,25,24,19], r3:[20,22,20,22,16] },
+    { r1:[42,30,28], r2:[28,30,20,22], r3:[24,18,22,20,16] },
+    { r1:[38,32,30], r2:[26,32,22,20], r3:[18,24,20,22,16] },
+    { r1:[33,40,27], r2:[34,24,24,18], r3:[22,20,24,18,16] },
   ];
-  const af = getFrame(AREA_KF);
-  const areaData = lerpArr(af.k0.a, af.k1.a, af.t).map((a, i) => {
-    const b = lerp(af.k0.b[i], af.k1.b[i], af.t);
-    const c = lerp(af.k0.c[i], af.k1.c[i], af.t);
-    const total = a + b + c;
-    return { a: (a / total) * 100, b: (b / total) * 100, c: (c / total) * 100 };
-  });
+  const p3f = getFrame(PIE3_KF);
+  const normalize = (arr) => { const s = arr.reduce((a,b)=>a+b,0); return arr.map(v => v/s*100); };
+  const pie3Ring1 = normalize(lerpArr(p3f.k0.r1, p3f.k1.r1, p3f.t)).map((value,i) => ({ name:String(i), value }));
+  const pie3Ring2 = normalize(lerpArr(p3f.k0.r2, p3f.k1.r2, p3f.t)).map((value,i) => ({ name:String(i), value }));
+  const pie3Ring3 = normalize(lerpArr(p3f.k0.r3, p3f.k1.r3, p3f.t)).map((value,i) => ({ name:String(i), value }));
 
-  // 5. Scatter — two product clusters (price vs volume), slowly repositioning
+  // 5. Scatter — 3 clusters with wide spread and lots of movement
   const SC1_KF = [
-    [{x:18,y:72},{x:22,y:65},{x:15,y:80},{x:25,y:58},{x:20,y:75},{x:12,y:82},{x:28,y:61},{x:17,y:69},{x:23,y:77},{x:14,y:85}],
-    [{x:20,y:70},{x:24,y:63},{x:17,y:78},{x:27,y:56},{x:22,y:73},{x:14,y:80},{x:30,y:59},{x:19,y:67},{x:25,y:75},{x:16,y:83}],
-    [{x:16,y:74},{x:20,y:67},{x:13,y:82},{x:23,y:60},{x:18,y:77},{x:10,y:84},{x:26,y:63},{x:15,y:71},{x:21,y:79},{x:12,y:87}],
+    [{x:10,y:80},{x:18,y:68},{x:5,y:90},{x:22,y:75},{x:14,y:55},{x:8,y:85},{x:25,y:62},{x:3,y:72}],
+    [{x:20,y:60},{x:8,y:88},{x:15,y:45},{x:30,y:70},{x:5,y:78},{x:18,y:92},{x:12,y:50},{x:25,y:80}],
+    [{x:5,y:70},{x:25,y:50},{x:10,y:95},{x:18,y:40},{x:28,y:85},{x:2,y:60},{x:20,y:75},{x:15,y:30}],
+    [{x:15,y:85},{x:3,y:55},{x:22,y:40},{x:8,y:92},{x:28,y:65},{x:12,y:78},{x:5,y:35},{x:20,y:90}],
   ];
   const SC2_KF = [
-    [{x:62,y:38},{x:68,y:44},{x:74,y:32},{x:58,y:50},{x:65,y:41},{x:72,y:35},{x:60,y:47},{x:76,y:29},{x:55,y:53},{x:70,y:36}],
-    [{x:64,y:36},{x:70,y:42},{x:76,y:30},{x:60,y:48},{x:67,y:39},{x:74,y:33},{x:62,y:45},{x:78,y:27},{x:57,y:51},{x:72,y:34}],
-    [{x:60,y:40},{x:66,y:46},{x:72,y:34},{x:56,y:52},{x:63,y:43},{x:70,y:37},{x:58,y:49},{x:74,y:31},{x:53,y:55},{x:68,y:38}],
+    [{x:45,y:45},{x:55,y:60},{x:40,y:30},{x:60,y:50},{x:48,y:70},{x:52,y:25},{x:42,y:55},{x:58,y:40}],
+    [{x:55,y:35},{x:42,y:65},{x:58,y:20},{x:48,y:55},{x:38,y:45},{x:62,y:70},{x:50,y:30},{x:44,y:80}],
+    [{x:40,y:55},{x:60,y:40},{x:45,y:75},{x:55,y:20},{x:50,y:65},{x:38,y:30},{x:58,y:80},{x:48,y:42}],
+    [{x:52,y:25},{x:44,y:70},{x:62,y:55},{x:40,y:42},{x:56,y:80},{x:46,y:18},{x:38,y:60},{x:60,y:35}],
+  ];
+  const SC3_KF = [
+    [{x:72,y:20},{x:85,y:40},{x:78,y:10},{x:92,y:55},{x:68,y:35},{x:88,y:15},{x:75,y:60},{x:95,y:28}],
+    [{x:80,y:35},{x:70,y:15},{x:90,y:50},{x:75,y:25},{x:95,y:40},{x:68,y:60},{x:85,y:8},{x:78,y:45}],
+    [{x:65,y:45},{x:90,y:20},{x:72,y:55},{x:88,y:35},{x:78,y:5},{x:95,y:50},{x:70,y:30},{x:82,y:65}],
+    [{x:88,y:10},{x:75,y:50},{x:92,y:38},{x:68,y:22},{x:82,y:60},{x:72,y:42},{x:95,y:18},{x:78,y:70}],
   ];
   const sf1 = getFrame(SC1_KF);
   const sf2 = getFrame(SC2_KF);
-  const scatterData1 = sf1.k0.map((p, i) => ({
-    x: lerp(p.x, sf1.k1[i].x, sf1.t),
-    y: lerp(p.y, sf1.k1[i].y, sf1.t),
-  }));
-  const scatterData2 = sf2.k0.map((p, i) => ({
-    x: lerp(p.x, sf2.k1[i].x, sf2.t),
-    y: lerp(p.y, sf2.k1[i].y, sf2.t),
-  }));
+  const sf3 = getFrame(SC3_KF);
+  const scatterData1 = sf1.k0.map((p, i) => ({ x: lerp(p.x, sf1.k1[i].x, sf1.t), y: lerp(p.y, sf1.k1[i].y, sf1.t) }));
+  const scatterData2 = sf2.k0.map((p, i) => ({ x: lerp(p.x, sf2.k1[i].x, sf2.t), y: lerp(p.y, sf2.k1[i].y, sf2.t) }));
+  const scatterData3 = sf3.k0.map((p, i) => ({ x: lerp(p.x, sf3.k1[i].x, sf3.t), y: lerp(p.y, sf3.k1[i].y, sf3.t) }));
 
   // 6. Radar — 5 performance axes, two entities compared
   const RAD_KF = [
@@ -581,26 +582,43 @@ export default function HomePage() {
                     </ResponsiveContainer>
                   </div>
 
-                  {/* 4. Percent Area Chart — 3 stacked areas = 100% */}
-                  <div className="chart-bare">
+                  {/* 4. Pie 3 niveaux — 3 donuts concentriques */}
+                  <div className="chart-bare chart-center">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={areaData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} stackOffset="expand">
-                        <Area type="monotoneX" dataKey="a" stackId="1" stroke="none" fill={CHART_COLORS[0]} isAnimationActive={false} />
-                        <Area type="monotoneX" dataKey="b" stackId="1" stroke="none" fill={CHART_COLORS[3]} isAnimationActive={false} />
-                        <Area type="monotoneX" dataKey="c" stackId="1" stroke="none" fill={CHART_COLORS[4]} isAnimationActive={false} />
-                      </AreaChart>
+                      <PieChart>
+                        <Pie data={pie3Ring1} dataKey="value" cx="50%" cy="50%"
+                          innerRadius="12%" outerRadius="28%"
+                          startAngle={90 + T * 8} endAngle={90 + T * 8 + 360}
+                          paddingAngle={2} isAnimationActive={false}>
+                          {pie3Ring1.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                        </Pie>
+                        <Pie data={pie3Ring2} dataKey="value" cx="50%" cy="50%"
+                          innerRadius="32%" outerRadius="46%"
+                          startAngle={90 - T * 6} endAngle={90 - T * 6 + 360}
+                          paddingAngle={2} isAnimationActive={false}>
+                          {pie3Ring2.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 2) % CHART_COLORS.length]} />)}
+                        </Pie>
+                        <Pie data={pie3Ring3} dataKey="value" cx="50%" cy="50%"
+                          innerRadius="50%" outerRadius="62%"
+                          startAngle={90 + T * 5} endAngle={90 + T * 5 + 360}
+                          paddingAngle={1.5} isAnimationActive={false}>
+                          {pie3Ring3.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 1) % CHART_COLORS.length]} />)}
+                        </Pie>
+                      </PieChart>
                     </ResponsiveContainer>
                   </div>
 
-                  {/* 5. Scatter — two drifting clusters */}
+                  {/* 5. Scatter — 3 clusters with wide spread */}
                   <div className="chart-bare">
                     <ResponsiveContainer width="100%" height="100%">
-                      <ScatterChart margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+                      <ScatterChart margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
                         <XAxis dataKey="x" type="number" domain={[0, 100]} hide={true} />
-                        <YAxis dataKey="y" yAxisId="left" type="number" domain={[0, 100]} hide={true} />
-                        <YAxis dataKey="y" yAxisId="right" orientation="right" type="number" domain={[0, 100]} hide={true} />
-                        <Scatter yAxisId="left" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
-                        <Scatter yAxisId="right" data={scatterData2} fill={CHART_COLORS[4]} isAnimationActive={false} />
+                        <YAxis dataKey="y" yAxisId="a" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="b" orientation="right" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="c" orientation="right" type="number" domain={[0, 100]} hide={true} />
+                        <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
+                        <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} isAnimationActive={false} />
+                        <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} isAnimationActive={false} />
                       </ScatterChart>
                     </ResponsiveContainer>
                   </div>
