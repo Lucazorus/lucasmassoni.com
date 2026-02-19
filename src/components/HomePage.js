@@ -636,14 +636,25 @@ export default function HomePage() {
           transition={{ duration: 0.22 }}
         >
           <Container>
-            <h2 className="section-title">{t.services.title}</h2>
+            <motion.h2
+              className="section-title"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {t.services.title}
+            </motion.h2>
 
             <div className="grid md:grid-cols-2 gap-6 mt-10">
-              {t.services.items.map((s) => (
+              {t.services.items.map((s, idx) => (
                 <motion.div
                   key={s.key}
+                  initial={{ opacity: 0, y: 32 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.5, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
                   whileHover={{ y: -6 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                   className="service-card card-hover"
                 >
                   <div className="icon">{SERVICE_ICONS[s.key]}</div>
@@ -684,12 +695,34 @@ export default function HomePage() {
       </AnimatePresence>
 
       {/* STACK */}
-      <section id="stack" className="py-20">
+      <motion.section
+        id="stack"
+        className="py-20"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.4 }}
+      >
         <Container>
-          <h2 className="section-title">{t.stack.title}</h2>
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {t.stack.title}
+          </motion.h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-10">
-            {t.stack.items.map((item) => (
-              <div key={item.name} className="flip-card">
+            {t.stack.items.map((item, idx) => (
+              <motion.div
+                key={item.name}
+                className="flip-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.45, delay: idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <div className="flip-inner">
                   <div className="flip-front">
                     {item.name}
@@ -699,11 +732,11 @@ export default function HomePage() {
                     <p className="flip-back-desc">{item.desc}</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </Container>
-      </section>
+      </motion.section>
 
       {/* CONTACT */}
       <AnimatePresence mode="wait">
@@ -717,6 +750,12 @@ export default function HomePage() {
           transition={{ duration: 0.22 }}
         >
           <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
             <div className="contact-box card-hover">
               <h2 className="section-title">{t.contact.title}</h2>
               <p className="font-tech mt-4">{t.contact.subtitle}</p>
@@ -743,6 +782,7 @@ export default function HomePage() {
                 </a>
               </div>
             </div>
+            </motion.div>
           </Container>
         </motion.section>
       </AnimatePresence>
