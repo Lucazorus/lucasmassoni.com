@@ -255,39 +255,42 @@ export default function HomePage() {
   }, []);
 
   const T = tRef.current;
-  const sin  = (freq, phase = 0) => Math.sin(T * freq + phase);
-  const sin01 = (freq, phase = 0) => (sin(freq, phase) + 1) / 2;
+  // Rule: frequency is FIXED (same for all points in a series) → no speed mismatch between neighbours
+  // Only the phase offset varies per point → smooth spatial wave that flows in time
+  const wave = (freq, amp, base, phase) => base + amp * Math.sin(T * freq + phase);
+  const wave01 = (freq, phase) => (Math.sin(T * freq + phase) + 1) / 2;
 
-  // 1. Line — 3 trending-up sales curves with slight natural wobble
+  // 1. Line — 3 trending-up sales curves, same frequency per series, phase spread over i
   const lineData = Array.from({ length: 12 }, (_, i) => {
-    const x = i / 11; // 0 → 1
+    const x = i / 11;
     return {
-      a: 10 + 75 * x + 6  * Math.sin(T * 0.18 + i * 0.4),
-      b: 5  + 55 * x + 5  * Math.sin(T * 0.22 + i * 0.5 + 1.2),
-      c: 2  + 35 * x + 4  * Math.sin(T * 0.15 + i * 0.35 + 2.5),
+      a: 10 + 75 * x + 5 * Math.sin(T * 0.4 + i * 0.55),
+      b: 5  + 55 * x + 4 * Math.sin(T * 0.35 + i * 0.55 + 1.2),
+      c: 2  + 35 * x + 3 * Math.sin(T * 0.3  + i * 0.55 + 2.5),
     };
   });
 
-  // 2. Pie — 4 segments always summing to 100 (true full pie)
+  // 2. Pie — 4 segments, each oscillates at its own fixed frequency
   const pieRaw = [
-    20 + 14 * sin01(0.5,  0.0),
-    20 + 14 * sin01(0.7,  1.8),
-    20 + 14 * sin01(0.9,  3.5),
-    20 + 14 * sin01(0.4,  5.2),
+    20 + 12 * wave01(0.28, 0.0),
+    20 + 12 * wave01(0.35, 1.8),
+    20 + 12 * wave01(0.22, 3.5),
+    20 + 12 * wave01(0.31, 5.2),
   ];
   const pieSum = pieRaw.reduce((a, b) => a + b, 0);
   const pieData = pieRaw.map((v, i) => ({ name: String(i), value: (v / pieSum) * 100 }));
 
-  // 3. Bars — 8 bars
+  // 3. Bars — 8 bars, fixed frequency, phase spread so they form a rolling wave
   const barData = Array.from({ length: 8 }, (_, i) => ({
-    v: 15 + 75 * sin01(0.6 + i * 0.12, i * 0.7),
+    v: 20 + 60 * wave01(0.4, i * 0.78),
   }));
 
-  // 4. Percent Area Chart — 3 stacked areas always summing to 100%
+  // 4. Percent Area — 3 stacked series, each a slow coherent wave
   const areaData = Array.from({ length: 10 }, (_, i) => {
-    const r0 = 25 + 18 * sin01(0.4 + i * 0.05, i * 0.6);
-    const r1 = 30 + 16 * sin01(0.5 + i * 0.06, i * 0.7 + 1.5);
-    const r2 = 25 + 14 * sin01(0.35 + i * 0.04, i * 0.5 + 3.0);
+    const phase = i * 0.65; // fixed spatial spacing
+    const r0 = 28 + 16 * wave01(0.32, phase);
+    const r1 = 32 + 14 * wave01(0.28, phase + 2.1);
+    const r2 = 28 + 12 * wave01(0.36, phase + 4.2);
     const total = r0 + r1 + r2;
     return {
       a: (r0 / total) * 100,
@@ -296,22 +299,22 @@ export default function HomePage() {
     };
   });
 
-  // 5. Scatter — two clusters drifting around slowly
+  // 5. Scatter — two clusters, each point drifts around its own anchor with slow fixed frequency
   const scatterData1 = Array.from({ length: 10 }, (_, i) => ({
-    x: 20 + 30 * sin01(0.18 + i * 0.08, i * 0.9),
-    y: 15 + 40 * sin01(0.22 + i * 0.07, i * 0.8 + 1.1),
+    x: 15 + (i % 4) * 8 + 6 * Math.sin(T * 0.3 + i * 0.9),
+    y: 15 + Math.floor(i / 4) * 10 + 5 * Math.sin(T * 0.25 + i * 0.9 + 1.0),
   }));
   const scatterData2 = Array.from({ length: 10 }, (_, i) => ({
-    x: 55 + 30 * sin01(0.15 + i * 0.09, i * 0.85 + 2.0),
-    y: 50 + 35 * sin01(0.2  + i * 0.06, i * 0.75 + 0.5),
+    x: 58 + (i % 4) * 7 + 5 * Math.sin(T * 0.28 + i * 0.85 + 0.5),
+    y: 48 + Math.floor(i / 4) * 9 + 5 * Math.sin(T * 0.22 + i * 0.85 + 2.0),
   }));
 
-  // 6. Radar — 5 axes, values oscillate slowly
+  // 6. Radar — 5 axes, each axis uses a fixed freq with its own phase
   const radarSubjects = ["A", "B", "C", "D", "E"];
   const radarData = radarSubjects.map((subject, i) => ({
     subject,
-    v1: 30 + 60 * sin01(0.25 + i * 0.11, i * 1.1),
-    v2: 25 + 55 * sin01(0.3  + i * 0.09, i * 1.0 + 2.0),
+    v1: 30 + 55 * wave01(0.3, i * 1.26),
+    v2: 25 + 50 * wave01(0.25, i * 1.26 + 2.0),
   }));
 
   // Force line break for the second title word on mobile
