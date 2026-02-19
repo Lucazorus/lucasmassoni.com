@@ -5,6 +5,7 @@ import {
   LineChart, Line, ResponsiveContainer,
   PieChart, Pie, Cell,
   BarChart, Bar,
+  AreaChart, Area,
   ScatterChart, Scatter, XAxis, YAxis,
   RadarChart, Radar, PolarGrid, PolarAngleAxis,
 } from "recharts";
@@ -318,19 +319,16 @@ export default function HomePage() {
   const bf = getFrame(BAR_KF);
   const barData = lerpArr(bf.k0, bf.k1, bf.t).map((v) => ({ v }));
 
-  // 4. Pie à 3 niveaux (3 donuts concentriques) — chaque anneau a ses propres segments
-  const PIE3_KF = [
-    { r1:[40,35,25], r2:[30,28,22,20], r3:[22,20,18,24,16] },
-    { r1:[35,38,27], r2:[32,25,24,19], r3:[20,22,20,22,16] },
-    { r1:[42,30,28], r2:[28,30,20,22], r3:[24,18,22,20,16] },
-    { r1:[38,32,30], r2:[26,32,22,20], r3:[18,24,20,22,16] },
-    { r1:[33,40,27], r2:[34,24,24,18], r3:[22,20,24,18,16] },
+  // 4. Area Fill By Value — valeurs pos/neg, gradient vert/rouge selon le signe
+  const AREA_FBV_KF = [
+    [ 120, 80, -40, 200, -150, 60, 300, 180, -80, 250, 100, -20 ],
+    [ 80, 200, -100, 50, 300, -200, 150, 80, 250, -60, 180, 120 ],
+    [ 200, -80, 150, -200, 100, 350, -50, 200, 80, -120, 300, 60 ],
+    [ -100, 150, 300, -50, 200, 100, -150, 250, 50, 300, -80, 200 ],
+    [ 150, 300, -150, 200, -80, 250, 100, -200, 300, 80, 200, -50 ],
   ];
-  const p3f = getFrame(PIE3_KF);
-  const normalize = (arr) => { const s = arr.reduce((a,b)=>a+b,0); return arr.map(v => v/s*100); };
-  const pie3Ring1 = normalize(lerpArr(p3f.k0.r1, p3f.k1.r1, p3f.t)).map((value,i) => ({ name:String(i), value }));
-  const pie3Ring2 = normalize(lerpArr(p3f.k0.r2, p3f.k1.r2, p3f.t)).map((value,i) => ({ name:String(i), value }));
-  const pie3Ring3 = normalize(lerpArr(p3f.k0.r3, p3f.k1.r3, p3f.t)).map((value,i) => ({ name:String(i), value }));
+  const afbv = getFrame(AREA_FBV_KF);
+  const areaFBVData = lerpArr(afbv.k0, afbv.k1, afbv.t).map((v, i) => ({ i, v }));
 
   // 5. Scatter — 3 clusters with wide spread and lots of movement
   const SC1_KF = [
@@ -582,31 +580,42 @@ export default function HomePage() {
                     </ResponsiveContainer>
                   </div>
 
-                  {/* 4. Pie 3 niveaux — 3 donuts concentriques */}
-                  <div className="chart-bare chart-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={pie3Ring1} dataKey="value" cx="50%" cy="50%"
-                          innerRadius="12%" outerRadius="28%"
-                          startAngle={90 + T * 8} endAngle={90 + T * 8 + 360}
-                          paddingAngle={2} isAnimationActive={false}>
-                          {pie3Ring1.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
-                        </Pie>
-                        <Pie data={pie3Ring2} dataKey="value" cx="50%" cy="50%"
-                          innerRadius="32%" outerRadius="46%"
-                          startAngle={90 - T * 6} endAngle={90 - T * 6 + 360}
-                          paddingAngle={2} isAnimationActive={false}>
-                          {pie3Ring2.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 2) % CHART_COLORS.length]} />)}
-                        </Pie>
-                        <Pie data={pie3Ring3} dataKey="value" cx="50%" cy="50%"
-                          innerRadius="50%" outerRadius="62%"
-                          startAngle={90 + T * 5} endAngle={90 + T * 5 + 360}
-                          paddingAngle={1.5} isAnimationActive={false}>
-                          {pie3Ring3.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 1) % CHART_COLORS.length]} />)}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
+                  {/* 4. Area Fill By Value — vert si positif, rouge si négatif */}
+                  {(() => {
+                    const DOMAIN_MAX = 400;
+                    // ratio = position du zéro dans le domaine [-400, 400]
+                    // y=0 dans domaine [-400,400] → ratio = 400/(400+400) = 0.5
+                    // Si les valeurs bougent le domaine reste fixe donc ratio = 0.5 fixe
+                    const zeroRatio = DOMAIN_MAX / (DOMAIN_MAX * 2);
+                    return (
+                      <div className="chart-bare">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={areaFBVData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+                            <defs>
+                              <linearGradient id="fbvGrad" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset={0} stopColor={CHART_COLORS[3]} stopOpacity={0.85} />
+                                <stop offset={zeroRatio} stopColor={CHART_COLORS[3]} stopOpacity={0.1} />
+                                <stop offset={zeroRatio} stopColor="#e05c5c" stopOpacity={0.1} />
+                                <stop offset={1} stopColor="#e05c5c" stopOpacity={0.85} />
+                              </linearGradient>
+                            </defs>
+                            <YAxis domain={[-DOMAIN_MAX, DOMAIN_MAX]} hide={true} />
+                            <XAxis dataKey="i" hide={true} />
+                            <Area
+                              type="monotone"
+                              dataKey="v"
+                              stroke={CHART_COLORS[3]}
+                              strokeWidth={1.5}
+                              fill="url(#fbvGrad)"
+                              isAnimationActive={false}
+                              dot={false}
+                              baseValue={0}
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                    );
+                  })()}
 
                   {/* 5. Scatter — 3 clusters with wide spread */}
                   <div className="chart-bare">
