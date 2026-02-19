@@ -42,8 +42,8 @@ const translations = {
     nav: { home: "Accueil", services: "Services", stack: "Stack", contact: "Contact" },
     hero: {
       kicker: "Freelance Salesforce",
-      titleLine1: "EXPERT",
-      titleLine2: "SALESFORCE",
+      titleLine1: "EXPERT SALESFORCE",
+      titleLine2: "& ANALYTICS",
       subtitle:
         "Sales, CPQ, Analytics et Data Migration. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
       ctaPrimary: "DÉMARRER UN PROJET",
@@ -104,8 +104,8 @@ const translations = {
     nav: { home: "Home", services: "Services", stack: "Stack", contact: "Contact" },
     hero: {
       kicker: "Freelance Salesforce Consultant",
-      titleLine1: "SALESFORCE",
-      titleLine2: "EXPERT",
+      titleLine1: "SALESFORCE EXPERT",
+      titleLine2: "& ANALYTICS",
       subtitle:
         "Sales, CPQ, Analytics & Data Migration. From strategy to delivery — fast, documented, and results-driven.",
       ctaPrimary: "START A PROJECT",
