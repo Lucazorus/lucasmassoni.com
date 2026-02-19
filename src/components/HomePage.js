@@ -580,7 +580,7 @@ export default function HomePage() {
                         <Pie
                           data={pieData} dataKey="value"
                           cx="50%" cy="50%"
-                          innerRadius="30%" outerRadius="48%"
+                          innerRadius="32%" outerRadius="56%"
                           paddingAngle={1.5}
                           startAngle={90 + T * 12}
                           endAngle={90 + T * 12 + 360}
@@ -654,7 +654,7 @@ export default function HomePage() {
                   {/* 6. Radar — 5-axis specified domain */}
                   <div className="chart-bare chart-center">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart data={radarData} margin={{ top: 6, right: 12, left: 12, bottom: 6 }}>
+                      <RadarChart data={radarData} outerRadius="54%" margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
                         <PolarGrid stroke={`${ACCENT1}44`} />
                         <PolarAngleAxis dataKey="subject" tick={false} />
                         <Radar dataKey="v1" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.35} isAnimationActive={false} dot={false} />
@@ -885,8 +885,13 @@ export default function HomePage() {
 
         .chart-center {
           display: flex;
-          align-items: center;
+          align-items: stretch;
           justify-content: center;
+        }
+
+        .chart-center > * {
+          width: 100%;
+          height: 100%;
         }
 
         @media (max-width: 960px) {
