@@ -207,103 +207,23 @@ function LangToggle({ lang, setLang }) {
   );
 }
 
-const TOTAL_SLIDES = 4;
-
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [lang, setLang] = useState("fr");
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const trackRef = useRef(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const t = translations[lang];
 
-  // ── Slide navigation ────────────────────────────────────────────────────────
-  const goToSlide = (n) => {
-    const idx = Math.max(0, Math.min(TOTAL_SLIDES - 1, n));
-    if (idx === currentSlide) return;
-    setCurrentSlide(idx);
-    if (trackRef.current) {
-      trackRef.current.style.transform = `translateX(-${idx * 100}vw)`;
-    }
-  };
-
-  // Sync track transform when currentSlide changes (e.g. initial render)
   useEffect(() => {
-    if (trackRef.current) {
-      trackRef.current.style.transform = `translateX(-${currentSlide * 100}vw)`;
-    }
-  }, [currentSlide]);
-
-  // ── Wheel → horizontal slide ─────────────────────────────────────────────
-  useEffect(() => {
-    const THROTTLE = 800; // ms between slide changes
-    let lastWheel = 0;
-    const onWheel = (e) => {
-      e.preventDefault();
-      const now = Date.now();
-      if (now - lastWheel < THROTTLE) return;
-      lastWheel = now;
-      const delta = e.deltaY || e.deltaX;
-      setCurrentSlide((prev) => {
-        const next = delta > 0 ? Math.min(TOTAL_SLIDES - 1, prev + 1) : Math.max(0, prev - 1);
-        if (trackRef.current) {
-          trackRef.current.style.transform = `translateX(-${next * 100}vw)`;
-        }
-        return next;
-      });
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24);
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docH > 0 ? Math.min(window.scrollY / docH, 1) : 0);
     };
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => window.removeEventListener("wheel", onWheel);
-  }, []);
-
-  // ── Touch swipe → horizontal slide ───────────────────────────────────────
-  useEffect(() => {
-    let touchStartX = 0;
-    let touchStartY = 0;
-    const onTouchStart = (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    };
-    const onTouchEnd = (e) => {
-      const dx = touchStartX - e.changedTouches[0].clientX;
-      const dy = touchStartY - e.changedTouches[0].clientY;
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-        setCurrentSlide((prev) => {
-          const next = dx > 0 ? Math.min(TOTAL_SLIDES - 1, prev + 1) : Math.max(0, prev - 1);
-          if (trackRef.current) {
-            trackRef.current.style.transform = `translateX(-${next * 100}vw)`;
-          }
-          return next;
-        });
-      }
-    };
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
-    return () => {
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchend", onTouchEnd);
-    };
-  }, []);
-
-  // ── Keyboard arrow navigation ─────────────────────────────────────────────
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-        setCurrentSlide((prev) => {
-          const next = Math.min(TOTAL_SLIDES - 1, prev + 1);
-          if (trackRef.current) trackRef.current.style.transform = `translateX(-${next * 100}vw)`;
-          return next;
-        });
-      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-        setCurrentSlide((prev) => {
-          const next = Math.max(0, prev - 1);
-          if (trackRef.current) trackRef.current.style.transform = `translateX(-${next * 100}vw)`;
-          return next;
-        });
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("scroll", onScroll);
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const CHART_COLORS = ["#6f9caf", "#70aaaf", "#6fafac", "#70af84", "#ffcf56", "#a8c5b8"];
@@ -491,66 +411,58 @@ export default function HomePage() {
   }, []);
 
 
-  // Slide index → nav label mapping
-  const NAV_SLIDES = [
-    { label: t.nav.home,     idx: 0 },
-    { label: t.nav.services, idx: 1 },
-    { label: t.nav.stack,    idx: 2 },
-    { label: t.nav.contact,  idx: 3 },
+  const navItems = [
+    { label: t.nav.home, href: "#top" },
+    { label: t.nav.services, href: "#services" },
+    { label: t.nav.stack, href: "#stack" },
+    { label: t.nav.contact, href: "#contact" },
   ];
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: BG, color: TEXT, position: "relative" }}>
+    <div className="min-h-screen relative" style={{ background: BG, color: TEXT }}>
       <Analytics />
 
-      {/* NAV — fixed on top of slides */}
+      {/* NAV */}
       <nav
         className="fixed w-full z-50 transition-all duration-500"
         style={{
           height: NAV_HEIGHT,
-          background: `${BG}ee`,
+          background: scrolled ? `${BG}f2` : `${BG}cc`,
           borderBottom: `1px solid ${ACCENT1}33`,
           backdropFilter: "blur(14px)",
         }}
       >
         <Container>
           <div className="flex justify-between items-center h-[88px]">
-            <button onClick={() => goToSlide(0)} className="flex items-center" style={{ background: "none", border: "none", cursor: "pointer" }}>
+            <a href="#top" className="flex items-center">
               <NavLogo />
               <span className="font-tech-upper text-xl font-bold" style={{ color: TITLES }}>
                 {t.name}
               </span>
-            </button>
+            </a>
 
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-8">
-              {NAV_SLIDES.slice(0, 3).map((item) => (
-                <button
-                  key={item.idx}
-                  onClick={() => goToSlide(item.idx)}
+              {navItems.slice(0, 3).map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
                   className="nav-link font-tech-upper"
-                  style={{
-                    color: TITLES,
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: currentSlide === item.idx ? "700" : undefined,
-                    opacity: currentSlide === item.idx ? 1 : 0.7,
-                  }}
+                  style={{ color: TITLES }}
                 >
                   {item.label}
-                </button>
+                </a>
               ))}
               <LangToggle lang={lang} setLang={setLang} />
-              <button
-                onClick={() => goToSlide(3)}
+              <a
+                href="#contact"
                 className="btn-primary btn-hover"
-                style={{ padding: "12px 18px", fontSize: "0.8rem", border: "none", cursor: "pointer" }}
+                style={{ padding: "12px 18px", fontSize: "0.8rem" }}
               >
                 {t.nav.contact}
-              </button>
+              </a>
             </div>
 
             {/* Mobile: lang toggle + hamburger */}
@@ -559,7 +471,7 @@ export default function HomePage() {
               <button
                 onClick={() => setIsMenuOpen((v) => !v)}
                 aria-label="Open menu"
-                style={{ color: TITLES, background: "none", border: "none", cursor: "pointer" }}
+                style={{ color: TITLES }}
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -567,292 +479,378 @@ export default function HomePage() {
           </div>
         </Container>
 
-        {/* Mobile menu */}
+        {/* Mobile menu panel */}
         {isMenuOpen && (
           <div
             className="md:hidden"
-            style={{ background: `${BG}f6`, borderTop: `1px solid ${ACCENT1}33`, backdropFilter: "blur(14px)" }}
+            style={{
+              background: `${BG}f6`,
+              borderTop: `1px solid ${ACCENT1}33`,
+              backdropFilter: "blur(14px)",
+            }}
           >
             <Container>
               <div className="py-5 flex flex-col gap-2">
-                {NAV_SLIDES.map((item) => (
-                  <button
-                    key={item.idx}
-                    onClick={() => { goToSlide(item.idx); closeMenu(); }}
-                    className="font-tech-upper px-3 py-3 rounded-xl text-left"
+                {navItems.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMenu}
+                    className="font-tech-upper px-3 py-3 rounded-xl"
                     style={{
                       color: TITLES,
                       letterSpacing: "0.14em",
-                      background: currentSlide === item.idx ? `${ACCENT1}22` : `${ACCENT1}0c`,
+                      background: `${ACCENT1}0c`,
                       border: `1px solid ${ACCENT1}22`,
-                      cursor: "pointer",
-                      width: "100%",
                     }}
                   >
                     {item.label}
-                  </button>
+                  </a>
                 ))}
               </div>
             </Container>
           </div>
         )}
-
-        {/* Slide progress dots */}
-        <div className="slide-dots">
-          {NAV_SLIDES.map((item) => (
-            <button
-              key={item.idx}
-              onClick={() => goToSlide(item.idx)}
-              className="slide-dot"
-              style={{ opacity: currentSlide === item.idx ? 1 : 0.3, transform: currentSlide === item.idx ? "scale(1.4)" : "scale(1)" }}
-              aria-label={item.label}
-            />
-          ))}
-        </div>
       </nav>
 
-      {/* SLIDES TRACK */}
-      <div
-        ref={trackRef}
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          width: `${TOTAL_SLIDES * 100}vw`,
-          height: "100vh",
-          willChange: "transform",
-          transition: "transform 0.75s cubic-bezier(0.77, 0, 0.18, 1)",
-          transform: "translateX(0vw)",
-        }}
-      >
-
-        {/* ── SLIDE 1: HERO ───────────────────────────────────────────────── */}
-        <section
+      {/* HERO */}
+      <AnimatePresence mode="wait">
+        <motion.section
+          key={lang + "-hero"}
           id="top"
-          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflowY: "auto", paddingTop: NAV_HEIGHT }}
+          style={{ paddingTop: NAV_HEIGHT + 48 }}
+          className="pb-20"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center" }}>
-            <Container>
-              <div className="hero-layout">
-                {/* LEFT: text */}
-                <div className="hero-left">
-                  <div className="flex gap-2 mb-4 flex-wrap">
-                    {t.hero.badges.map((b) => (
-                      <span key={b} className="badge">{b}</span>
-                    ))}
-                  </div>
-                  <div className="font-tech-upper text-sm mb-3 opacity-70">{t.hero.kicker}</div>
-                  <h1 className="hero-title font-tech-upper font-bold">
-                    {t.hero.titleLine1}{" "}
-                    <span className="hero-title-line2">{t.hero.titleLine2}</span>
-                  </h1>
-                  <p className="font-tech mt-6 text-lg leading-relaxed">{t.hero.subtitle}</p>
-                  <div className="flex gap-4 mt-8 flex-wrap">
-                    <button onClick={() => goToSlide(3)} className="btn-primary btn-hover" style={{ border: "none", cursor: "pointer" }}>
-                      {t.hero.ctaPrimary}
-                      <ArrowRight size={18} />
-                    </button>
-                    <button onClick={() => goToSlide(1)} className="btn-secondary btn-hover" style={{ cursor: "pointer" }}>
-                      {t.hero.ctaSecondary}
-                    </button>
-                  </div>
+          <Container>
+            <div className="hero-layout">
+              {/* LEFT: text */}
+              <div className="hero-left">
+                <div className="flex gap-2 mb-4 flex-wrap">
+                  {t.hero.badges.map((b) => (
+                    <span key={b} className="badge">
+                      {b}
+                    </span>
+                  ))}
                 </div>
 
-                {/* RIGHT: charts grid */}
-                <div className="hero-right">
-                  <div className="charts-grid">
-                    {/* 1. Line */}
-                    <div className="chart-bare">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={lineData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
-                          <YAxis domain={[0, 50]} hide={true} />
-                          <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
-                          <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
-                          <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-                    {/* 2. Pie */}
-                    <div className="chart-bare chart-center">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie data={pieData} dataKey="value" cx="50%" cy="50%" innerRadius="32%" outerRadius="56%" paddingAngle={1.5} startAngle={90 + T * 12} endAngle={90 + T * 12 + 360} isAnimationActive={false}>
-                            {pieData.map((_, i) => (<Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />))}
-                          </Pie>
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    {/* 3. Bar */}
-                    <div className="chart-bare">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={barData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} barCategoryGap="18%">
-                          <Bar dataKey="v" radius={[3, 3, 0, 0]} isAnimationActive={false}>
-                            {barData.map((_, i) => (<Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />))}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                    {/* 4. Scatter */}
-                    <div className="chart-bare">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <ScatterChart margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
-                          <XAxis dataKey="x" type="number" domain={[0, 100]} hide={true} />
-                          <YAxis dataKey="y" yAxisId="a" type="number" domain={[0, 100]} hide={true} />
-                          <YAxis dataKey="y" yAxisId="b" orientation="right" type="number" domain={[0, 100]} hide={true} />
-                          <YAxis dataKey="y" yAxisId="c" orientation="right" type="number" domain={[0, 100]} hide={true} />
-                          <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
-                          <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} isAnimationActive={false} />
-                          <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} isAnimationActive={false} />
-                        </ScatterChart>
-                      </ResponsiveContainer>
-                    </div>
-                    {/* 5. ComposedChart */}
-                    <div className="chart-bare">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={composedData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
-                          <defs>
-                            <linearGradient id="compAreaGrad" x1="0" x2="0" y1="0" y2="1">
-                              <stop offset="0%" stopColor={ACCENT1} stopOpacity={0.55} />
-                              <stop offset="100%" stopColor={ACCENT1} stopOpacity={0.05} />
-                            </linearGradient>
-                          </defs>
-                          <XAxis dataKey="i" hide={true} />
-                          <YAxis domain={[0, 1300]} hide={true} />
-                          <Area type="monotone" dataKey="area" fill="url(#compAreaGrad)" stroke={ACCENT1} strokeWidth={1.5} dot={false} isAnimationActive={false} />
-                          <Bar dataKey="bar" barSize={8} fill={CHART_COLORS[1]} radius={[2, 2, 0, 0]} isAnimationActive={false} />
-                          <Line type="monotone" dataKey="line" stroke={ACCENT2} strokeWidth={2} dot={false} isAnimationActive={false} />
-                          <Scatter dataKey="dot" fill={CHART_COLORS[5]} isAnimationActive={false} />
-                        </ComposedChart>
-                      </ResponsiveContainer>
-                    </div>
-                    {/* 6. Radar */}
-                    <div className="chart-bare chart-center">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart data={radarData} outerRadius="54%" margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
-                          <PolarGrid stroke={`${ACCENT1}44`} />
-                          <PolarAngleAxis dataKey="subject" tick={false} />
-                          <Radar dataKey="v1" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.35} isAnimationActive={false} dot={false} />
-                          <Radar dataKey="v2" stroke={CHART_COLORS[4]} fill={CHART_COLORS[4]} fillOpacity={0.28} isAnimationActive={false} dot={false} />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
+                <div className="font-tech-upper text-sm mb-3 opacity-70">{t.hero.kicker}</div>
+
+                <h1 className="hero-title font-tech-upper font-bold">
+                  {t.hero.titleLine1}{" "}
+                  <span className="hero-title-line2">{t.hero.titleLine2}</span>
+                </h1>
+
+                <p className="font-tech mt-6 text-lg leading-relaxed">{t.hero.subtitle}</p>
+
+                <div className="flex gap-4 mt-8 flex-wrap">
+                  <a href="#contact" className="btn-primary btn-hover">
+                    {t.hero.ctaPrimary}
+                    <ArrowRight size={18} />
+                  </a>
+                  <a href="#services" className="btn-secondary btn-hover">
+                    {t.hero.ctaSecondary}
+                  </a>
                 </div>
               </div>
-            </Container>
-          </div>
-        </section>
 
-        {/* ── SLIDE 2: SERVICES ───────────────────────────────────────────── */}
-        <section
+              {/* RIGHT: 4 charts grid */}
+              <div className="hero-right">
+                <div className="charts-grid">
+
+                  {/* 1. Line — 3 trending sales curves */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={lineData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+                        <YAxis domain={[0, 50]} hide={true} />
+                        <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+                        <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+                        <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 2. Pie — always 100% filled, slowly rotates */}
+                  <div className="chart-bare chart-center">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieData} dataKey="value"
+                          cx="50%" cy="50%"
+                          innerRadius="32%" outerRadius="56%"
+                          paddingAngle={1.5}
+                          startAngle={90 + T * 12}
+                          endAngle={90 + T * 12 + 360}
+                          isAnimationActive={false}
+                        >
+                          {pieData.map((_, i) => (
+                            <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 3. Bar */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={barData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} barCategoryGap="18%">
+                        <Bar dataKey="v" radius={[3, 3, 0, 0]} isAnimationActive={false}>
+                          {barData.map((_, i) => (
+                            <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 4. Scatter — 3 clusters with wide spread */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ScatterChart margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
+                        <XAxis dataKey="x" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="a" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="b" orientation="right" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="c" orientation="right" type="number" domain={[0, 100]} hide={true} />
+                        <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
+                        <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} isAnimationActive={false} />
+                        <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} isAnimationActive={false} />
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 5. ComposedChart — Area + Bar + Line + Scatter */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={composedData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+                        <defs>
+                          <linearGradient id="compAreaGrad" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stopColor={ACCENT1} stopOpacity={0.55} />
+                            <stop offset="100%" stopColor={ACCENT1} stopOpacity={0.05} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="i" hide={true} />
+                        <YAxis domain={[0, 1300]} hide={true} />
+                        <Area
+                          type="monotone"
+                          dataKey="area"
+                          fill="url(#compAreaGrad)"
+                          stroke={ACCENT1}
+                          strokeWidth={1.5}
+                          dot={false}
+                          isAnimationActive={false}
+                        />
+                        <Bar dataKey="bar" barSize={8} fill={CHART_COLORS[1]} radius={[2, 2, 0, 0]} isAnimationActive={false} />
+                        <Line type="monotone" dataKey="line" stroke={ACCENT2} strokeWidth={2} dot={false} isAnimationActive={false} />
+                        <Scatter dataKey="dot" fill={CHART_COLORS[5]} isAnimationActive={false} />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 6. Radar — 5-axis specified domain */}
+                  <div className="chart-bare chart-center">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart data={radarData} outerRadius="54%" margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
+                        <PolarGrid stroke={`${ACCENT1}44`} />
+                        <PolarAngleAxis dataKey="subject" tick={false} />
+                        <Radar dataKey="v1" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.35} isAnimationActive={false} dot={false} />
+                        <Radar dataKey="v2" stroke={CHART_COLORS[4]} fill={CHART_COLORS[4]} fillOpacity={0.28} isAnimationActive={false} dot={false} />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </Container>
+        </motion.section>
+      </AnimatePresence>
+
+      {/* SERVICES */}
+      <AnimatePresence mode="wait">
+        <motion.section
+          key={lang + "-services"}
           id="services"
-          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflowY: "auto", paddingTop: NAV_HEIGHT }}
+          className="py-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22 }}
         >
-          <div style={{ minHeight: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", padding: "40px 0" }}>
-            <Container>
-              <h2 className="section-title">{t.services.title}</h2>
-              <div className="grid md:grid-cols-2 gap-6 mt-10">
-                {t.services.items.map((s) => (
-                  <motion.div
-                    key={s.key}
-                    whileHover={{ y: -6 }}
-                    className="service-card card-hover"
-                  >
-                    <div className="icon">{SERVICE_ICONS[s.key]}</div>
-                    <div className="min-w-0">
-                      <div className="service-title">{s.title}</div>
-                      <p className="service-text">{s.desc}</p>
-                      {s.cta?.url && (
-                        <div className="mt-4">
-                          <div className="preview-wrapper">
-                            <a
-                              href={s.cta.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn-secondary btn-hover preview-trigger"
-                              style={{ padding: "10px 14px", fontSize: "0.78rem" }}
-                            >
-                              {s.cta.label}
-                              <ArrowRight size={16} />
-                            </a>
-                            <div className="preview-tooltip">
-                              <img src="/Capture.png" alt="Aperçu du site" className="preview-img" />
-                              <div className="preview-label">economytimelapse.com</div>
-                            </div>
+          <Container>
+            <motion.h2
+              className="section-title"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {t.services.title}
+            </motion.h2>
+
+            <div className="grid md:grid-cols-2 gap-6 mt-10">
+              {t.services.items.map((s, idx) => (
+                <motion.div
+                  key={s.key}
+                  initial={{ opacity: 0, y: 32 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.5, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ y: -6 }}
+                  className="service-card card-hover"
+                >
+                  <div className="icon">{SERVICE_ICONS[s.key]}</div>
+                  <div className="min-w-0">
+                    <div className="service-title">{s.title}</div>
+                    <p className="service-text">{s.desc}</p>
+
+                    {s.cta?.url && (
+                      <div className="mt-4">
+                        <div className="preview-wrapper">
+                          <a
+                            href={s.cta.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-secondary btn-hover preview-trigger"
+                            style={{ padding: "10px 14px", fontSize: "0.78rem" }}
+                          >
+                            {s.cta.label}
+                            <ArrowRight size={16} />
+                          </a>
+                          <div className="preview-tooltip">
+                            <img
+                              src="/Capture.png"
+                              alt="Aperçu du site"
+                              className="preview-img"
+                            />
+                            <div className="preview-label">economytimelapse.com</div>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </Container>
-          </div>
-        </section>
-
-        {/* ── SLIDE 3: STACK ──────────────────────────────────────────────── */}
-        <section
-          id="stack"
-          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflowY: "auto", paddingTop: NAV_HEIGHT }}
-        >
-          <div style={{ minHeight: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", padding: "40px 0" }}>
-            <Container>
-              <h2 className="section-title">{t.stack.title}</h2>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-10">
-                {t.stack.items.map((item) => (
-                  <div key={item.name} className="flip-card">
-                    <div className="flip-inner">
-                      <div className="flip-front">{item.name}</div>
-                      <div className="flip-back">
-                        <span className="flip-back-name">{item.name}</span>
-                        <p className="flip-back-desc">{item.desc}</p>
                       </div>
-                    </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            </Container>
-          </div>
-        </section>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </motion.section>
+      </AnimatePresence>
 
-        {/* ── SLIDE 4: CONTACT ────────────────────────────────────────────── */}
-        <section
-          id="contact"
-          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflowY: "auto", paddingTop: NAV_HEIGHT }}
-        >
-          <div style={{ minHeight: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 0" }}>
-            <Container>
-              <div className="contact-box card-hover">
-                <h2 className="section-title">{t.contact.title}</h2>
-                <p className="font-tech mt-4">{t.contact.subtitle}</p>
-                <div className="flex gap-4 mt-6 flex-wrap">
-                  <a href="https://calendly.com/lucas-massoni-contact" className="btn-primary btn-hover" target="_blank" rel="noopener noreferrer">
-                    <Calendar size={18} />
-                    {t.contact.calendly}
-                  </a>
-                  <a href="https://www.linkedin.com/in/lucas-massoni/" className="btn-secondary btn-hover" target="_blank" rel="noopener noreferrer">
-                    <Linkedin size={18} />
-                    {t.contact.linkedin}
-                  </a>
+      {/* STACK */}
+      <motion.section
+        id="stack"
+        className="py-20"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.4 }}
+      >
+        <Container>
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {t.stack.title}
+          </motion.h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-10">
+            {t.stack.items.map((item, idx) => (
+              <motion.div
+                key={item.name}
+                className="flip-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.45, delay: idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="flip-inner">
+                  <div className="flip-front">
+                    {item.name}
+                  </div>
+                  <div className="flip-back">
+                    <span className="flip-back-name">{item.name}</span>
+                    <p className="flip-back-desc">{item.desc}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="font-tech text-sm opacity-50 text-center mt-8">
-                {t.footer.replace("{year}", new Date().getFullYear())}
-              </div>
-            </Container>
+              </motion.div>
+            ))}
           </div>
-        </section>
+        </Container>
+      </motion.section>
 
-      </div>{/* end slides track */}
+      {/* CONTACT */}
+      <AnimatePresence mode="wait">
+        <motion.section
+          key={lang + "-contact"}
+          id="contact"
+          className="py-24"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22 }}
+        >
+          <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
+            <div className="contact-box card-hover">
+              <h2 className="section-title">{t.contact.title}</h2>
+              <p className="font-tech mt-4">{t.contact.subtitle}</p>
+
+              <div className="flex gap-4 mt-6 flex-wrap">
+                <a
+                  href="https://calendly.com/lucas-massoni-contact"
+                  className="btn-primary btn-hover"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Calendar size={18} />
+                  {t.contact.calendly}
+                </a>
+
+                <a
+                  href="https://www.linkedin.com/in/lucas-massoni/"
+                  className="btn-secondary btn-hover"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Linkedin size={18} />
+                  {t.contact.linkedin}
+                </a>
+              </div>
+            </div>
+            </motion.div>
+          </Container>
+        </motion.section>
+      </AnimatePresence>
+
+      {/* FOOTER */}
+      <footer className="py-8 border-t text-center" style={{ borderColor: `${ACCENT1}22` }}>
+        <div className="font-tech text-sm opacity-70">
+          {t.footer.replace("{year}", new Date().getFullYear())}
+        </div>
+      </footer>
 
       {/* STYLES */}
       <style jsx global>{`
+        html {
+          scroll-behavior: smooth;
+        }
 
         /* Hero 2-col layout */
         .hero-layout {
           display: flex;
           align-items: stretch;
           gap: 80px;
-          width: 100%;
+          min-height: 380px;
         }
 
         .hero-left {
@@ -876,7 +874,6 @@ export default function HomePage() {
           grid-template-rows: 1fr 1fr;
           gap: 10px;
           flex: 1;
-          height: calc(100vh - ${NAV_HEIGHT}px - 80px);
         }
 
         .chart-bare {
@@ -896,33 +893,9 @@ export default function HomePage() {
           height: 100%;
         }
 
-        /* Slide dots */
-        .slide-dots {
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: 8px;
-          padding-bottom: 6px;
-        }
-        .slide-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: ${ACCENT1};
-          border: none;
-          cursor: pointer;
-          transition: transform 0.22s ease, opacity 0.22s ease;
-          padding: 0;
-        }
-
         @media (max-width: 960px) {
           .hero-right {
             display: none;
-          }
-          .charts-grid {
-            height: auto;
           }
         }
 
