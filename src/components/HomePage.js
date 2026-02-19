@@ -632,7 +632,6 @@ export default function HomePage() {
                             <stop offset="100%" stopColor={ACCENT1} stopOpacity={0.05} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke={`${ACCENT1}22`} />
                         <XAxis dataKey="i" hide={true} />
                         <YAxis domain={[0, 1300]} hide={true} />
                         <Area
