@@ -218,10 +218,19 @@ export default function HomePage() {
 
   useEffect(() => {
     let last = null;
+    let sinceTick = 0;
+    const TICK = 1000 / 30; // cap at 30fps to avoid setState storm
     const step = (ts) => {
-      if (last !== null) tRef.current += (ts - last) * 0.001; // seconds
+      if (last !== null) {
+        const dt = ts - last;
+        tRef.current += dt * 0.001; // seconds
+        sinceTick += dt;
+        if (sinceTick >= TICK) {
+          sinceTick = 0;
+          setChartFrame(f => f + 1); // trigger re-render at ~30fps
+        }
+      }
       last = ts;
-      setChartFrame(f => f + 1); // trigger re-render
       rafRef.current = requestAnimationFrame(step);
     };
     rafRef.current = requestAnimationFrame(step);
@@ -524,10 +533,11 @@ export default function HomePage() {
                   <div className="chart-bare">
                     <ResponsiveContainer width="100%" height="100%">
                       <ScatterChart margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
-                        <XAxis dataKey="x" type="number" domain={[0, 100]} hide />
-                        <YAxis dataKey="y" type="number" domain={[0, 100]} hide />
-                        <Scatter data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
-                        <Scatter data={scatterData2} fill={CHART_COLORS[4]} isAnimationActive={false} />
+                        <XAxis dataKey="x" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="left" type="number" domain={[0, 100]} hide={true} />
+                        <YAxis dataKey="y" yAxisId="right" orientation="right" type="number" domain={[0, 100]} hide={true} />
+                        <Scatter yAxisId="left" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
+                        <Scatter yAxisId="right" data={scatterData2} fill={CHART_COLORS[4]} isAnimationActive={false} />
                       </ScatterChart>
                     </ResponsiveContainer>
                   </div>
