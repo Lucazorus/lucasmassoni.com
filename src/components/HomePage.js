@@ -528,9 +528,9 @@ export default function HomePage() {
                   <div className="chart-bare">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={areaData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} stackOffset="expand">
-                        <Area type="monotone" dataKey="a" stackId="1" stroke="none" fill={CHART_COLORS[0]} isAnimationActive={false} />
-                        <Area type="monotone" dataKey="b" stackId="1" stroke="none" fill={CHART_COLORS[3]} isAnimationActive={false} />
-                        <Area type="monotone" dataKey="c" stackId="1" stroke="none" fill={CHART_COLORS[4]} isAnimationActive={false} />
+                        <Area type="monotoneX" dataKey="a" stackId="1" stroke="none" fill={CHART_COLORS[0]} isAnimationActive={false} />
+                        <Area type="monotoneX" dataKey="b" stackId="1" stroke="none" fill={CHART_COLORS[3]} isAnimationActive={false} />
+                        <Area type="monotoneX" dataKey="c" stackId="1" stroke="none" fill={CHART_COLORS[4]} isAnimationActive={false} />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
@@ -553,7 +553,7 @@ export default function HomePage() {
                     <ResponsiveContainer width="100%" height="100%">
                       <RadarChart data={radarData} margin={{ top: 6, right: 12, left: 12, bottom: 6 }}>
                         <PolarGrid stroke={`${ACCENT1}44`} />
-                        <PolarAngleAxis dataKey="subject" tick={{ fill: ACCENT1, fontSize: 10, fontFamily: "var(--font-share-tech-mono)" }} />
+                        <PolarAngleAxis dataKey="subject" tick={false} />
                         <Radar dataKey="v1" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.35} isAnimationActive={false} dot={false} />
                         <Radar dataKey="v2" stroke={CHART_COLORS[4]} fill={CHART_COLORS[4]} fillOpacity={0.28} isAnimationActive={false} dot={false} />
                       </RadarChart>
