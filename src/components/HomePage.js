@@ -1,6 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import {
+  LineChart, Line, ResponsiveContainer,
+  PieChart, Pie, Cell,
+  BarChart, Bar,
+  AreaChart, Area,
+  ScatterChart, Scatter, XAxis, YAxis,
+  RadarChart, Radar, PolarGrid, PolarAngleAxis,
+} from "recharts";
 import {
   Menu,
   X,
@@ -186,15 +194,99 @@ export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [lang, setLang] = useState("fr");
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const t = translations[lang];
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24);
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docH > 0 ? Math.min(window.scrollY / docH, 1) : 0);
+    };
     window.addEventListener("scroll", onScroll);
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const CHART_COLORS = ["#6f9caf", "#70aaaf", "#6fafac", "#70af84", "#ffcf56", "#a8c5b8"];
+
+  // ---- rAF-driven time for buttery smooth animation (like D3 project) ----
+  const rafRef = useRef(null);
+  const tRef   = useRef(0);
+  const [chartFrame, setChartFrame] = useState(0);
+
+  useEffect(() => {
+    let last = null;
+    const step = (ts) => {
+      if (last !== null) tRef.current += (ts - last) * 0.001; // seconds
+      last = ts;
+      setChartFrame(f => f + 1); // trigger re-render
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  const T = tRef.current;
+  const sin  = (freq, phase = 0) => Math.sin(T * freq + phase);
+  const sin01 = (freq, phase = 0) => (sin(freq, phase) + 1) / 2;
+
+  // 1. Line — 3 trending-up sales curves with slight natural wobble
+  const lineData = Array.from({ length: 12 }, (_, i) => {
+    const x = i / 11; // 0 → 1
+    return {
+      a: 10 + 75 * x + 6  * Math.sin(T * 0.18 + i * 0.4),
+      b: 5  + 55 * x + 5  * Math.sin(T * 0.22 + i * 0.5 + 1.2),
+      c: 2  + 35 * x + 4  * Math.sin(T * 0.15 + i * 0.35 + 2.5),
+    };
+  });
+
+  // 2. Pie — 4 segments always summing to 100 (true full pie)
+  const pieRaw = [
+    20 + 14 * sin01(0.5,  0.0),
+    20 + 14 * sin01(0.7,  1.8),
+    20 + 14 * sin01(0.9,  3.5),
+    20 + 14 * sin01(0.4,  5.2),
+  ];
+  const pieSum = pieRaw.reduce((a, b) => a + b, 0);
+  const pieData = pieRaw.map((v, i) => ({ name: String(i), value: (v / pieSum) * 100 }));
+
+  // 3. Bars — 8 bars
+  const barData = Array.from({ length: 8 }, (_, i) => ({
+    v: 15 + 75 * sin01(0.6 + i * 0.12, i * 0.7),
+  }));
+
+  // 4. Percent Area Chart — 3 stacked areas always summing to 100%
+  const areaData = Array.from({ length: 10 }, (_, i) => {
+    const r0 = 25 + 18 * sin01(0.4 + i * 0.05, i * 0.6);
+    const r1 = 30 + 16 * sin01(0.5 + i * 0.06, i * 0.7 + 1.5);
+    const r2 = 25 + 14 * sin01(0.35 + i * 0.04, i * 0.5 + 3.0);
+    const total = r0 + r1 + r2;
+    return {
+      a: (r0 / total) * 100,
+      b: (r1 / total) * 100,
+      c: (r2 / total) * 100,
+    };
+  });
+
+  // 5. Scatter — two clusters drifting around slowly
+  const scatterData1 = Array.from({ length: 10 }, (_, i) => ({
+    x: 20 + 30 * sin01(0.18 + i * 0.08, i * 0.9),
+    y: 15 + 40 * sin01(0.22 + i * 0.07, i * 0.8 + 1.1),
+  }));
+  const scatterData2 = Array.from({ length: 10 }, (_, i) => ({
+    x: 55 + 30 * sin01(0.15 + i * 0.09, i * 0.85 + 2.0),
+    y: 50 + 35 * sin01(0.2  + i * 0.06, i * 0.75 + 0.5),
+  }));
+
+  // 6. Radar — 5 axes, values oscillate slowly
+  const radarSubjects = ["A", "B", "C", "D", "E"];
+  const radarData = radarSubjects.map((subject, i) => ({
+    subject,
+    v1: 30 + 60 * sin01(0.25 + i * 0.11, i * 1.1),
+    v2: 25 + 55 * sin01(0.3  + i * 0.09, i * 1.0 + 2.0),
+  }));
 
   // Force line break for the second title word on mobile
   useEffect(() => {
@@ -329,40 +421,130 @@ export default function HomePage() {
         <motion.section
           key={lang + "-hero"}
           id="top"
-          style={{ paddingTop: NAV_HEIGHT }}
-          className="pt-14 pb-20"
+          style={{ paddingTop: NAV_HEIGHT + 48 }}
+          className="pb-20"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         >
           <Container>
-            <div className="max-w-3xl">
-              <div className="flex gap-2 mb-4 flex-wrap">
-                {t.hero.badges.map((b) => (
-                  <span key={b} className="badge">
-                    {b}
-                  </span>
-                ))}
+            <div className="hero-layout">
+              {/* LEFT: text */}
+              <div className="hero-left">
+                <div className="flex gap-2 mb-4 flex-wrap">
+                  {t.hero.badges.map((b) => (
+                    <span key={b} className="badge">
+                      {b}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="font-tech-upper text-sm mb-3 opacity-70">{t.hero.kicker}</div>
+
+                <h1 className="hero-title font-tech-upper font-bold">
+                  {t.hero.titleLine1}{" "}
+                  <span className="hero-title-line2">{t.hero.titleLine2}</span>
+                </h1>
+
+                <p className="font-tech mt-6 text-lg leading-relaxed">{t.hero.subtitle}</p>
+
+                <div className="flex gap-4 mt-8 flex-wrap">
+                  <a href="#contact" className="btn-primary btn-hover">
+                    {t.hero.ctaPrimary}
+                    <ArrowRight size={18} />
+                  </a>
+                  <a href="#services" className="btn-secondary btn-hover">
+                    {t.hero.ctaSecondary}
+                  </a>
+                </div>
               </div>
 
-              <div className="font-tech-upper text-sm mb-3 opacity-70">{t.hero.kicker}</div>
+              {/* RIGHT: 4 charts grid */}
+              <div className="hero-right">
+                <div className="charts-grid">
 
-              <h1 className="hero-title font-tech-upper font-bold">
-                {t.hero.titleLine1}{" "}
-                <span className="hero-title-line2">{t.hero.titleLine2}</span>
-              </h1>
+                  {/* 1. Line — 3 trending sales curves */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={lineData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+                        <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+                        <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+                        <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
 
-              <p className="font-tech mt-6 text-lg leading-relaxed">{t.hero.subtitle}</p>
+                  {/* 2. Pie — always 100% filled, slowly rotates */}
+                  <div className="chart-bare chart-center">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieData} dataKey="value"
+                          cx="50%" cy="50%"
+                          innerRadius="30%" outerRadius="48%"
+                          paddingAngle={1.5}
+                          startAngle={90 + T * 12}
+                          endAngle={90 + T * 12 + 360}
+                          isAnimationActive={false}
+                        >
+                          {pieData.map((_, i) => (
+                            <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
 
-              <div className="flex gap-4 mt-8 flex-wrap">
-                <a href="#contact" className="btn-primary btn-hover">
-                  {t.hero.ctaPrimary}
-                  <ArrowRight size={18} />
-                </a>
-                <a href="#services" className="btn-secondary btn-hover">
-                  {t.hero.ctaSecondary}
-                </a>
+                  {/* 3. Bar */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={barData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} barCategoryGap="18%">
+                        <Bar dataKey="v" radius={[3, 3, 0, 0]} isAnimationActive={false}>
+                          {barData.map((_, i) => (
+                            <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 4. Percent Area Chart — 3 stacked areas = 100% */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={areaData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} stackOffset="expand">
+                        <Area type="monotone" dataKey="a" stackId="1" stroke="none" fill={CHART_COLORS[0]} isAnimationActive={false} />
+                        <Area type="monotone" dataKey="b" stackId="1" stroke="none" fill={CHART_COLORS[3]} isAnimationActive={false} />
+                        <Area type="monotone" dataKey="c" stackId="1" stroke="none" fill={CHART_COLORS[4]} isAnimationActive={false} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 5. Scatter — two drifting clusters */}
+                  <div className="chart-bare">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ScatterChart margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+                        <XAxis dataKey="x" type="number" domain={[0, 100]} hide />
+                        <YAxis dataKey="y" type="number" domain={[0, 100]} hide />
+                        <Scatter data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
+                        <Scatter data={scatterData2} fill={CHART_COLORS[4]} isAnimationActive={false} />
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* 6. Radar — 5-axis specified domain */}
+                  <div className="chart-bare chart-center">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart data={radarData} margin={{ top: 6, right: 12, left: 12, bottom: 6 }}>
+                        <PolarGrid stroke={`${ACCENT1}44`} />
+                        <PolarAngleAxis dataKey="subject" tick={{ fill: ACCENT1, fontSize: 10, fontFamily: "var(--font-share-tech-mono)" }} />
+                        <Radar dataKey="v1" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.35} isAnimationActive={false} dot={false} />
+                        <Radar dataKey="v2" stroke={CHART_COLORS[4]} fill={CHART_COLORS[4]} fillOpacity={0.28} isAnimationActive={false} dot={false} />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                </div>
               </div>
             </div>
           </Container>
@@ -503,6 +685,55 @@ export default function HomePage() {
       <style jsx global>{`
         html {
           scroll-behavior: smooth;
+        }
+
+        /* Hero 2-col layout */
+        .hero-layout {
+          display: flex;
+          align-items: stretch;
+          gap: 80px;
+          min-height: 380px;
+        }
+
+        .hero-left {
+          flex: 1;
+          min-width: 0;
+          max-width: 560px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .hero-right {
+          flex: 0 0 400px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .charts-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: repeat(3, 1fr);
+          gap: 10px;
+          flex: 1;
+        }
+
+        .chart-bare {
+          background: transparent;
+          overflow: hidden;
+          min-height: 0;
+        }
+
+        .chart-center {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        @media (max-width: 960px) {
+          .hero-right {
+            display: none;
+          }
         }
 
         /* Titles */
