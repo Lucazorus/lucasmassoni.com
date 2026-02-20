@@ -586,22 +586,23 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Slide indicator dots (right side of nav) */}
-        <div className="slide-dots">
-          {NAV_SLIDES.map((item) => (
-            <button
-              key={item.idx}
-              onClick={() => goToSlide(item.idx)}
-              className="slide-dot"
-              style={{
-                opacity: currentSlide === item.idx ? 1 : 0.3,
-                transform: currentSlide === item.idx ? "scale(1.5)" : "scale(1)",
-              }}
-              aria-label={item.label}
-            />
-          ))}
-        </div>
       </nav>
+
+      {/* Slide indicator dots — fixés à gauche, centrés verticalement */}
+      <div className="slide-dots">
+        {NAV_SLIDES.map((item) => (
+          <button
+            key={item.idx}
+            onClick={() => goToSlide(item.idx)}
+            className="slide-dot"
+            style={{
+              opacity: currentSlide === item.idx ? 1 : 0.3,
+              transform: currentSlide === item.idx ? "scale(1.5)" : "scale(1)",
+            }}
+            aria-label={item.label}
+          />
+        ))}
+      </div>
 
       {/* SLIDES TRACK — vertical */}
       <div
@@ -831,8 +832,7 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center" }}>
-            <Container>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", justifyContent: "center", padding: "24px 40px" }}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={lang + "-stack"}
@@ -840,9 +840,10 @@ export default function HomePage() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.22 }}
+                  style={{ height: "100%", display: "flex", flexDirection: "column" }}
                 >
-                  <h2 className="section-title">{t.stack.title}</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-10">
+                  <h2 className="section-title mb-8">{t.stack.title}</h2>
+                  <div className="stack-grid">
                     {t.stack.items.map((item, idx) => (
                       <motion.div
                         key={item.name}
@@ -865,7 +866,6 @@ export default function HomePage() {
                   </div>
                 </motion.div>
               </AnimatePresence>
-            </Container>
           </div>
         </section>
 
@@ -1153,9 +1153,28 @@ export default function HomePage() {
           border-top: 1px solid ${ACCENT1}22;
         }
 
+        /* Stack grid */
+        .stack-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          grid-template-rows: repeat(2, 1fr);
+          gap: 16px;
+          flex: 1;
+        }
+
+        @media (max-width: 768px) {
+          .stack-grid {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 12px;
+            height: auto;
+          }
+        }
+
         /* Flip cards */
         .flip-card {
-          height: 100px;
+          height: 100%;
+          min-height: 120px;
           perspective: 900px;
         }
 
@@ -1192,7 +1211,7 @@ export default function HomePage() {
           letter-spacing: 0.12em;
           color: ${TITLES};
           text-align: center;
-          font-size: 0.85rem;
+          font-size: 1.1rem;
         }
 
         .flip-back {
@@ -1205,16 +1224,16 @@ export default function HomePage() {
 
         .flip-back-name {
           font-family: var(--font-share-tech-mono);
-          font-size: 0.7rem;
+          font-size: 0.85rem;
           font-weight: 700;
           letter-spacing: 0.14em;
           color: ${BG};
-          opacity: 0.8;
+          opacity: 0.9;
           text-transform: uppercase;
         }
 
         .flip-back-desc {
-          font-size: 0.68rem;
+          font-size: 0.8rem;
           line-height: 1.5;
           color: ${BG};
           opacity: 0.95;
@@ -1301,16 +1320,17 @@ export default function HomePage() {
           width: 100%;
         }
 
-        /* Slide dots */
+        /* Slide dots — vertical, côté gauche de l'écran */
         .slide-dots {
-          position: absolute;
-          right: 32px;
+          position: fixed;
+          left: 24px;
           top: 50%;
           transform: translateY(-50%);
           display: flex;
-          flex-direction: row;
-          gap: 8px;
+          flex-direction: column;
+          gap: 10px;
           align-items: center;
+          z-index: 100;
         }
 
         .slide-dot {
@@ -1333,7 +1353,7 @@ export default function HomePage() {
             padding: 14px 18px;
           }
           .slide-dots {
-            right: 16px;
+            left: 12px;
           }
         }
       `}</style>
