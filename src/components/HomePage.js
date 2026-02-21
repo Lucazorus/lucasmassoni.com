@@ -832,7 +832,7 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", justifyContent: "center", overflowY: "auto" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", overflowY: "auto" }}>
             <Container>
               <AnimatePresence mode="wait">
                 <motion.div
