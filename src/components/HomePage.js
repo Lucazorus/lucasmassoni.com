@@ -767,7 +767,7 @@ export default function HomePage() {
           id="services"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", overflowY: "auto" }}>
             <Container>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -832,7 +832,7 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", justifyContent: "center", padding: "24px 40px" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", justifyContent: "center", padding: "24px 40px", overflowY: "auto" }}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={lang + "-stack"}
@@ -1162,15 +1162,6 @@ export default function HomePage() {
           flex: 1;
         }
 
-        @media (max-width: 768px) {
-          .stack-grid {
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 12px;
-            height: auto;
-          }
-        }
-
         /* Flip cards */
         .flip-card {
           height: 100%;
@@ -1344,16 +1335,82 @@ export default function HomePage() {
           transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
-        @media (max-width: 640px) {
-          .contact-box {
-            padding: 28px;
+        /* ── MOBILE ─────────────────────────────────────────────────────────── */
+        @media (max-width: 768px) {
+
+          /* Hero */
+          .hero-layout {
+            flex-direction: column;
+            gap: 24px;
+            justify-content: center;
           }
+          .hero-left {
+            max-width: 100%;
+          }
+          .hero-title {
+            font-size: clamp(1.5rem, 7vw, 2rem);
+          }
+          .hero-left p {
+            font-size: 0.95rem;
+          }
+          .hero-left .flex.gap-4 {
+            gap: 10px;
+          }
+
+          /* Services */
+          .services-inner {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          .section-title {
+            font-size: clamp(1.3rem, 5vw, 1.7rem);
+          }
+          .service-card {
+            padding: 16px;
+          }
+          .service-text {
+            font-size: 0.82rem;
+          }
+
+          /* Stack */
+          .stack-grid {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 10px;
+          }
+          .flip-card {
+            min-height: 70px;
+          }
+          .flip-front {
+            font-size: 0.8rem;
+          }
+          .flip-back-name {
+            font-size: 0.7rem;
+          }
+          .flip-back-desc {
+            font-size: 0.62rem;
+          }
+
+          /* Contact */
+          .contact-box {
+            padding: 24px 20px;
+          }
+
+          /* Buttons */
           .btn-primary,
           .btn-secondary {
-            padding: 14px 18px;
+            padding: 12px 16px;
+            font-size: 0.78rem;
           }
+
+          /* Dots */
           .slide-dots {
-            left: 12px;
+            left: 10px;
+            gap: 8px;
+          }
+          .slide-dot {
+            width: 6px;
+            height: 6px;
           }
         }
       `}</style>
