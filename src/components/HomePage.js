@@ -832,7 +832,7 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", overflowY: "auto" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", overflowY: "auto" }}>
             <Container>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -841,7 +841,6 @@ export default function HomePage() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.22 }}
-                  style={{ display: "flex", flexDirection: "column" }}
                 >
                   <h2 className="section-title mb-6">{t.stack.title}</h2>
                   <div className="stack-grid">
@@ -1159,14 +1158,14 @@ export default function HomePage() {
         .stack-grid {
           display: grid;
           grid-template-columns: repeat(5, 1fr);
-          grid-template-rows: repeat(2, 120px);
+          grid-template-rows: repeat(2, 160px);
           gap: 16px;
           width: 100%;
         }
 
         /* Flip cards */
         .flip-card {
-          height: 120px;
+          height: 160px;
           perspective: 900px;
         }
 
