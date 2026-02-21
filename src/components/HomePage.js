@@ -832,7 +832,8 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div className="stack-slide-inner">
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", overflowY: "auto" }}>
+            <Container>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={lang + "-stack"}
@@ -865,6 +866,7 @@ export default function HomePage() {
                   </div>
                 </motion.div>
               </AnimatePresence>
+            </Container>
           </div>
         </section>
 
@@ -1166,7 +1168,7 @@ export default function HomePage() {
         /* Stack grid */
         .stack-grid {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
+          grid-template-columns: repeat(5, minmax(180px, 1fr));
           grid-template-rows: repeat(2, 160px);
           gap: 16px;
           width: 100%;
