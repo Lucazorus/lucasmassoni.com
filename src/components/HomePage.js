@@ -778,7 +778,7 @@ export default function HomePage() {
                   transition={{ duration: 0.22 }}
                 >
                   <h2 className="section-title">{t.services.title}</h2>
-                  <div className="grid md:grid-cols-2 gap-6 mt-10">
+                  <div className="grid md:grid-cols-2 gap-3 md:gap-6 mt-4 md:mt-10">
                     {t.services.items.map((s, idx) => (
                       <motion.div
                         key={s.key}
@@ -832,7 +832,7 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", justifyContent: "center", padding: "24px 40px", overflowY: "auto" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", justifyContent: "center", overflowY: "auto", padding: "0 40px" }}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={lang + "-stack"}
@@ -840,9 +840,9 @@ export default function HomePage() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.22 }}
-                  style={{ height: "100%", display: "flex", flexDirection: "column" }}
+                  style={{ display: "flex", flexDirection: "column" }}
                 >
-                  <h2 className="section-title mb-8">{t.stack.title}</h2>
+                  <h2 className="section-title mb-6">{t.stack.title}</h2>
                   <div className="stack-grid">
                     {t.stack.items.map((item, idx) => (
                       <motion.div
@@ -1157,15 +1157,14 @@ export default function HomePage() {
         .stack-grid {
           display: grid;
           grid-template-columns: repeat(5, 1fr);
-          grid-template-rows: repeat(2, 1fr);
+          grid-template-rows: repeat(2, 120px);
           gap: 16px;
-          flex: 1;
+          width: 100%;
         }
 
         /* Flip cards */
         .flip-card {
-          height: 100%;
-          min-height: 120px;
+          height: 120px;
           perspective: 900px;
         }
 
@@ -1341,66 +1340,76 @@ export default function HomePage() {
           /* Hero */
           .hero-layout {
             flex-direction: column;
-            gap: 24px;
+            gap: 12px;
             justify-content: center;
           }
           .hero-left {
             max-width: 100%;
           }
           .hero-title {
-            font-size: clamp(1.5rem, 7vw, 2rem);
+            font-size: clamp(1.3rem, 6vw, 1.7rem);
           }
           .hero-left p {
-            font-size: 0.95rem;
-          }
-          .hero-left .flex.gap-4 {
-            gap: 10px;
+            font-size: 0.82rem;
+            margin-top: 8px !important;
           }
 
-          /* Services */
-          .services-inner {
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-          }
+          /* Section titles */
           .section-title {
-            font-size: clamp(1.3rem, 5vw, 1.7rem);
+            font-size: clamp(1.1rem, 5vw, 1.4rem);
+            margin-bottom: 8px !important;
           }
+
+          /* Services — 4 cards ultra compactes */
           .service-card {
-            padding: 16px;
+            padding: 10px 12px;
+            gap: 10px;
+            border-radius: 12px;
+          }
+          .service-title {
+            font-size: 0.74rem;
           }
           .service-text {
-            font-size: 0.82rem;
+            font-size: 0.7rem;
+            line-height: 1.35;
+            margin-top: 2px;
+          }
+          .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            flex: 0 0 32px;
           }
 
           /* Stack */
           .stack-grid {
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(5, 1fr);
-            gap: 10px;
+            gap: 8px;
           }
           .flip-card {
-            min-height: 70px;
+            min-height: 55px;
           }
           .flip-front {
-            font-size: 0.8rem;
+            font-size: 0.72rem;
           }
           .flip-back-name {
-            font-size: 0.7rem;
+            font-size: 0.62rem;
           }
           .flip-back-desc {
-            font-size: 0.62rem;
+            font-size: 0.55rem;
           }
 
           /* Contact */
           .contact-box {
-            padding: 24px 20px;
+            padding: 22px 18px;
           }
 
           /* Buttons */
           .btn-primary,
           .btn-secondary {
-            padding: 12px 16px;
-            font-size: 0.78rem;
+            padding: 10px 14px;
+            font-size: 0.72rem;
           }
 
           /* Dots */
