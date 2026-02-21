@@ -832,7 +832,8 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", justifyContent: "center", overflowY: "auto", padding: "0 40px" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", justifyContent: "center", overflowY: "auto" }}>
+            <Container>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={lang + "-stack"}
@@ -866,6 +867,7 @@ export default function HomePage() {
                   </div>
                 </motion.div>
               </AnimatePresence>
+            </Container>
           </div>
         </section>
 
