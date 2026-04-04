@@ -211,7 +211,7 @@ function LoaderLogo() {
     const clickTimer = setTimeout(() => {
       const clickInput = rive.stateMachineInputs("SM")?.find((i) => i.name === "Click");
       if (clickInput) clickInput.fire();
-    }, 3000);
+    }, 2500);
 
     return () => clearTimeout(clickTimer);
   }, [rive]);
