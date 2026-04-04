@@ -20,6 +20,7 @@ import {
   Wrench,
   ArrowRight,
   Globe,
+  ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
@@ -91,11 +92,17 @@ const translations = {
         { name: "API / JSON", desc: "Intégrations REST/SOAP entre Salesforce et systèmes tiers via échanges JSON." },
       ],
     },
+    metrics: [
+      { value: "6+", label: "Années d'expérience" },
+      { value: "12+", label: "Projets livrés" },
+      { value: "24h", label: "Temps de réponse" },
+    ],
     contact: {
       title: "Travaillons ensemble",
       subtitle: "Décrivez votre besoin. Réponse sous 24h.",
       calendly: "Planifier un appel",
       linkedin: "LinkedIn",
+      availability: "Disponible pour de nouveaux projets",
     },
     footer: "© {year} Lucas Massoni · Expert Salesforce Freelance",
   },
@@ -153,11 +160,17 @@ const translations = {
         { name: "API / JSON", desc: "REST/SOAP integrations between Salesforce and third-party systems via JSON." },
       ],
     },
+    metrics: [
+      { value: "6+", label: "Years of experience" },
+      { value: "12+", label: "Projects delivered" },
+      { value: "24h", label: "Response time" },
+    ],
     contact: {
       title: "Let's work together",
       subtitle: "Tell me about your project. I'll get back to you within 24 hours.",
       calendly: "Schedule a call",
       linkedin: "LinkedIn",
+      availability: "Available for new projects",
     },
     footer: "© {year} Lucas Massoni · Freelance Salesforce Expert",
   },
@@ -174,6 +187,37 @@ const SERVICE_ICONS = {
 const Container = ({ children }) => (
   <div className="max-w-7xl mx-auto px-6 md:px-10">{children}</div>
 );
+
+// ================= LOADER LOGO =================
+function LoaderLogo() {
+  const { rive, RiveComponent } = useRive({
+    src: "/logo.riv",
+    stateMachines: "SM",
+    autoplay: true,
+    layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
+    backgroundColor: "transparent",
+  });
+
+  useEffect(() => {
+    if (!rive) return;
+    const inputs = rive.stateMachineInputs("SM");
+    if (!inputs) return;
+
+    // Trigger LogoHover on mount
+    const hoverInput = inputs.find((i) => i.name === "LogoHover");
+    if (hoverInput) hoverInput.value = true;
+
+    // Trigger Click at 3s (before loader exits at 4s)
+    const clickTimer = setTimeout(() => {
+      const clickInput = rive.stateMachineInputs("SM")?.find((i) => i.name === "Click");
+      if (clickInput) clickInput.fire();
+    }, 3000);
+
+    return () => clearTimeout(clickTimer);
+  }, [rive]);
+
+  return <RiveComponent className="w-full h-full" />;
+}
 
 // ================= NAV LOGO =================
 // Must be defined OUTSIDE HomePage to avoid re-mounting on every re-render
@@ -209,11 +253,39 @@ function LangToggle({ lang, setLang }) {
 
 const TOTAL_SLIDES = 4;
 
+// ================= MAGNETIC BUTTON =================
+function MagneticButton({ children, className, style, ...props }) {
+  const ref = useRef(null);
+  const handleMouseMove = (e) => {
+    const rect = ref.current.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = e.clientY - (rect.top + rect.height / 2);
+    ref.current.style.transform = `translate(${dx * 0.08}px, ${dy * 0.08}px)`;
+  };
+  const handleMouseLeave = () => {
+    ref.current.style.transform = "translate(0, 0)";
+  };
+  return (
+    <div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={className}
+      style={{ ...style, transition: "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)", display: "inline-block" }}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [lang, setLang] = useState("fr");
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const trackRef = useRef(null);
+  const cursorGlowRef = useRef(null);
 
   const t = translations[lang];
 
@@ -234,7 +306,7 @@ export default function HomePage() {
 
   // ── Wheel → vertical snap ─────────────────────────────────────────────────
   useEffect(() => {
-    const THROTTLE = 900;
+    const THROTTLE = 1100;
     let lastWheel = 0;
     const onWheel = (e) => {
       e.preventDefault();
@@ -304,6 +376,27 @@ export default function HomePage() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // ── Cursor glow (desktop only) ───────────────────────────────────────────
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(hover: hover)");
+    if (!mq.matches) return;
+    const onMove = (e) => {
+      if (cursorGlowRef.current) {
+        cursorGlowRef.current.style.left = e.clientX + "px";
+        cursorGlowRef.current.style.top = e.clientY + "px";
+      }
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
+  // ── Page entrance ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    const timer = setTimeout(() => setLoaded(true), 4000);
+    return () => clearTimeout(timer);
   }, []);
 
   const CHART_COLORS = ["#6f9caf", "#70aaaf", "#6fafac", "#70af84", "#ffcf56", "#a8c5b8"];
@@ -494,24 +587,62 @@ export default function HomePage() {
     <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: BG, color: TEXT, position: "relative" }}>
       <Analytics />
 
+      {/* Page entrance overlay */}
+      <AnimatePresence>
+        {!loaded && (
+          <motion.div
+            key="loader"
+            className="page-loader"
+            initial={{ opacity: 1 }}
+            exit={{ y: "-100vh" }}
+            transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="page-loader-content"
+            >
+              <div className="page-loader-rive">
+                <LoaderLogo />
+              </div>
+              <motion.span
+                className="page-loader-name"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                Lucas Massoni
+              </motion.span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cursor glow */}
+      <div ref={cursorGlowRef} className="cursor-glow" />
+
       {/* NAV */}
       <nav
         className="fixed w-full z-50 transition-all duration-500"
         style={{
           height: NAV_HEIGHT,
-          background: `${BG}ee`,
-          borderBottom: `1px solid ${ACCENT1}33`,
+          background: currentSlide > 0 ? `${BG}f8` : `${BG}ee`,
+          borderBottom: `1px solid ${currentSlide > 0 ? ACCENT1 + "44" : ACCENT1 + "33"}`,
           backdropFilter: "blur(14px)",
+          boxShadow: currentSlide > 0 ? "0 1px 12px rgba(0,0,0,0.04)" : "none",
+          transition: "background 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease, opacity 0.3s ease",
+          opacity: loaded ? 1 : 0,
         }}
       >
         <Container>
           <div className="flex justify-between items-center h-[88px]">
-            <button onClick={() => goToSlide(0)} className="flex items-center" style={{ background: "none", border: "none", cursor: "pointer" }}>
+            <div className="flex items-center" style={{ cursor: "default" }}>
               <NavLogo />
               <span className="font-tech-upper text-xl font-bold" style={{ color: TITLES }}>
                 {t.name}
               </span>
-            </button>
+            </div>
 
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-8">
@@ -589,18 +720,19 @@ export default function HomePage() {
       </nav>
 
       {/* Slide indicator dots — fixés à gauche, centrés verticalement */}
-      <div className="slide-dots">
+      <div className="slide-dots" style={{ opacity: loaded ? 1 : 0, transition: "opacity 0.3s ease" }}>
+        <div className="slide-dots-line" />
         {NAV_SLIDES.map((item) => (
           <button
             key={item.idx}
             onClick={() => goToSlide(item.idx)}
-            className="slide-dot"
-            style={{
-              opacity: currentSlide === item.idx ? 1 : 0.3,
-              transform: currentSlide === item.idx ? "scale(1.5)" : "scale(1)",
-            }}
+            className={`slide-dot ${currentSlide === item.idx ? "slide-dot-active" : ""}`}
             aria-label={item.label}
-          />
+          >
+            {currentSlide === item.idx && (
+              <span className="slide-dot-label hidden md:block">{item.label}</span>
+            )}
+          </button>
         ))}
       </div>
 
@@ -613,7 +745,7 @@ export default function HomePage() {
           width: "100vw",
           height: `${TOTAL_SLIDES * 100}vh`,
           willChange: "transform",
-          transition: "transform 0.75s cubic-bezier(0.77, 0, 0.18, 1)",
+          transition: "transform 0.9s cubic-bezier(0.65, 0, 0.35, 1)",
           transform: "translateY(0vh)",
         }}
       >
@@ -621,37 +753,118 @@ export default function HomePage() {
         {/* ── SLIDE 1: HERO ─────────────────────────────────────────────────── */}
         <section
           id="top"
-          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
+          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT, position: "relative" }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center" }}>
+          {/* Dot grid background */}
+          <div className="hero-dot-grid" />
+
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", position: "relative", zIndex: 1 }}>
             <Container>
               <div className="hero-layout">
                 {/* LEFT: text */}
                 <div className="hero-left">
-                  <div className="flex gap-2 mb-4 flex-wrap">
-                    {t.hero.badges.map((b) => (
-                      <span key={b} className="badge">{b}</span>
+                  <motion.div
+                    className="flex gap-2 mb-4 flex-wrap"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {t.hero.badges.map((b, i) => (
+                      <motion.span
+                        key={b}
+                        className="badge"
+                        initial={{ opacity: 0, scale: 0.85 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, delay: 0.15 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        {b}
+                      </motion.span>
                     ))}
-                  </div>
-                  <div className="font-tech-upper text-sm mb-3 opacity-70">{t.hero.kicker}</div>
-                  <h1 className="hero-title font-tech-upper font-bold">
+                  </motion.div>
+                  <motion.div
+                    className="font-tech-upper text-sm mb-3 opacity-70"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 0.7, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {t.hero.kicker}
+                  </motion.div>
+                  <motion.h1
+                    className="hero-title font-tech-upper font-bold"
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  >
                     {t.hero.titleLine1}{" "}
-                    <span className="hero-title-line2">{t.hero.titleLine2}</span>
-                  </h1>
-                  <p className="font-tech mt-6 text-lg leading-relaxed">{t.hero.subtitle}</p>
-                  <div className="flex gap-4 mt-8 flex-wrap">
-                    <button onClick={() => goToSlide(3)} className="btn-primary btn-hover" style={{ border: "none", cursor: "pointer" }}>
-                      {t.hero.ctaPrimary}
-                      <ArrowRight size={18} />
-                    </button>
-                    <button onClick={() => goToSlide(1)} className="btn-secondary btn-hover" style={{ cursor: "pointer" }}>
-                      {t.hero.ctaSecondary}
-                    </button>
-                  </div>
+                    <motion.span
+                      className="hero-title-line2"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      {t.hero.titleLine2}
+                    </motion.span>
+                  </motion.h1>
+                  <motion.p
+                    className="font-tech mt-6 text-lg leading-relaxed"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {t.hero.subtitle}
+                  </motion.p>
+                  <motion.div
+                    className="flex gap-4 mt-8 flex-wrap"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.75, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <MagneticButton>
+                      <button onClick={() => goToSlide(3)} className="btn-primary btn-hover" style={{ border: "none", cursor: "pointer" }}>
+                        {t.hero.ctaPrimary}
+                        <ArrowRight size={18} />
+                      </button>
+                    </MagneticButton>
+                    <MagneticButton>
+                      <button onClick={() => goToSlide(1)} className="btn-secondary btn-hover" style={{ cursor: "pointer" }}>
+                        {t.hero.ctaSecondary}
+                      </button>
+                    </MagneticButton>
+                  </motion.div>
+
+                  {/* Metrics bar */}
+                  <motion.div
+                    className="metrics-bar"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {t.metrics.map((m, i) => (
+                      <motion.div
+                        key={m.label}
+                        className="metric-item"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.95 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <span className="metric-value">{m.value}</span>
+                        <span className="metric-label">{m.label}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
                 </div>
 
                 {/* RIGHT: 6 charts grid */}
-                <div className="hero-right">
+                <motion.div
+                  className="hero-right"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{
+                    opacity: currentSlide === 0 ? 1 : 0.3,
+                    scale: 1,
+                    y: currentSlide * -40,
+                  }}
+                  transition={{ duration: 0.9, ease: [0.65, 0, 0.35, 1] }}
+                >
                   <div className="charts-grid">
 
                     {/* 1. Line — 3 trending sales curves */}
@@ -756,16 +969,31 @@ export default function HomePage() {
                     </div>
 
                   </div>
-                </div>
+                </motion.div>
               </div>
             </Container>
           </div>
+
+          {/* Scroll down indicator */}
+          <motion.div
+            className="scroll-indicator"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            style={{ opacity: currentSlide === 0 ? 0.4 : 0 }}
+            onClick={() => goToSlide(1)}
+          >
+            <ChevronDown size={20} color={TITLES} />
+          </motion.div>
         </section>
 
         {/* ── SLIDE 2: SERVICES ─────────────────────────────────────────────── */}
         <section
           id="services"
-          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
+          style={{
+            width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT,
+            position: "relative",
+            backgroundImage: `radial-gradient(circle at 20% 50%, ${ACCENT1}08 0%, transparent 50%), radial-gradient(circle at 80% 20%, ${ACCENT2}06 0%, transparent 40%)`,
+          }}
         >
           <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", overflowY: "auto" }}>
             <Container>
@@ -784,10 +1012,12 @@ export default function HomePage() {
                         key={s.key}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.45, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
                         whileHover={{ y: -6 }}
                         className="service-card card-hover"
                       >
+                        <span className="service-number">{`0${idx + 1}`}</span>
+                        <div className="service-accent-bar" />
                         <div className="icon">{SERVICE_ICONS[s.key]}</div>
                         <div className="min-w-0">
                           <div className="service-title">{s.title}</div>
@@ -847,19 +1077,17 @@ export default function HomePage() {
                     {t.stack.items.map((item, idx) => (
                       <motion.div
                         key={item.name}
-                        className="flip-card"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, delay: idx * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                        className="stack-card"
+                        initial={{ opacity: 0, y: 30, scale: 0.92 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.5, delay: idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
                       >
-                        <div className="flip-inner">
-                          <div className="flip-front">
-                            {item.name}
-                          </div>
-                          <div className="flip-back">
-                            <span className="flip-back-name">{item.name}</span>
-                            <p className="flip-back-desc">{item.desc}</p>
-                          </div>
+                        <div className="stack-card-inner">
+                          <span className="stack-card-name">{item.name}</span>
+                        </div>
+                        <div className="stack-card-reveal">
+                          <span className="stack-card-reveal-name">{item.name}</span>
+                          <p className="stack-card-desc">{item.desc}</p>
                         </div>
                       </motion.div>
                     ))}
@@ -873,9 +1101,21 @@ export default function HomePage() {
         {/* ── SLIDE 4: CONTACT ──────────────────────────────────────────────── */}
         <section
           id="contact"
-          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
+          style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT, position: "relative" }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          {/* Gradient orbs */}
+          <motion.div
+            className="contact-orb contact-orb-1"
+            animate={{ x: [0, 30, -20, 0], y: [0, -40, 20, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="contact-orb contact-orb-2"
+            animate={{ x: [0, -25, 15, 0], y: [0, 30, -35, 0] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1 }}>
             <Container>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -892,12 +1132,19 @@ export default function HomePage() {
                   >
                     <div className="contact-box card-hover">
                       <h2 className="section-title">{t.contact.title}</h2>
+
+                      {/* Availability indicator */}
+                      <div className="availability-badge">
+                        <span className="availability-dot" />
+                        {t.contact.availability}
+                      </div>
+
                       <p className="font-tech mt-4">{t.contact.subtitle}</p>
 
                       <div className="flex gap-4 mt-6 flex-wrap">
                         <a
                           href="https://calendly.com/lucas-massoni-contact"
-                          className="btn-primary btn-hover"
+                          className="btn-primary btn-hover btn-glow"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -1105,6 +1352,41 @@ export default function HomePage() {
           gap: 16px;
           border: 1px solid ${ACCENT1}33;
           box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .service-accent-bar {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 4px;
+          height: 100%;
+          background: ${ACCENT1};
+          border-radius: 20px 0 0 20px;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .service-card:hover .service-accent-bar {
+          opacity: 1;
+        }
+
+        .service-number {
+          position: absolute;
+          top: 12px;
+          right: 16px;
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.65rem;
+          letter-spacing: 0.1em;
+          opacity: 0.2;
+          color: ${TITLES};
+        }
+
+        .service-card:hover .icon {
+          background: ${ACCENT1}28;
+          border-color: ${ACCENT1}55;
+          transform: scale(1.08);
         }
 
         /* Preview tooltip */
@@ -1138,9 +1420,8 @@ export default function HomePage() {
 
         .preview-img {
           width: 100%;
-          height: 160px;
-          object-fit: cover;
-          object-position: top;
+          height: auto;
+          object-fit: contain;
           display: block;
         }
 
@@ -1174,41 +1455,39 @@ export default function HomePage() {
           width: 100%;
         }
 
-        /* Flip cards */
-        .flip-card {
-          height: 160px;
-          perspective: 900px;
-        }
-
-        .flip-inner {
+        /* Stack cards — hover-reveal */
+        .stack-card {
           position: relative;
-          width: 100%;
-          height: 100%;
-          transform-style: preserve-3d;
-          transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .flip-card:hover .flip-inner {
-          transform: rotateY(180deg);
-        }
-
-        .flip-front,
-        .flip-back {
-          position: absolute;
-          inset: 0;
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
+          overflow: hidden;
           border-radius: 16px;
+          background: ${CARD_BG};
           border: 1px solid ${ACCENT1}33;
           box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 14px;
+          height: 160px;
+          cursor: default;
+          transition: border-color 0.22s ease, box-shadow 0.22s ease;
         }
 
-        .flip-front {
-          background: ${CARD_BG};
+        .stack-card:hover {
+          border-color: ${ACCENT1}66;
+          box-shadow: 0 22px 70px rgba(0, 0, 0, 0.1);
+        }
+
+        .stack-card-inner {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 16px;
+          transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .stack-card:hover .stack-card-inner {
+          opacity: 0;
+        }
+
+        .stack-card-name {
           font-family: var(--font-share-tech-mono);
           letter-spacing: 0.12em;
           color: ${TITLES};
@@ -1216,36 +1495,48 @@ export default function HomePage() {
           font-size: 1.1rem;
         }
 
-        .flip-back {
+        .stack-card-reveal {
+          position: absolute;
+          inset: 0;
           background: ${ACCENT1};
-          transform: rotateY(180deg);
+          padding: 14px;
+          display: flex;
           flex-direction: column;
-          gap: 6px;
-          text-align: center;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          transform: translateY(100%);
+          transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+          border-radius: 16px;
         }
 
-        .flip-back-name {
+        .stack-card:hover .stack-card-reveal {
+          transform: translateY(0);
+        }
+
+        .stack-card-reveal-name {
           font-family: var(--font-share-tech-mono);
           font-size: 0.85rem;
           font-weight: 700;
           letter-spacing: 0.14em;
           color: ${BG};
-          opacity: 0.9;
           text-transform: uppercase;
         }
 
-        .flip-back-desc {
-          font-size: 0.8rem;
+        .stack-card-desc {
+          font-size: 0.78rem;
           line-height: 1.5;
           color: ${BG};
-          opacity: 0.95;
           margin: 0;
+          text-align: center;
         }
 
         @media (hover: none) {
-          /* Touch devices: tap to flip */
-          .flip-card:active .flip-inner {
-            transform: rotateY(180deg);
+          .stack-card:active .stack-card-inner {
+            transform: translateY(-12px);
+          }
+          .stack-card:active .stack-card-reveal {
+            transform: translateY(0);
           }
         }
 
@@ -1255,6 +1546,76 @@ export default function HomePage() {
           padding: 48px;
           border: 1px solid ${ACCENT1}33;
           box-shadow: 0 18px 60px rgba(0, 0, 0, 0.07);
+        }
+
+        /* Contact gradient orbs */
+        .contact-orb {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .contact-orb-1 {
+          width: 300px;
+          height: 300px;
+          background: radial-gradient(circle, ${ACCENT1}15, transparent);
+          top: 20%;
+          left: 15%;
+        }
+
+        .contact-orb-2 {
+          width: 250px;
+          height: 250px;
+          background: radial-gradient(circle, ${ACCENT2}12, transparent);
+          bottom: 15%;
+          right: 20%;
+        }
+
+        /* Availability indicator */
+        .availability-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.78rem;
+          letter-spacing: 0.1em;
+          color: #4ade80;
+          margin-top: 12px;
+        }
+
+        .availability-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #4ade80;
+          display: inline-block;
+          animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+          0%, 100% {
+            box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4);
+          }
+          50% {
+            box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
+          }
+        }
+
+        /* CTA glow */
+        .btn-glow {
+          background-size: 200% 200%;
+          background-image: linear-gradient(135deg, ${ACCENT1}, ${ACCENT1}dd, ${ACCENT1});
+          animation: gradient-x 4s ease infinite;
+        }
+
+        .btn-glow:hover {
+          box-shadow: 0 0 0 4px ${ACCENT1}22, 0 16px 42px rgba(122, 165, 149, 0.32);
+        }
+
+        @keyframes gradient-x {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
         }
 
         .card-hover {
@@ -1282,6 +1643,7 @@ export default function HomePage() {
           border: 1px solid ${ACCENT1}2a;
           color: ${ACCENT1};
           flex: 0 0 auto;
+          transition: all 0.25s ease;
         }
 
         .service-title {
@@ -1335,6 +1697,17 @@ export default function HomePage() {
           z-index: 100;
         }
 
+        .slide-dots-line {
+          position: absolute;
+          width: 1px;
+          height: 100%;
+          background: ${ACCENT1}22;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          pointer-events: none;
+        }
+
         .slide-dot {
           width: 7px;
           height: 7px;
@@ -1343,7 +1716,139 @@ export default function HomePage() {
           border: none;
           cursor: pointer;
           padding: 0;
-          transition: opacity 0.25s ease, transform 0.25s ease;
+          opacity: 0.3;
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .slide-dot-active {
+          width: 7px;
+          height: 20px;
+          border-radius: 4px;
+          opacity: 1;
+        }
+
+        .slide-dot-label {
+          position: absolute;
+          left: 16px;
+          white-space: nowrap;
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.55rem;
+          letter-spacing: 0.14em;
+          color: ${ACCENT1};
+          opacity: 0.7;
+          text-transform: uppercase;
+        }
+
+        /* Page loader */
+        .page-loader {
+          position: fixed;
+          inset: 0;
+          z-index: 9999;
+          background: ${BG};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .page-loader-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .page-loader-rive {
+          width: 120px;
+          height: 120px;
+        }
+
+        .page-loader-name {
+          font-family: var(--font-share-tech-mono);
+          font-size: 1.1rem;
+          letter-spacing: 0.18em;
+          font-weight: 700;
+          color: ${TITLES};
+          text-transform: uppercase;
+        }
+
+        /* Cursor glow */
+        .cursor-glow {
+          position: fixed;
+          pointer-events: none;
+          width: 400px;
+          height: 400px;
+          border-radius: 50%;
+          background: radial-gradient(circle, ${ACCENT1}06, transparent 70%);
+          z-index: 1;
+          transform: translate(-50%, -50%);
+          will-change: left, top;
+        }
+
+        @media (hover: none) {
+          .cursor-glow {
+            display: none;
+          }
+        }
+
+        /* Dot grid background */
+        .hero-dot-grid {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          opacity: 0.4;
+          background-image: radial-gradient(circle, ${ACCENT1}20 1px, transparent 1px);
+          background-size: 40px 40px;
+          animation: dotGridDrift 20s linear infinite;
+        }
+
+        @keyframes dotGridDrift {
+          0% { background-position: 0 0; }
+          100% { background-position: 40px 40px; }
+        }
+
+        /* Metrics bar */
+        .metrics-bar {
+          display: flex;
+          gap: 32px;
+          margin-top: 40px;
+          padding-top: 24px;
+          border-top: 1px solid ${ACCENT1}22;
+        }
+
+        .metric-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .metric-value {
+          font-family: var(--font-share-tech-mono);
+          font-size: 1.4rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          color: ${ACCENT1};
+        }
+
+        .metric-label {
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.68rem;
+          letter-spacing: 0.1em;
+          color: ${TITLES};
+          opacity: 0.6;
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+          position: absolute;
+          bottom: 28px;
+          left: 50%;
+          transform: translateX(-50%);
+          cursor: pointer;
+          z-index: 2;
+          transition: opacity 0.4s ease;
         }
 
         /* ── MOBILE ─────────────────────────────────────────────────────────── */
@@ -1399,17 +1904,16 @@ export default function HomePage() {
             grid-template-rows: repeat(5, 1fr);
             gap: 8px;
           }
-          .flip-card {
+          .stack-card {
+            height: auto;
             min-height: 55px;
           }
-          .flip-front {
+          .stack-card-name {
             font-size: 0.72rem;
           }
-          .flip-back-name {
-            font-size: 0.62rem;
-          }
-          .flip-back-desc {
-            font-size: 0.55rem;
+          .stack-card-desc {
+            font-size: 0.58rem;
+            padding: 8px 10px;
           }
 
           /* Contact */
@@ -1422,6 +1926,24 @@ export default function HomePage() {
           .btn-secondary {
             padding: 10px 14px;
             font-size: 0.72rem;
+          }
+
+          /* Metrics */
+          .metrics-bar {
+            gap: 20px;
+            margin-top: 20px;
+            padding-top: 16px;
+          }
+          .metric-value {
+            font-size: 1.1rem;
+          }
+          .metric-label {
+            font-size: 0.6rem;
+          }
+
+          /* Scroll indicator */
+          .scroll-indicator {
+            bottom: 16px;
           }
 
           /* Dots */
