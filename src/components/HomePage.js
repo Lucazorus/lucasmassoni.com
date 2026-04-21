@@ -46,9 +46,9 @@ const translations = {
     hero: {
       kicker: "Freelance Salesforce & SAP",
       titleLine1: "EXPERT SALESFORCE",
-      titleLine2: "& ANALYTICS",
+      titleLine2: "SAP & ANALYTICS",
       subtitle:
-        "Sales, CPQ, Analytics et Data Migration. Également expérimenté sur SAP (S/4HANA, Fiori, ABAP) et autres systèmes d'information. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
+        "Salesforce (Sales, CPQ, Apex/Flow/LWC), SAP (S/4HANA, Fiori, ABAP) et Analytics avancé. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
       ctaPrimary: "DÉMARRER UN PROJET",
       ctaSecondary: "VOIR MES SERVICES",
       badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration", "SAP"],
@@ -132,9 +132,9 @@ const translations = {
     hero: {
       kicker: "Freelance Salesforce & SAP Consultant",
       titleLine1: "SALESFORCE EXPERT",
-      titleLine2: "& ANALYTICS",
+      titleLine2: "SAP & ANALYTICS",
       subtitle:
-        "Sales, CPQ, Analytics & Data Migration. Also experienced with SAP (S/4HANA, Fiori, ABAP) and other enterprise systems. From strategy to delivery — fast, documented, and results-driven.",
+        "Salesforce (Sales, CPQ, Apex/Flow/LWC), SAP (S/4HANA, Fiori, ABAP) and advanced Analytics. From strategy to delivery — fast, documented, and results-driven.",
       ctaPrimary: "START A PROJECT",
       ctaSecondary: "VIEW MY SERVICES",
       badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration", "SAP"],
