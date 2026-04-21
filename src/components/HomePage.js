@@ -21,6 +21,8 @@ import {
   ArrowRight,
   Globe,
   ChevronDown,
+  Smartphone,
+  Layers,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
@@ -42,14 +44,14 @@ const translations = {
     name: "Lucas Massoni",
     nav: { home: "Accueil", services: "Services", stack: "Stack", contact: "Contact" },
     hero: {
-      kicker: "Freelance Salesforce",
+      kicker: "Freelance Salesforce & SAP",
       titleLine1: "EXPERT SALESFORCE",
       titleLine2: "& ANALYTICS",
       subtitle:
-        "Sales, CPQ, Analytics et Data Migration. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
+        "Sales, CPQ, Analytics et Data Migration. Également expérimenté sur SAP (S/4HANA, Fiori, ABAP) et autres systèmes d'information. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
       ctaPrimary: "DÉMARRER UN PROJET",
       ctaSecondary: "VOIR MES SERVICES",
-      badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration"],
+      badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration", "SAP"],
     },
     services: {
       title: "MES SERVICES",
@@ -57,23 +59,36 @@ const translations = {
         {
           key: "cpq",
           title: "Salesforce Sales & CPQ",
-          desc: "Configuration avancée, pricing, bundles, règles CPQ et industrialisation complète du cycle quote-to-cash.",
+          desc: "Configuration avancée des objets, règles de pricing et bundles produits. Personnalisation complète du cycle quote-to-cash : de la qualification jusqu'à la signature, avec des processus automatisés et documentés.",
         },
         {
           key: "analytics",
           title: "Analytics & Tableau",
           desc: "Dashboards décisionnels, KPIs fiables, data storytelling orienté direction et opérations.",
-          cta: { label: "DÉMO INTERACTIVE", url: "https://www.economytimelapse.com/" },
+          cta: { label: "Global Economy Timelapse", url: "https://www.economytimelapse.com/", preview: "/Capture.png", previewLabel: "economytimelapse.com" },
+          cta2: { label: "Open Mandats", url: "https://www.openmandats.com/", preview: "/open-mandats.png", previewLabel: "openmandats.com" },
         },
         {
           key: "dev",
           title: "Développement Apex / Flow / LWC",
-          desc: "Automatisations robustes, intégrations API, logique métier complexe et expériences utilisateurs sur-mesure.",
+          desc: "Automatisations robustes via Flow et Apex, intégrations REST/SOAP avec des systèmes tiers, logique métier complexe côté serveur et composants Lightning sur-mesure pour des expériences utilisateurs optimisées.",
         },
         {
           key: "migration",
           title: "Data Migration Salesforce",
-          desc: "Audit, mapping, staging SQL, dédoublonnage, chargements batchés et cut-over maîtrisé.",
+          desc: "Audit complet des données sources, mapping de champs, staging SQL, règles de dédoublonnage, chargements batchés via Data Loader ou scripts Python, et bascule finale maîtrisée avec plan de retour arrière.",
+        },
+        {
+          key: "sap",
+          title: "Intégration SAP & ERP",
+          desc: "Customisation et intégrations sur SAP (S/4HANA, Fiori, SAP BTP, ABAP). Connecteurs entre SAP et autres systèmes d'information, analyse des process métier, automatisations data et migrations cross-ERP.",
+        },
+        {
+          key: "mobile",
+          title: "Développement d'application mobile",
+          desc: "Conception et développement d'applications iOS/Android, de l'idée au déploiement sur l'App Store.",
+          cta: { label: "Anima Apnea", url: "https://www.animaapnea.com/" },
+          cta2: { label: "App Store", sublabel: "Télécharger sur l'App Store", url: "https://apps.apple.com/fr/app/anima-apnea/id6760680506", appStore: true },
         },
       ],
     },
@@ -82,14 +97,19 @@ const translations = {
       items: [
         { name: "Salesforce", desc: "CRM leader mondial. Configuration, administration et personnalisation de la plateforme." },
         { name: "CPQ", desc: "Configure, Price, Quote. Industrialisation du cycle de vente et des devis complexes." },
-        { name: "Data Migration", desc: "Transfert et transformation de données entre systèmes avec qualité garantie." },
         { name: "Apex", desc: "Langage back-end natif Salesforce pour la logique métier et les intégrations serveur." },
         { name: "Flow", desc: "Automatisation no-code/low-code : workflows, écrans guidés et processus métier." },
         { name: "LWC", desc: "Lightning Web Components : composants UI modernes et performants sur Salesforce." },
+        { name: "Data Migration", desc: "Transfert et transformation de données entre systèmes avec qualité garantie." },
         { name: "SQL", desc: "Requêtes et transformations de données pour le staging, l'audit et la migration." },
         { name: "Tableau", desc: "Visualisation de données avancée et dashboards décisionnels interactifs." },
         { name: "CRM Analytics", desc: "Analytics natif Salesforce : exploration de données et rapports embarqués." },
         { name: "API / JSON", desc: "Intégrations REST/SOAP entre Salesforce et systèmes tiers via échanges JSON." },
+        { name: "SAP", desc: "ERP leader mondial. Customisation, intégrations et automatisation des process métier." },
+        { name: "S/4HANA", desc: "Dernière génération SAP ERP : finance, logistique et chaîne d'approvisionnement." },
+        { name: "ABAP", desc: "Langage natif SAP pour le développement back-end et la customisation ERP." },
+        { name: "Fiori", desc: "Interface utilisateur moderne SAP en HTML5/UI5, cohérente sur tous les modules." },
+        { name: "SAP BTP", desc: "Business Technology Platform : intégrations cloud, extensions et data services SAP." },
       ],
     },
     metrics: [
@@ -104,20 +124,20 @@ const translations = {
       linkedin: "LinkedIn",
       availability: "Disponible pour de nouveaux projets",
     },
-    footer: "© {year} Lucas Massoni · Expert Salesforce Freelance",
+    footer: "© {year} Lucas Massoni · Expert Salesforce, SAP & Analytics Freelance",
   },
   en: {
     name: "Lucas Massoni",
     nav: { home: "Home", services: "Services", stack: "Stack", contact: "Contact" },
     hero: {
-      kicker: "Freelance Salesforce Consultant",
+      kicker: "Freelance Salesforce & SAP Consultant",
       titleLine1: "SALESFORCE EXPERT",
       titleLine2: "& ANALYTICS",
       subtitle:
-        "Sales, CPQ, Analytics & Data Migration. From strategy to delivery — fast, documented, and results-driven.",
+        "Sales, CPQ, Analytics & Data Migration. Also experienced with SAP (S/4HANA, Fiori, ABAP) and other enterprise systems. From strategy to delivery — fast, documented, and results-driven.",
       ctaPrimary: "START A PROJECT",
       ctaSecondary: "VIEW MY SERVICES",
-      badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration"],
+      badges: ["CPQ", "Analytics", "Apex / Flow / LWC", "Data Migration", "SAP"],
     },
     services: {
       title: "MY SERVICES",
@@ -125,23 +145,36 @@ const translations = {
         {
           key: "cpq",
           title: "Salesforce Sales & CPQ",
-          desc: "Advanced configuration, pricing rules, product bundles, and full quote-to-cash process industrialisation.",
+          desc: "Advanced object configuration, pricing rules and product bundles. Full quote-to-cash industrialisation — from qualification to signature, with automated, documented and scalable processes.",
         },
         {
           key: "analytics",
           title: "Analytics & Tableau",
           desc: "Executive dashboards, reliable KPIs, and data storytelling designed for leadership and operations teams.",
-          cta: { label: "INTERACTIVE DEMO", url: "https://www.economytimelapse.com/" },
+          cta: { label: "Global Economy Timelapse", url: "https://www.economytimelapse.com/", preview: "/Capture.png", previewLabel: "economytimelapse.com" },
+          cta2: { label: "Open Mandats", url: "https://www.openmandats.com/", preview: "/open-mandats.png", previewLabel: "openmandats.com" },
         },
         {
           key: "dev",
           title: "Apex / Flow / LWC Development",
-          desc: "Robust automations, API integrations, complex business logic, and custom user experiences.",
+          desc: "Robust Flow and Apex automations, REST/SOAP integrations with third-party systems, complex server-side business logic and custom Lightning components for optimised user experiences.",
         },
         {
           key: "migration",
           title: "Salesforce Data Migration",
-          desc: "Audit, field mapping, SQL staging, deduplication, batch loading, and controlled cut-over.",
+          desc: "Full source data audit, field mapping, SQL staging, deduplication rules, batch loading via Data Loader or Python scripts, and planned cut-over with rollback strategy.",
+        },
+        {
+          key: "sap",
+          title: "SAP & ERP Integration",
+          desc: "Customisation and integrations on SAP (S/4HANA, Fiori, SAP BTP, ABAP). Connectors between SAP and other enterprise systems, business process analysis, data automations and cross-ERP migrations.",
+        },
+        {
+          key: "mobile",
+          title: "Mobile App Development",
+          desc: "Design and development of iOS/Android apps, from concept to App Store deployment.",
+          cta: { label: "Anima Apnea", url: "https://www.animaapnea.com/" },
+          cta2: { label: "App Store", sublabel: "Download on the App Store", url: "https://apps.apple.com/fr/app/anima-apnea/id6760680506", appStore: true },
         },
       ],
     },
@@ -150,14 +183,19 @@ const translations = {
       items: [
         { name: "Salesforce", desc: "World-leading CRM. Platform configuration, administration and customisation." },
         { name: "CPQ", desc: "Configure, Price, Quote. Streamlining complex sales cycles and quoting processes." },
-        { name: "Data Migration", desc: "Reliable data transfer and transformation between systems with quality assurance." },
         { name: "Apex", desc: "Salesforce native back-end language for business logic and server-side integrations." },
         { name: "Flow", desc: "No-code/low-code automation: workflows, guided screens, and business processes." },
         { name: "LWC", desc: "Lightning Web Components: modern, high-performance UI components on Salesforce." },
+        { name: "Data Migration", desc: "Reliable data transfer and transformation between systems with quality assurance." },
         { name: "SQL", desc: "Data querying and transformation for staging, auditing, and migration pipelines." },
         { name: "Tableau", desc: "Advanced data visualisation and interactive executive dashboards." },
         { name: "CRM Analytics", desc: "Native Salesforce analytics: embedded data exploration and reporting." },
         { name: "API / JSON", desc: "REST/SOAP integrations between Salesforce and third-party systems via JSON." },
+        { name: "SAP", desc: "World-leading ERP. Platform customisation, integrations and business process automation." },
+        { name: "S/4HANA", desc: "Latest-generation SAP ERP: finance, logistics and supply chain." },
+        { name: "ABAP", desc: "SAP native language for back-end development and ERP customisation." },
+        { name: "Fiori", desc: "Modern SAP user interface in HTML5/UI5, consistent across all modules." },
+        { name: "SAP BTP", desc: "Business Technology Platform: cloud integrations, extensions and SAP data services." },
       ],
     },
     metrics: [
@@ -172,7 +210,7 @@ const translations = {
       linkedin: "LinkedIn",
       availability: "Available for new projects",
     },
-    footer: "© {year} Lucas Massoni · Freelance Salesforce Expert",
+    footer: "© {year} Lucas Massoni · Freelance Salesforce, SAP & Analytics Expert",
   },
 };
 
@@ -182,6 +220,8 @@ const SERVICE_ICONS = {
   analytics: <Brain size={22} />,
   dev: <Wrench size={22} />,
   migration: <Database size={22} />,
+  sap: <Layers size={22} />,
+  mobile: <Smartphone size={22} />,
 };
 
 const Container = ({ children }) => (
@@ -275,6 +315,294 @@ function MagneticButton({ children, className, style, ...props }) {
       {...props}
     >
       {children}
+    </div>
+  );
+}
+
+// ================= CHART GRID (isolated animation) =================
+const CHART_COLORS = ["#6f9caf", "#70aaaf", "#6fafac", "#70af84", "#ffcf56", "#a8c5b8"];
+const CYCLE = 10;
+
+// Catmull-Rom cubic spline — C¹ continuous, organic motion
+const spline = (p0, p1, p2, p3, t) => {
+  const t2 = t * t;
+  const t3 = t2 * t;
+  return 0.5 * (
+    2 * p1 +
+    (-p0 + p2) * t +
+    (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
+    (-p0 + 3 * p1 - 3 * p2 + p3) * t3
+  );
+};
+const splineArr = (k0, k1, k2, k3, t) => k0.map((_, i) => spline(k0[i], k1[i], k2[i], k3[i], t));
+// Explicit loop closure: duplicates the first keyframe at the end of the array.
+const loop = (arr) => [...arr, arr[0]];
+
+const LINE_KF = loop([
+  { a:[10,14,18,22,26,30,34,38,41,44,46,48], b:[22,24,25,26,26,25,24,23,22,21,20,19], c:[ 5, 7,10,14,18,23,28,33,37,40,43,45] },
+  { a:[12,16,20,24,27,29,30,30,29,28,26,24], b:[20,21,21,20,19,18,17,16,16,16,17,18], c:[ 8,12,17,22,28,33,37,40,42,43,43,42] },
+  { a:[14,16,17,17,16,15,14,13,13,14,16,18], b:[18,20,23,27,31,34,36,37,37,36,34,32], c:[20,25,30,35,39,42,44,45,44,43,41,39] },
+  { a:[16,18,20,21,22,22,21,20,19,18,18,19], b:[15,20,27,34,39,43,46,47,47,46,44,42], c:[22,24,25,25,24,23,22,22,22,23,25,27] },
+  { a:[24,26,28,29,29,28,27,25,23,21,19,18], b:[28,27,26,25,24,24,24,25,26,27,28,29], c:[20,22,24,26,28,29,29,28,27,26,25,24] },
+  { a:[ 8,12,17,22,27,32,36,40,43,45,47,48], b:[26,25,24,23,22,21,20,20,20,21,22,23], c:[18,20,22,23,23,22,21,20,20,21,22,24] },
+]);
+const PIE_KF = loop([
+  [34, 28, 22, 16],
+  [30, 32, 24, 14],
+  [28, 26, 30, 16],
+  [32, 24, 26, 18],
+  [36, 22, 24, 18],
+  [30, 30, 22, 18],
+]);
+const BAR_KF = loop([
+  [72, 45, 88, 33, 61, 79, 52, 40],
+  [68, 50, 82, 38, 65, 74, 58, 44],
+  [75, 42, 91, 30, 58, 83, 49, 37],
+  [70, 48, 85, 35, 63, 77, 55, 42],
+  [65, 55, 78, 42, 70, 71, 62, 48],
+  [73, 44, 89, 32, 60, 81, 51, 39],
+]);
+const COMP_AREA_KF = loop([
+  [420, 580, 750, 620, 890, 740, 960, 830, 710, 950, 1100, 880],
+  [510, 640, 700, 780, 830, 950, 880, 760, 920, 1050, 990, 850],
+  [390, 620, 810, 700, 870, 720, 1010, 880, 750, 900, 1080, 920],
+  [460, 590, 730, 810, 860, 980, 910, 790, 960, 1020, 970, 840],
+]);
+const COMP_BAR_KF = loop([
+  [180, 260, 340, 290, 410, 320, 450, 380, 300, 430, 510, 400],
+  [210, 290, 310, 360, 380, 440, 400, 340, 420, 490, 460, 390],
+  [160, 280, 370, 320, 400, 300, 470, 400, 330, 410, 500, 420],
+  [200, 270, 330, 380, 400, 460, 420, 360, 440, 480, 450, 380],
+]);
+const COMP_LINE_KF = loop([
+  [300, 400, 500, 450, 600, 520, 650, 580, 490, 660, 750, 620],
+  [350, 440, 480, 530, 570, 640, 600, 520, 610, 700, 680, 580],
+  [280, 430, 560, 490, 590, 490, 690, 600, 520, 620, 730, 640],
+  [320, 410, 490, 560, 580, 660, 620, 540, 640, 680, 660, 560],
+]);
+const COMP_SCAT_KF = loop([
+  [80, 140, 200, 170, 240, 190, 280, 230, 180, 260, 320, 250],
+  [110, 160, 180, 210, 230, 280, 250, 200, 260, 310, 290, 240],
+  [70, 150, 220, 190, 250, 170, 300, 240, 200, 250, 310, 260],
+  [100, 155, 195, 230, 240, 290, 260, 215, 270, 300, 280, 230],
+]);
+const SC1_KF = loop([
+  [{x:10,y:80},{x:18,y:68},{x:5,y:90},{x:22,y:75},{x:14,y:55},{x:8,y:85},{x:25,y:62},{x:3,y:72}],
+  [{x:20,y:60},{x:8,y:88},{x:15,y:45},{x:30,y:70},{x:5,y:78},{x:18,y:92},{x:12,y:50},{x:25,y:80}],
+  [{x:5,y:70},{x:25,y:50},{x:10,y:95},{x:18,y:40},{x:28,y:85},{x:2,y:60},{x:20,y:75},{x:15,y:30}],
+  [{x:15,y:85},{x:3,y:55},{x:22,y:40},{x:8,y:92},{x:28,y:65},{x:12,y:78},{x:5,y:35},{x:20,y:90}],
+]);
+const SC2_KF = loop([
+  [{x:45,y:45},{x:55,y:60},{x:40,y:30},{x:60,y:50},{x:48,y:70},{x:52,y:25},{x:42,y:55},{x:58,y:40}],
+  [{x:55,y:35},{x:42,y:65},{x:58,y:20},{x:48,y:55},{x:38,y:45},{x:62,y:70},{x:50,y:30},{x:44,y:80}],
+  [{x:40,y:55},{x:60,y:40},{x:45,y:75},{x:55,y:20},{x:50,y:65},{x:38,y:30},{x:58,y:80},{x:48,y:42}],
+  [{x:52,y:25},{x:44,y:70},{x:62,y:55},{x:40,y:42},{x:56,y:80},{x:46,y:18},{x:38,y:60},{x:60,y:35}],
+]);
+const SC3_KF = loop([
+  [{x:72,y:20},{x:85,y:40},{x:78,y:10},{x:92,y:55},{x:68,y:35},{x:88,y:15},{x:75,y:60},{x:95,y:28}],
+  [{x:80,y:35},{x:70,y:15},{x:90,y:50},{x:75,y:25},{x:95,y:40},{x:68,y:60},{x:85,y:8},{x:78,y:45}],
+  [{x:65,y:45},{x:90,y:20},{x:72,y:55},{x:88,y:35},{x:78,y:5},{x:95,y:50},{x:70,y:30},{x:82,y:65}],
+  [{x:88,y:10},{x:75,y:50},{x:92,y:38},{x:68,y:22},{x:82,y:60},{x:72,y:42},{x:95,y:18},{x:78,y:70}],
+]);
+const RAD_KF = loop([
+  { v1:[80,65,72,88,55], v2:[60,78,50,65,82] },
+  { v1:[75,70,68,85,60], v2:[65,72,55,70,78] },
+  { v1:[82,60,75,90,52], v2:[58,80,48,62,85] },
+  { v1:[78,68,70,87,58], v2:[62,75,52,68,80] },
+  { v1:[72,74,65,83,63], v2:[68,70,58,74,75] },
+]);
+const RADAR_SUBJECTS = ["A", "B", "C", "D", "E"];
+
+function ChartGrid({ active }) {
+  const rafRef = useRef(null);
+  const tRef = useRef(0);
+  const [, setFrame] = useState(0);
+
+  useEffect(() => {
+    if (!active) return;
+    let last = null;
+    const step = (ts) => {
+      if (last !== null) {
+        tRef.current += (ts - last) * 0.001;
+        setFrame((f) => f + 1);
+      }
+      last = ts;
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [active]);
+
+  const T = tRef.current;
+
+  const getFrame = (keyframes) => {
+    const n = keyframes.length - 1;
+    const pos = ((T % CYCLE) / CYCLE) * n;
+    const i = Math.floor(pos);
+    const t = pos - i;
+    return {
+      k0: keyframes[(i - 1 + n) % n],
+      k1: keyframes[i % n],
+      k2: keyframes[(i + 1) % n],
+      k3: keyframes[(i + 2) % n],
+      t,
+    };
+  };
+
+  const lf = getFrame(LINE_KF);
+  const lineData = splineArr(lf.k0.a, lf.k1.a, lf.k2.a, lf.k3.a, lf.t).map((a, i) => ({
+    a,
+    b: spline(lf.k0.b[i], lf.k1.b[i], lf.k2.b[i], lf.k3.b[i], lf.t),
+    c: spline(lf.k0.c[i], lf.k1.c[i], lf.k2.c[i], lf.k3.c[i], lf.t),
+  }));
+
+  const pf = getFrame(PIE_KF);
+  const pieRaw = splineArr(pf.k0, pf.k1, pf.k2, pf.k3, pf.t);
+  const pieSum = pieRaw.reduce((a, b) => a + b, 0);
+  const pieData = pieRaw.map((v, i) => ({ name: String(i), value: (v / pieSum) * 100 }));
+
+  const bf = getFrame(BAR_KF);
+  const barData = splineArr(bf.k0, bf.k1, bf.k2, bf.k3, bf.t).map((v) => ({ v }));
+
+  const cf = getFrame(COMP_AREA_KF);
+  const cf2 = getFrame(COMP_BAR_KF);
+  const cf3 = getFrame(COMP_LINE_KF);
+  const cf4 = getFrame(COMP_SCAT_KF);
+  const composedData = splineArr(cf.k0, cf.k1, cf.k2, cf.k3, cf.t).map((area, i) => ({
+    i,
+    area,
+    bar:  spline(cf2.k0[i], cf2.k1[i], cf2.k2[i], cf2.k3[i], cf2.t),
+    line: spline(cf3.k0[i], cf3.k1[i], cf3.k2[i], cf3.k3[i], cf3.t),
+    dot:  spline(cf4.k0[i], cf4.k1[i], cf4.k2[i], cf4.k3[i], cf4.t),
+  }));
+
+  const sf1 = getFrame(SC1_KF);
+  const sf2 = getFrame(SC2_KF);
+  const sf3 = getFrame(SC3_KF);
+  const scatterData1 = sf1.k1.map((_, i) => ({
+    x: spline(sf1.k0[i].x, sf1.k1[i].x, sf1.k2[i].x, sf1.k3[i].x, sf1.t),
+    y: spline(sf1.k0[i].y, sf1.k1[i].y, sf1.k2[i].y, sf1.k3[i].y, sf1.t),
+  }));
+  const scatterData2 = sf2.k1.map((_, i) => ({
+    x: spline(sf2.k0[i].x, sf2.k1[i].x, sf2.k2[i].x, sf2.k3[i].x, sf2.t),
+    y: spline(sf2.k0[i].y, sf2.k1[i].y, sf2.k2[i].y, sf2.k3[i].y, sf2.t),
+  }));
+  const scatterData3 = sf3.k1.map((_, i) => ({
+    x: spline(sf3.k0[i].x, sf3.k1[i].x, sf3.k2[i].x, sf3.k3[i].x, sf3.t),
+    y: spline(sf3.k0[i].y, sf3.k1[i].y, sf3.k2[i].y, sf3.k3[i].y, sf3.t),
+  }));
+
+  const rf = getFrame(RAD_KF);
+  const radarData = RADAR_SUBJECTS.map((subject, i) => ({
+    subject,
+    v1: spline(rf.k0.v1[i], rf.k1.v1[i], rf.k2.v1[i], rf.k3.v1[i], rf.t),
+    v2: spline(rf.k0.v2[i], rf.k1.v2[i], rf.k2.v2[i], rf.k3.v2[i], rf.t),
+  }));
+
+  return (
+    <div className="charts-grid">
+      {/* 1. Line */}
+      <div className="chart-bare">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={lineData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+            <YAxis domain={[0, 50]} hide={true} />
+            <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+            <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+            <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 2. Pie */}
+      <div className="chart-bare chart-center">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={pieData} dataKey="value"
+              cx="50%" cy="50%"
+              innerRadius="32%" outerRadius="56%"
+              paddingAngle={1.5}
+              startAngle={90 + T * 12}
+              endAngle={90 + T * 12 + 360}
+              isAnimationActive={false}
+            >
+              {pieData.map((_, i) => (
+                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 3. Bar */}
+      <div className="chart-bare">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={barData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} barCategoryGap="18%">
+            <Bar dataKey="v" radius={[3, 3, 0, 0]} isAnimationActive={false}>
+              {barData.map((_, i) => (
+                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 4. Scatter */}
+      <div className="chart-bare">
+        <ResponsiveContainer width="100%" height="100%">
+          <ScatterChart margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
+            <XAxis dataKey="x" type="number" domain={[0, 100]} hide={true} />
+            <YAxis dataKey="y" yAxisId="a" type="number" domain={[0, 100]} hide={true} />
+            <YAxis dataKey="y" yAxisId="b" orientation="right" type="number" domain={[0, 100]} hide={true} />
+            <YAxis dataKey="y" yAxisId="c" orientation="right" type="number" domain={[0, 100]} hide={true} />
+            <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
+            <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} isAnimationActive={false} />
+            <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} isAnimationActive={false} />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 5. Composed */}
+      <div className="chart-bare">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={composedData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
+            <defs>
+              <linearGradient id="compAreaGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor={ACCENT1} stopOpacity={0.55} />
+                <stop offset="100%" stopColor={ACCENT1} stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="i" hide={true} />
+            <YAxis domain={[0, 1300]} hide={true} />
+            <Area
+              type="monotone"
+              dataKey="area"
+              fill="url(#compAreaGrad)"
+              stroke={ACCENT1}
+              strokeWidth={1.5}
+              dot={false}
+              isAnimationActive={false}
+            />
+            <Bar dataKey="bar" barSize={8} fill={CHART_COLORS[1]} radius={[2, 2, 0, 0]} isAnimationActive={false} />
+            <Line type="monotone" dataKey="line" stroke={ACCENT2} strokeWidth={2} dot={false} isAnimationActive={false} />
+            <Scatter dataKey="dot" fill={CHART_COLORS[5]} isAnimationActive={false} />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 6. Radar */}
+      <div className="chart-bare chart-center">
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart data={radarData} outerRadius="54%" margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
+            <PolarGrid stroke={`${ACCENT1}44`} />
+            <PolarAngleAxis dataKey="subject" tick={false} />
+            <Radar dataKey="v1" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.35} isAnimationActive={false} dot={false} />
+            <Radar dataKey="v2" stroke={CHART_COLORS[4]} fill={CHART_COLORS[4]} fillOpacity={0.28} isAnimationActive={false} dot={false} />
+          </RadarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
@@ -399,169 +727,7 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const CHART_COLORS = ["#6f9caf", "#70aaaf", "#6fafac", "#70af84", "#ffcf56", "#a8c5b8"];
 
-  // ---- rAF-driven time for buttery smooth animation (like D3 project) ----
-  const rafRef = useRef(null);
-  const tRef   = useRef(0);
-  const [chartFrame, setChartFrame] = useState(0);
-
-  useEffect(() => {
-    let last = null;
-    let sinceTick = 0;
-    const TICK = 1000 / 30; // cap at 30fps to avoid setState storm
-    const step = (ts) => {
-      if (last !== null) {
-        const dt = ts - last;
-        tRef.current += dt * 0.001; // seconds
-        sinceTick += dt;
-        if (sinceTick >= TICK) {
-          sinceTick = 0;
-          setChartFrame(f => f + 1); // trigger re-render at ~30fps
-        }
-      }
-      last = ts;
-      rafRef.current = requestAnimationFrame(step);
-    };
-    rafRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
-
-  const T = tRef.current;
-
-  // ── Keyframe interpolation helper ──────────────────────────────────────────
-  const CYCLE = 12; // seconds for one full loop through all keyframes
-  const lerp = (a, b, t) => a + (b - a) * t;
-  const getFrame = (keyframes) => {
-    const n = keyframes.length;
-    const pos = ((T % CYCLE) / CYCLE) * n;
-    const i0 = Math.floor(pos) % n;
-    const i1 = (i0 + 1) % n;
-    const t = pos - Math.floor(pos);
-    return { k0: keyframes[i0], k1: keyframes[i1], t };
-  };
-  const lerpArr = (a, b, t) => a.map((v, i) => lerp(v, b[i], t));
-
-  // 1. Line — 3 series crossing each other, all values 0–50, fixed Y domain
-  const LINE_KF = [
-    { a:[10,14,18,22,26,30,34,38,41,44,46,48], b:[22,24,25,26,26,25,24,23,22,21,20,19], c:[ 5, 7,10,14,18,23,28,33,37,40,43,45] },
-    { a:[12,16,20,24,27,29,30,30,29,28,26,24], b:[20,21,21,20,19,18,17,16,16,16,17,18], c:[ 8,12,17,22,28,33,37,40,42,43,43,42] },
-    { a:[14,16,17,17,16,15,14,13,13,14,16,18], b:[18,20,23,27,31,34,36,37,37,36,34,32], c:[20,25,30,35,39,42,44,45,44,43,41,39] },
-    { a:[16,18,20,21,22,22,21,20,19,18,18,19], b:[15,20,27,34,39,43,46,47,47,46,44,42], c:[22,24,25,25,24,23,22,22,22,23,25,27] },
-    { a:[24,26,28,29,29,28,27,25,23,21,19,18], b:[28,27,26,25,24,24,24,25,26,27,28,29], c:[20,22,24,26,28,29,29,28,27,26,25,24] },
-    { a:[ 8,12,17,22,27,32,36,40,43,45,47,48], b:[26,25,24,23,22,21,20,20,20,21,22,23], c:[18,20,22,23,23,22,21,20,20,21,22,24] },
-  ];
-  const lf = getFrame(LINE_KF);
-  const lineData = lerpArr(lf.k0.a, lf.k1.a, lf.t).map((a, i) => ({
-    a,
-    b: lerp(lf.k0.b[i], lf.k1.b[i], lf.t),
-    c: lerp(lf.k0.c[i], lf.k1.c[i], lf.t),
-  }));
-
-  // 2. Pie — 4 market segments, proportions shift slowly
-  const PIE_KF = [
-    [34, 28, 22, 16],
-    [30, 32, 24, 14],
-    [28, 26, 30, 16],
-    [32, 24, 26, 18],
-    [36, 22, 24, 18],
-    [30, 30, 22, 18],
-  ];
-  const pf = getFrame(PIE_KF);
-  const pieRaw = lerpArr(pf.k0, pf.k1, pf.t);
-  const pieSum = pieRaw.reduce((a, b) => a + b, 0);
-  const pieData = pieRaw.map((v, i) => ({ name: String(i), value: (v / pieSum) * 100 }));
-
-  // 3. Bars — 8 product categories, volumes shift each cycle
-  const BAR_KF = [
-    [72, 45, 88, 33, 61, 79, 52, 40],
-    [68, 50, 82, 38, 65, 74, 58, 44],
-    [75, 42, 91, 30, 58, 83, 49, 37],
-    [70, 48, 85, 35, 63, 77, 55, 42],
-    [65, 55, 78, 42, 70, 71, 62, 48],
-    [73, 44, 89, 32, 60, 81, 51, 39],
-  ];
-  const bf = getFrame(BAR_KF);
-  const barData = lerpArr(bf.k0, bf.k1, bf.t).map((v) => ({ v }));
-
-  // 4. ComposedChart — Area + Bar + Line + Scatter
-  const COMP_AREA_KF = [
-    [420, 580, 750, 620, 890, 740, 960, 830, 710, 950, 1100, 880],
-    [510, 640, 700, 780, 830, 950, 880, 760, 920, 1050, 990, 850],
-    [390, 620, 810, 700, 870, 720, 1010, 880, 750, 900, 1080, 920],
-    [460, 590, 730, 810, 860, 980, 910, 790, 960, 1020, 970, 840],
-  ];
-  const COMP_BAR_KF = [
-    [180, 260, 340, 290, 410, 320, 450, 380, 300, 430, 510, 400],
-    [210, 290, 310, 360, 380, 440, 400, 340, 420, 490, 460, 390],
-    [160, 280, 370, 320, 400, 300, 470, 400, 330, 410, 500, 420],
-    [200, 270, 330, 380, 400, 460, 420, 360, 440, 480, 450, 380],
-  ];
-  const COMP_LINE_KF = [
-    [300, 400, 500, 450, 600, 520, 650, 580, 490, 660, 750, 620],
-    [350, 440, 480, 530, 570, 640, 600, 520, 610, 700, 680, 580],
-    [280, 430, 560, 490, 590, 490, 690, 600, 520, 620, 730, 640],
-    [320, 410, 490, 560, 580, 660, 620, 540, 640, 680, 660, 560],
-  ];
-  const COMP_SCAT_KF = [
-    [80, 140, 200, 170, 240, 190, 280, 230, 180, 260, 320, 250],
-    [110, 160, 180, 210, 230, 280, 250, 200, 260, 310, 290, 240],
-    [70, 150, 220, 190, 250, 170, 300, 240, 200, 250, 310, 260],
-    [100, 155, 195, 230, 240, 290, 260, 215, 270, 300, 280, 230],
-  ];
-  const cf = getFrame(COMP_AREA_KF);
-  const cf2 = getFrame(COMP_BAR_KF);
-  const cf3 = getFrame(COMP_LINE_KF);
-  const cf4 = getFrame(COMP_SCAT_KF);
-  const composedData = lerpArr(cf.k0, cf.k1, cf.t).map((area, i) => ({
-    i,
-    area,
-    bar:  lerp(cf2.k0[i], cf2.k1[i], cf2.t),
-    line: lerp(cf3.k0[i], cf3.k1[i], cf3.t),
-    dot:  lerp(cf4.k0[i], cf4.k1[i], cf4.t),
-  }));
-
-  // 5. Scatter — 3 clusters with wide spread and lots of movement
-  const SC1_KF = [
-    [{x:10,y:80},{x:18,y:68},{x:5,y:90},{x:22,y:75},{x:14,y:55},{x:8,y:85},{x:25,y:62},{x:3,y:72}],
-    [{x:20,y:60},{x:8,y:88},{x:15,y:45},{x:30,y:70},{x:5,y:78},{x:18,y:92},{x:12,y:50},{x:25,y:80}],
-    [{x:5,y:70},{x:25,y:50},{x:10,y:95},{x:18,y:40},{x:28,y:85},{x:2,y:60},{x:20,y:75},{x:15,y:30}],
-    [{x:15,y:85},{x:3,y:55},{x:22,y:40},{x:8,y:92},{x:28,y:65},{x:12,y:78},{x:5,y:35},{x:20,y:90}],
-  ];
-  const SC2_KF = [
-    [{x:45,y:45},{x:55,y:60},{x:40,y:30},{x:60,y:50},{x:48,y:70},{x:52,y:25},{x:42,y:55},{x:58,y:40}],
-    [{x:55,y:35},{x:42,y:65},{x:58,y:20},{x:48,y:55},{x:38,y:45},{x:62,y:70},{x:50,y:30},{x:44,y:80}],
-    [{x:40,y:55},{x:60,y:40},{x:45,y:75},{x:55,y:20},{x:50,y:65},{x:38,y:30},{x:58,y:80},{x:48,y:42}],
-    [{x:52,y:25},{x:44,y:70},{x:62,y:55},{x:40,y:42},{x:56,y:80},{x:46,y:18},{x:38,y:60},{x:60,y:35}],
-  ];
-  const SC3_KF = [
-    [{x:72,y:20},{x:85,y:40},{x:78,y:10},{x:92,y:55},{x:68,y:35},{x:88,y:15},{x:75,y:60},{x:95,y:28}],
-    [{x:80,y:35},{x:70,y:15},{x:90,y:50},{x:75,y:25},{x:95,y:40},{x:68,y:60},{x:85,y:8},{x:78,y:45}],
-    [{x:65,y:45},{x:90,y:20},{x:72,y:55},{x:88,y:35},{x:78,y:5},{x:95,y:50},{x:70,y:30},{x:82,y:65}],
-    [{x:88,y:10},{x:75,y:50},{x:92,y:38},{x:68,y:22},{x:82,y:60},{x:72,y:42},{x:95,y:18},{x:78,y:70}],
-  ];
-  const sf1 = getFrame(SC1_KF);
-  const sf2 = getFrame(SC2_KF);
-  const sf3 = getFrame(SC3_KF);
-  const scatterData1 = sf1.k0.map((p, i) => ({ x: lerp(p.x, sf1.k1[i].x, sf1.t), y: lerp(p.y, sf1.k1[i].y, sf1.t) }));
-  const scatterData2 = sf2.k0.map((p, i) => ({ x: lerp(p.x, sf2.k1[i].x, sf2.t), y: lerp(p.y, sf2.k1[i].y, sf2.t) }));
-  const scatterData3 = sf3.k0.map((p, i) => ({ x: lerp(p.x, sf3.k1[i].x, sf3.t), y: lerp(p.y, sf3.k1[i].y, sf3.t) }));
-
-  // 6. Radar — 5 performance axes, two entities compared
-  const RAD_KF = [
-    { v1:[80,65,72,88,55], v2:[60,78,50,65,82] },
-    { v1:[75,70,68,85,60], v2:[65,72,55,70,78] },
-    { v1:[82,60,75,90,52], v2:[58,80,48,62,85] },
-    { v1:[78,68,70,87,58], v2:[62,75,52,68,80] },
-    { v1:[72,74,65,83,63], v2:[68,70,58,74,75] },
-  ];
-  const radarSubjects = ["A", "B", "C", "D", "E"];
-  const rf = getFrame(RAD_KF);
-  const radarData = radarSubjects.map((subject, i) => ({
-    subject,
-    v1: lerp(rf.k0.v1[i], rf.k1.v1[i], rf.t),
-    v2: lerp(rf.k0.v2[i], rf.k1.v2[i], rf.t),
-  }));
 
   // Force line break for the second title word on mobile
   useEffect(() => {
@@ -613,6 +779,14 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               >
                 Lucas Massoni
+              </motion.span>
+              <motion.span
+                className="page-loader-title"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              >
+                Salesforce · SAP · Analytics
               </motion.span>
             </motion.div>
           </motion.div>
@@ -865,110 +1039,7 @@ export default function HomePage() {
                   }}
                   transition={{ duration: 0.9, ease: [0.65, 0, 0.35, 1] }}
                 >
-                  <div className="charts-grid">
-
-                    {/* 1. Line — 3 trending sales curves */}
-                    <div className="chart-bare">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={lineData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
-                          <YAxis domain={[0, 50]} hide={true} />
-                          <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
-                          <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
-                          <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    {/* 2. Pie — always 100% filled, slowly rotates */}
-                    <div className="chart-bare chart-center">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={pieData} dataKey="value"
-                            cx="50%" cy="50%"
-                            innerRadius="32%" outerRadius="56%"
-                            paddingAngle={1.5}
-                            startAngle={90 + T * 12}
-                            endAngle={90 + T * 12 + 360}
-                            isAnimationActive={false}
-                          >
-                            {pieData.map((_, i) => (
-                              <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                            ))}
-                          </Pie>
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    {/* 3. Bar */}
-                    <div className="chart-bare">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={barData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} barCategoryGap="18%">
-                          <Bar dataKey="v" radius={[3, 3, 0, 0]} isAnimationActive={false}>
-                            {barData.map((_, i) => (
-                              <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                            ))}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    {/* 4. Scatter — 3 clusters with wide spread */}
-                    <div className="chart-bare">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <ScatterChart margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
-                          <XAxis dataKey="x" type="number" domain={[0, 100]} hide={true} />
-                          <YAxis dataKey="y" yAxisId="a" type="number" domain={[0, 100]} hide={true} />
-                          <YAxis dataKey="y" yAxisId="b" orientation="right" type="number" domain={[0, 100]} hide={true} />
-                          <YAxis dataKey="y" yAxisId="c" orientation="right" type="number" domain={[0, 100]} hide={true} />
-                          <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
-                          <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} isAnimationActive={false} />
-                          <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} isAnimationActive={false} />
-                        </ScatterChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    {/* 5. ComposedChart — Area + Bar + Line + Scatter */}
-                    <div className="chart-bare">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={composedData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
-                          <defs>
-                            <linearGradient id="compAreaGrad" x1="0" x2="0" y1="0" y2="1">
-                              <stop offset="0%" stopColor={ACCENT1} stopOpacity={0.55} />
-                              <stop offset="100%" stopColor={ACCENT1} stopOpacity={0.05} />
-                            </linearGradient>
-                          </defs>
-                          <XAxis dataKey="i" hide={true} />
-                          <YAxis domain={[0, 1300]} hide={true} />
-                          <Area
-                            type="monotone"
-                            dataKey="area"
-                            fill="url(#compAreaGrad)"
-                            stroke={ACCENT1}
-                            strokeWidth={1.5}
-                            dot={false}
-                            isAnimationActive={false}
-                          />
-                          <Bar dataKey="bar" barSize={8} fill={CHART_COLORS[1]} radius={[2, 2, 0, 0]} isAnimationActive={false} />
-                          <Line type="monotone" dataKey="line" stroke={ACCENT2} strokeWidth={2} dot={false} isAnimationActive={false} />
-                          <Scatter dataKey="dot" fill={CHART_COLORS[5]} isAnimationActive={false} />
-                        </ComposedChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    {/* 6. Radar — 5-axis specified domain */}
-                    <div className="chart-bare chart-center">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart data={radarData} outerRadius="54%" margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
-                          <PolarGrid stroke={`${ACCENT1}44`} />
-                          <PolarAngleAxis dataKey="subject" tick={false} />
-                          <Radar dataKey="v1" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.35} isAnimationActive={false} dot={false} />
-                          <Radar dataKey="v2" stroke={CHART_COLORS[4]} fill={CHART_COLORS[4]} fillOpacity={0.28} isAnimationActive={false} dot={false} />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                  </div>
+                  <ChartGrid active={currentSlide === 0} />
                 </motion.div>
               </div>
             </Container>
@@ -1006,45 +1077,80 @@ export default function HomePage() {
                   transition={{ duration: 0.22 }}
                 >
                   <h2 className="section-title">{t.services.title}</h2>
-                  <div className="grid md:grid-cols-2 gap-3 md:gap-6 mt-4 md:mt-10">
+                  <div className="grid grid-cols-1 md:grid-cols-6 gap-3 md:gap-4 mt-4 md:mt-10">
                     {t.services.items.map((s, idx) => (
                       <motion.div
                         key={s.key}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.5, delay: idx * 1, ease: [0.22, 1, 0.36, 1] }}
                         whileHover={{ y: -6 }}
-                        className="service-card card-hover"
+                        className="service-card card-hover md:col-span-2"
                       >
                         <span className="service-number">{`0${idx + 1}`}</span>
-                        <div className="service-accent-bar" />
-                        <div className="icon">{SERVICE_ICONS[s.key]}</div>
-                        <div className="min-w-0">
-                          <div className="service-title">{s.title}</div>
-                          <p className="service-text">{s.desc}</p>
+                        <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 0 }}>
+                          <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                            <div className="icon">{SERVICE_ICONS[s.key]}</div>
+                            <div className="min-w-0">
+                              <div className="service-title">{s.title}</div>
+                              <p className="service-text">{s.desc}</p>
+                            </div>
+                          </div>
 
-                          {s.cta?.url && (
-                            <div className="mt-4">
-                              <div className="preview-wrapper">
-                                <a
-                                  href={s.cta.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn-secondary btn-hover preview-trigger"
-                                  style={{ padding: "10px 14px", fontSize: "0.78rem" }}
-                                >
-                                  {s.cta.label}
-                                  <ArrowRight size={16} />
-                                </a>
-                                <div className="preview-tooltip">
-                                  <img
-                                    src="/Capture.png"
-                                    alt="Aperçu du site"
-                                    className="preview-img"
-                                  />
-                                  <div className="preview-label">economytimelapse.com</div>
+                          {(s.cta?.url || s.cta2?.url) && (
+                            <div style={{ display: "flex", gap: "8px", justifyContent: "center", alignItems: "center", marginTop: "auto", paddingTop: "16px" }}>
+                              {s.cta?.url && (
+                                <div className="preview-wrapper">
+                                  <a
+                                    href={s.cta.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn-secondary btn-hover preview-trigger"
+                                    style={{ padding: "8px 12px", fontSize: "0.72rem" }}
+                                  >
+                                    {s.cta.label}
+                                  </a>
+                                  {s.cta.preview && (
+                                    <div className="preview-tooltip">
+                                      <img src={s.cta.preview} alt="Aperçu du site" className="preview-img" />
+                                      <div className="preview-label">{s.cta.previewLabel}</div>
+                                    </div>
+                                  )}
                                 </div>
-                              </div>
+                              )}
+                              {s.cta2?.url && (
+                                s.cta2.appStore ? (
+                                  <a
+                                    href={s.cta2.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn-secondary btn-hover"
+                                    style={{ background: ACCENT1, color: "#fff", borderColor: ACCENT1, padding: "8px 14px" }}
+                                  >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                                    </svg>
+                                  </a>
+                                ) : (
+                                  <div className="preview-wrapper">
+                                    <a
+                                      href={s.cta2.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="btn-secondary btn-hover preview-trigger"
+                                      style={{ padding: "8px 12px", fontSize: "0.72rem" }}
+                                    >
+                                      {s.cta2.label}
+                                    </a>
+                                    {s.cta2.preview && (
+                                      <div className="preview-tooltip">
+                                        <img src={s.cta2.preview} alt="Aperçu du site" className="preview-img" />
+                                        <div className="preview-label">{s.cta2.previewLabel}</div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )
+                              )}
                             </div>
                           )}
                         </div>
@@ -1349,11 +1455,12 @@ export default function HomePage() {
           border-radius: 20px;
           padding: 24px;
           display: flex;
-          gap: 16px;
+          flex-direction: column;
+          gap: 0;
           border: 1px solid ${ACCENT1}33;
           box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
           position: relative;
-          overflow: hidden;
+          overflow: visible;
         }
 
         .service-accent-bar {
@@ -1400,16 +1507,16 @@ export default function HomePage() {
           bottom: calc(100% + 12px);
           left: 50%;
           transform: translateX(-50%) translateY(6px);
-          width: 280px;
+          width: 420px;
           background: ${CARD_BG};
           border-radius: 14px;
           border: 1px solid ${ACCENT1}33;
           box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-          overflow: hidden;
+          overflow: visible;
           opacity: 0;
           pointer-events: none;
           transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1);
-          z-index: 100;
+          z-index: 200;
         }
 
         .preview-wrapper:hover .preview-tooltip {
@@ -1449,9 +1556,9 @@ export default function HomePage() {
         /* Stack grid */
         .stack-grid {
           display: grid;
-          grid-template-columns: repeat(5, minmax(180px, 1fr));
-          grid-template-rows: repeat(2, 160px);
-          gap: 16px;
+          grid-template-columns: repeat(5, minmax(160px, 1fr));
+          grid-template-rows: repeat(3, 130px);
+          gap: 12px;
           width: 100%;
         }
 
@@ -1463,7 +1570,7 @@ export default function HomePage() {
           background: ${CARD_BG};
           border: 1px solid ${ACCENT1}33;
           box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
-          height: 160px;
+          height: 130px;
           cursor: default;
           transition: border-color 0.22s ease, box-shadow 0.22s ease;
         }
@@ -1774,6 +1881,16 @@ export default function HomePage() {
           text-transform: uppercase;
         }
 
+        .page-loader-title {
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.72rem;
+          letter-spacing: 0.26em;
+          color: ${ACCENT1};
+          text-transform: uppercase;
+          margin-top: -8px;
+          opacity: 0.9;
+        }
+
         /* Cursor glow */
         .cursor-glow {
           position: fixed;
@@ -1900,9 +2017,9 @@ export default function HomePage() {
 
           /* Stack */
           .stack-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(5, 1fr);
-            gap: 8px;
+            gap: 6px;
           }
           .stack-card {
             height: auto;
