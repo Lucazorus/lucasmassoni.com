@@ -448,9 +448,12 @@ function ChartGrid({ active }) {
   const tRef = useRef(0);
   const [, setFrame] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [hovering, setHovering] = useState(false);
+
+  const animationPaused = !!selected || hovering;
 
   useEffect(() => {
-    if (!active) return;
+    if (!active || animationPaused) return;
     let last = null;
     const step = (ts) => {
       if (last !== null) {
@@ -464,14 +467,17 @@ function ChartGrid({ active }) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [active]);
+  }, [active, animationPaused]);
 
   const T = tRef.current;
 
   const toggleColor = (color) => setSelected((prev) => (prev === color ? null : color));
   const fillAlpha = (color, base = 1) => (!selected || selected === color ? base : base * 0.14);
   const strokeAlpha = (color) => (!selected || selected === color ? 1 : 0.14);
-  const isActive = (color) => !selected || selected === color;
+  const handlePick = (color) => ({
+    onClick: () => toggleColor(color),
+    style: { cursor: "pointer" },
+  });
 
   const getFrame = (keyframes) => {
     const n = keyframes.length - 1;
@@ -571,9 +577,14 @@ function ChartGrid({ active }) {
   }));
 
   return (
-    <div className="charts-grid">
+    <div
+      className="charts-grid"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      onTouchStart={() => setHovering(true)}
+    >
       {selected && (
-        <button className="chart-reset-pill" onClick={() => setSelected(null)} aria-label="Réinitialiser la sélection">
+        <button className="chart-reset-pill" onPointerDown={(e) => { e.stopPropagation(); setSelected(null); }} aria-label="Réinitialiser la sélection">
           <span className="chart-reset-dot" style={{ background: selected }} />
           <span className="chart-reset-label">Reset</span>
           <X size={12} />
@@ -585,12 +596,12 @@ function ChartGrid({ active }) {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={lineData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
             <YAxis domain={[0, 50]} hide={true} />
-            <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[0])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[0])} style={{ cursor: "pointer" }} />
-            <Line type="monotone" dataKey="d" stroke={CHART_COLORS[1]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[1])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[1])} style={{ cursor: "pointer" }} />
-            <Line type="monotone" dataKey="e" stroke={CHART_COLORS[2]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[2])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[2])} style={{ cursor: "pointer" }} />
-            <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[3])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[3])} style={{ cursor: "pointer" }} />
-            <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[4])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[4])} style={{ cursor: "pointer" }} />
-            <Line type="monotone" dataKey="f" stroke={CHART_COLORS[5]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[5])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[5])} style={{ cursor: "pointer" }} />
+            <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[0])} dot={false} isAnimationActive={false} strokeLinecap="round" {...handlePick(CHART_COLORS[0])} />
+            <Line type="monotone" dataKey="d" stroke={CHART_COLORS[1]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[1])} dot={false} isAnimationActive={false} strokeLinecap="round" {...handlePick(CHART_COLORS[1])} />
+            <Line type="monotone" dataKey="e" stroke={CHART_COLORS[2]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[2])} dot={false} isAnimationActive={false} strokeLinecap="round" {...handlePick(CHART_COLORS[2])} />
+            <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[3])} dot={false} isAnimationActive={false} strokeLinecap="round" {...handlePick(CHART_COLORS[3])} />
+            <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[4])} dot={false} isAnimationActive={false} strokeLinecap="round" {...handlePick(CHART_COLORS[4])} />
+            <Line type="monotone" dataKey="f" stroke={CHART_COLORS[5]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[5])} dot={false} isAnimationActive={false} strokeLinecap="round" {...handlePick(CHART_COLORS[5])} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -658,12 +669,12 @@ function ChartGrid({ active }) {
             <YAxis dataKey="y" yAxisId="d" orientation="right" type="number" domain={[0, 100]} hide={true} />
             <YAxis dataKey="y" yAxisId="e" orientation="right" type="number" domain={[0, 100]} hide={true} />
             <YAxis dataKey="y" yAxisId="f" orientation="right" type="number" domain={[0, 100]} hide={true} />
-            <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} fillOpacity={fillAlpha(CHART_COLORS[0])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[0])} style={{ cursor: "pointer" }} />
-            <Scatter yAxisId="d" data={scatterData4} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[1])} style={{ cursor: "pointer" }} />
-            <Scatter yAxisId="e" data={scatterData5} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[2])} style={{ cursor: "pointer" }} />
-            <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} fillOpacity={fillAlpha(CHART_COLORS[3])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[3])} style={{ cursor: "pointer" }} />
-            <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} fillOpacity={fillAlpha(CHART_COLORS[4])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[4])} style={{ cursor: "pointer" }} />
-            <Scatter yAxisId="f" data={scatterData6} fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[5])} style={{ cursor: "pointer" }} />
+            <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} fillOpacity={fillAlpha(CHART_COLORS[0])} isAnimationActive={false} {...handlePick(CHART_COLORS[0])} />
+            <Scatter yAxisId="d" data={scatterData4} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1])} isAnimationActive={false} {...handlePick(CHART_COLORS[1])} />
+            <Scatter yAxisId="e" data={scatterData5} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2])} isAnimationActive={false} {...handlePick(CHART_COLORS[2])} />
+            <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} fillOpacity={fillAlpha(CHART_COLORS[3])} isAnimationActive={false} {...handlePick(CHART_COLORS[3])} />
+            <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} fillOpacity={fillAlpha(CHART_COLORS[4])} isAnimationActive={false} {...handlePick(CHART_COLORS[4])} />
+            <Scatter yAxisId="f" data={scatterData6} fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5])} isAnimationActive={false} {...handlePick(CHART_COLORS[5])} />
           </ScatterChart>
         </ResponsiveContainer>
       </div>
@@ -680,12 +691,12 @@ function ChartGrid({ active }) {
             </defs>
             <XAxis dataKey="i" hide={true} />
             <YAxis domain={[0, 1300]} hide={true} />
-            <Area type="monotone" dataKey="area" fill="url(#compAreaGrad0)" fillOpacity={fillAlpha(CHART_COLORS[0])} stroke={CHART_COLORS[0]} strokeOpacity={strokeAlpha(CHART_COLORS[0])} strokeWidth={1.5} dot={false} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[0])} style={{ cursor: "pointer" }} />
-            <Bar dataKey="bar" barSize={7} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1])} radius={[2, 2, 0, 0]} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[1])} style={{ cursor: "pointer" }} />
-            <Bar dataKey="bar2" barSize={7} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2])} radius={[2, 2, 0, 0]} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[2])} style={{ cursor: "pointer" }} />
-            <Line type="monotone" dataKey="line" stroke={CHART_COLORS[3]} strokeOpacity={strokeAlpha(CHART_COLORS[3])} strokeWidth={2} dot={false} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[3])} style={{ cursor: "pointer" }} />
-            <Line type="monotone" dataKey="line2" stroke={CHART_COLORS[4]} strokeOpacity={strokeAlpha(CHART_COLORS[4])} strokeWidth={2} dot={false} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[4])} style={{ cursor: "pointer" }} />
-            <Scatter dataKey="dot" fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[5])} style={{ cursor: "pointer" }} />
+            <Area type="monotone" dataKey="area" fill="url(#compAreaGrad0)" fillOpacity={fillAlpha(CHART_COLORS[0])} stroke={CHART_COLORS[0]} strokeOpacity={strokeAlpha(CHART_COLORS[0])} strokeWidth={1.5} dot={false} isAnimationActive={false} {...handlePick(CHART_COLORS[0])} />
+            <Bar dataKey="bar" barSize={7} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1])} radius={[2, 2, 0, 0]} isAnimationActive={false} {...handlePick(CHART_COLORS[1])} />
+            <Bar dataKey="bar2" barSize={7} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2])} radius={[2, 2, 0, 0]} isAnimationActive={false} {...handlePick(CHART_COLORS[2])} />
+            <Line type="monotone" dataKey="line" stroke={CHART_COLORS[3]} strokeOpacity={strokeAlpha(CHART_COLORS[3])} strokeWidth={2} dot={false} isAnimationActive={false} {...handlePick(CHART_COLORS[3])} />
+            <Line type="monotone" dataKey="line2" stroke={CHART_COLORS[4]} strokeOpacity={strokeAlpha(CHART_COLORS[4])} strokeWidth={2} dot={false} isAnimationActive={false} {...handlePick(CHART_COLORS[4])} />
+            <Scatter dataKey="dot" fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5])} isAnimationActive={false} {...handlePick(CHART_COLORS[5])} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -696,12 +707,12 @@ function ChartGrid({ active }) {
           <RadarChart data={radarData} outerRadius="54%" margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
             <PolarGrid stroke={`${ACCENT1}44`} />
             <PolarAngleAxis dataKey="subject" tick={false} />
-            <Radar dataKey="v1" stroke={CHART_COLORS[0]} strokeOpacity={strokeAlpha(CHART_COLORS[0])} fill={CHART_COLORS[0]} fillOpacity={fillAlpha(CHART_COLORS[0], 0.35)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[0])} style={{ cursor: "pointer" }} />
-            <Radar dataKey="v3" stroke={CHART_COLORS[1]} strokeOpacity={strokeAlpha(CHART_COLORS[1])} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1], 0.25)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[1])} style={{ cursor: "pointer" }} />
-            <Radar dataKey="v4" stroke={CHART_COLORS[2]} strokeOpacity={strokeAlpha(CHART_COLORS[2])} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2], 0.22)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[2])} style={{ cursor: "pointer" }} />
-            <Radar dataKey="v5" stroke={CHART_COLORS[3]} strokeOpacity={strokeAlpha(CHART_COLORS[3])} fill={CHART_COLORS[3]} fillOpacity={fillAlpha(CHART_COLORS[3], 0.22)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[3])} style={{ cursor: "pointer" }} />
-            <Radar dataKey="v2" stroke={CHART_COLORS[4]} strokeOpacity={strokeAlpha(CHART_COLORS[4])} fill={CHART_COLORS[4]} fillOpacity={fillAlpha(CHART_COLORS[4], 0.3)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[4])} style={{ cursor: "pointer" }} />
-            <Radar dataKey="v6" stroke={CHART_COLORS[5]} strokeOpacity={strokeAlpha(CHART_COLORS[5])} fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5], 0.22)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[5])} style={{ cursor: "pointer" }} />
+            <Radar dataKey="v1" stroke={CHART_COLORS[0]} strokeOpacity={strokeAlpha(CHART_COLORS[0])} fill={CHART_COLORS[0]} fillOpacity={fillAlpha(CHART_COLORS[0], 0.35)} isAnimationActive={false} dot={false} {...handlePick(CHART_COLORS[0])} />
+            <Radar dataKey="v3" stroke={CHART_COLORS[1]} strokeOpacity={strokeAlpha(CHART_COLORS[1])} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1], 0.25)} isAnimationActive={false} dot={false} {...handlePick(CHART_COLORS[1])} />
+            <Radar dataKey="v4" stroke={CHART_COLORS[2]} strokeOpacity={strokeAlpha(CHART_COLORS[2])} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2], 0.22)} isAnimationActive={false} dot={false} {...handlePick(CHART_COLORS[2])} />
+            <Radar dataKey="v5" stroke={CHART_COLORS[3]} strokeOpacity={strokeAlpha(CHART_COLORS[3])} fill={CHART_COLORS[3]} fillOpacity={fillAlpha(CHART_COLORS[3], 0.22)} isAnimationActive={false} dot={false} {...handlePick(CHART_COLORS[3])} />
+            <Radar dataKey="v2" stroke={CHART_COLORS[4]} strokeOpacity={strokeAlpha(CHART_COLORS[4])} fill={CHART_COLORS[4]} fillOpacity={fillAlpha(CHART_COLORS[4], 0.3)} isAnimationActive={false} dot={false} {...handlePick(CHART_COLORS[4])} />
+            <Radar dataKey="v6" stroke={CHART_COLORS[5]} strokeOpacity={strokeAlpha(CHART_COLORS[5])} fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5], 0.22)} isAnimationActive={false} dot={false} {...handlePick(CHART_COLORS[5])} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
