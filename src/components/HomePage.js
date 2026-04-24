@@ -1461,6 +1461,11 @@ export default function HomePage() {
           box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
           position: relative;
           overflow: visible;
+          z-index: 1;
+        }
+
+        .service-card:has(.preview-wrapper:hover) {
+          z-index: 100;
         }
 
         .service-accent-bar {
