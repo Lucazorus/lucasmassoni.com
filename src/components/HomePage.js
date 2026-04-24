@@ -94,22 +94,37 @@ const translations = {
     },
     stack: {
       title: "STACK TECHNIQUE",
-      items: [
-        { name: "Salesforce", desc: "CRM leader mondial. Configuration, administration et personnalisation de la plateforme." },
-        { name: "CPQ", desc: "Configure, Price, Quote. Industrialisation du cycle de vente et des devis complexes." },
-        { name: "Apex", desc: "Langage back-end natif Salesforce pour la logique métier et les intégrations serveur." },
-        { name: "Flow", desc: "Automatisation no-code/low-code : workflows, écrans guidés et processus métier." },
-        { name: "LWC", desc: "Lightning Web Components : composants UI modernes et performants sur Salesforce." },
-        { name: "Data Migration", desc: "Transfert et transformation de données entre systèmes avec qualité garantie." },
-        { name: "SQL", desc: "Requêtes et transformations de données pour le staging, l'audit et la migration." },
-        { name: "Tableau", desc: "Visualisation de données avancée et dashboards décisionnels interactifs." },
-        { name: "CRM Analytics", desc: "Analytics natif Salesforce : exploration de données et rapports embarqués." },
-        { name: "API / JSON", desc: "Intégrations REST/SOAP entre Salesforce et systèmes tiers via échanges JSON." },
-        { name: "SAP", desc: "ERP leader mondial. Customisation, intégrations et automatisation des process métier." },
-        { name: "S/4HANA", desc: "Dernière génération SAP ERP : finance, logistique et chaîne d'approvisionnement." },
-        { name: "ABAP", desc: "Langage natif SAP pour le développement back-end et la customisation ERP." },
-        { name: "Fiori", desc: "Interface utilisateur moderne SAP en HTML5/UI5, cohérente sur tous les modules." },
-        { name: "SAP BTP", desc: "Business Technology Platform : intégrations cloud, extensions et data services SAP." },
+      columns: [
+        {
+          title: "Salesforce",
+          items: [
+            { name: "Salesforce", desc: "CRM leader mondial. Configuration, administration et personnalisation de la plateforme." },
+            { name: "CPQ", desc: "Configure, Price, Quote. Industrialisation du cycle de vente et des devis complexes." },
+            { name: "Apex", desc: "Langage back-end natif Salesforce pour la logique métier et les intégrations serveur." },
+            { name: "Flow", desc: "Automatisation no-code/low-code : workflows, écrans guidés et processus métier." },
+            { name: "LWC", desc: "Lightning Web Components : composants UI modernes et performants sur Salesforce." },
+            { name: "API / JSON", desc: "Intégrations REST/SOAP entre Salesforce et systèmes tiers via échanges JSON." },
+          ],
+        },
+        {
+          title: "SAP",
+          items: [
+            { name: "SAP", desc: "ERP leader mondial. Customisation, intégrations et automatisation des process métier." },
+            { name: "S/4HANA", desc: "Dernière génération SAP ERP : finance, logistique et chaîne d'approvisionnement." },
+            { name: "ABAP", desc: "Langage natif SAP pour le développement back-end et la customisation ERP." },
+            { name: "Fiori", desc: "Interface utilisateur moderne SAP en HTML5/UI5, cohérente sur tous les modules." },
+            { name: "SAP BTP", desc: "Business Technology Platform : intégrations cloud, extensions et data services SAP." },
+          ],
+        },
+        {
+          title: "Analytics & Data",
+          items: [
+            { name: "Tableau", desc: "Visualisation de données avancée et dashboards décisionnels interactifs." },
+            { name: "CRM Analytics", desc: "Analytics natif Salesforce : exploration de données et rapports embarqués." },
+            { name: "SQL", desc: "Requêtes et transformations de données pour le staging, l'audit et la migration." },
+            { name: "Data Migration", desc: "Transfert et transformation de données entre systèmes avec qualité garantie." },
+          ],
+        },
       ],
     },
     metrics: [
@@ -180,22 +195,37 @@ const translations = {
     },
     stack: {
       title: "TECH STACK",
-      items: [
-        { name: "Salesforce", desc: "World-leading CRM. Platform configuration, administration and customisation." },
-        { name: "CPQ", desc: "Configure, Price, Quote. Streamlining complex sales cycles and quoting processes." },
-        { name: "Apex", desc: "Salesforce native back-end language for business logic and server-side integrations." },
-        { name: "Flow", desc: "No-code/low-code automation: workflows, guided screens, and business processes." },
-        { name: "LWC", desc: "Lightning Web Components: modern, high-performance UI components on Salesforce." },
-        { name: "Data Migration", desc: "Reliable data transfer and transformation between systems with quality assurance." },
-        { name: "SQL", desc: "Data querying and transformation for staging, auditing, and migration pipelines." },
-        { name: "Tableau", desc: "Advanced data visualisation and interactive executive dashboards." },
-        { name: "CRM Analytics", desc: "Native Salesforce analytics: embedded data exploration and reporting." },
-        { name: "API / JSON", desc: "REST/SOAP integrations between Salesforce and third-party systems via JSON." },
-        { name: "SAP", desc: "World-leading ERP. Platform customisation, integrations and business process automation." },
-        { name: "S/4HANA", desc: "Latest-generation SAP ERP: finance, logistics and supply chain." },
-        { name: "ABAP", desc: "SAP native language for back-end development and ERP customisation." },
-        { name: "Fiori", desc: "Modern SAP user interface in HTML5/UI5, consistent across all modules." },
-        { name: "SAP BTP", desc: "Business Technology Platform: cloud integrations, extensions and SAP data services." },
+      columns: [
+        {
+          title: "Salesforce",
+          items: [
+            { name: "Salesforce", desc: "World-leading CRM. Platform configuration, administration and customisation." },
+            { name: "CPQ", desc: "Configure, Price, Quote. Streamlining complex sales cycles and quoting processes." },
+            { name: "Apex", desc: "Salesforce native back-end language for business logic and server-side integrations." },
+            { name: "Flow", desc: "No-code/low-code automation: workflows, guided screens, and business processes." },
+            { name: "LWC", desc: "Lightning Web Components: modern, high-performance UI components on Salesforce." },
+            { name: "API / JSON", desc: "REST/SOAP integrations between Salesforce and third-party systems via JSON." },
+          ],
+        },
+        {
+          title: "SAP",
+          items: [
+            { name: "SAP", desc: "World-leading ERP. Platform customisation, integrations and business process automation." },
+            { name: "S/4HANA", desc: "Latest-generation SAP ERP: finance, logistics and supply chain." },
+            { name: "ABAP", desc: "SAP native language for back-end development and ERP customisation." },
+            { name: "Fiori", desc: "Modern SAP user interface in HTML5/UI5, consistent across all modules." },
+            { name: "SAP BTP", desc: "Business Technology Platform: cloud integrations, extensions and SAP data services." },
+          ],
+        },
+        {
+          title: "Analytics & Data",
+          items: [
+            { name: "Tableau", desc: "Advanced data visualisation and interactive executive dashboards." },
+            { name: "CRM Analytics", desc: "Native Salesforce analytics: embedded data exploration and reporting." },
+            { name: "SQL", desc: "Data querying and transformation for staging, auditing, and migration pipelines." },
+            { name: "Data Migration", desc: "Reliable data transfer and transformation between systems with quality assurance." },
+          ],
+        },
       ],
     },
     metrics: [
@@ -417,6 +447,7 @@ function ChartGrid({ active }) {
   const rafRef = useRef(null);
   const tRef = useRef(0);
   const [, setFrame] = useState(0);
+  const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     if (!active) return;
@@ -437,6 +468,11 @@ function ChartGrid({ active }) {
 
   const T = tRef.current;
 
+  const toggleColor = (color) => setSelected((prev) => (prev === color ? null : color));
+  const fillAlpha = (color, base = 1) => (!selected || selected === color ? base : base * 0.14);
+  const strokeAlpha = (color) => (!selected || selected === color ? 1 : 0.14);
+  const isActive = (color) => !selected || selected === color;
+
   const getFrame = (keyframes) => {
     const n = keyframes.length - 1;
     const pos = ((T % CYCLE) / CYCLE) * n;
@@ -452,16 +488,31 @@ function ChartGrid({ active }) {
   };
 
   const lf = getFrame(LINE_KF);
-  const lineData = splineArr(lf.k0.a, lf.k1.a, lf.k2.a, lf.k3.a, lf.t).map((a, i) => ({
-    a,
-    b: spline(lf.k0.b[i], lf.k1.b[i], lf.k2.b[i], lf.k3.b[i], lf.t),
-    c: spline(lf.k0.c[i], lf.k1.c[i], lf.k2.c[i], lf.k3.c[i], lf.t),
-  }));
+  const lineData = splineArr(lf.k0.a, lf.k1.a, lf.k2.a, lf.k3.a, lf.t).map((a, i) => {
+    const b = spline(lf.k0.b[i], lf.k1.b[i], lf.k2.b[i], lf.k3.b[i], lf.t);
+    const c = spline(lf.k0.c[i], lf.k1.c[i], lf.k2.c[i], lf.k3.c[i], lf.t);
+    return {
+      a,
+      b,
+      c,
+      d: 10 + 32 * (0.5 + 0.5 * Math.sin(T * 0.55 + i * 0.5)),
+      e: 8 + 34 * (0.5 + 0.5 * Math.cos(T * 0.65 + i * 0.42 + 1)),
+      f: 12 + 28 * (0.5 + 0.5 * Math.sin(T * 0.48 + i * 0.34 + 2.2)),
+    };
+  });
 
   const pf = getFrame(PIE_KF);
-  const pieRaw = splineArr(pf.k0, pf.k1, pf.k2, pf.k3, pf.t);
-  const pieSum = pieRaw.reduce((a, b) => a + b, 0);
-  const pieData = pieRaw.map((v, i) => ({ name: String(i), value: (v / pieSum) * 100 }));
+  const pieBase = splineArr(pf.k0, pf.k1, pf.k2, pf.k3, pf.t);
+  const pieExpanded = [
+    pieBase[0] * 0.58,
+    pieBase[0] * 0.42,
+    pieBase[1] * 0.55,
+    pieBase[1] * 0.45,
+    pieBase[2],
+    pieBase[3],
+  ];
+  const pieSum = pieExpanded.reduce((a, b) => a + b, 0);
+  const pieData = pieExpanded.map((v, i) => ({ name: String(i), value: (v / pieSum) * 100 }));
 
   const bf = getFrame(BAR_KF);
   const barData = splineArr(bf.k0, bf.k1, bf.k2, bf.k3, bf.t).map((v) => ({ v }));
@@ -474,7 +525,9 @@ function ChartGrid({ active }) {
     i,
     area,
     bar:  spline(cf2.k0[i], cf2.k1[i], cf2.k2[i], cf2.k3[i], cf2.t),
+    bar2: 120 + 160 * (0.5 + 0.5 * Math.sin(T * 0.6 + i * 0.35)),
     line: spline(cf3.k0[i], cf3.k1[i], cf3.k2[i], cf3.k3[i], cf3.t),
+    line2: 280 + 240 * (0.5 + 0.5 * Math.cos(T * 0.5 + i * 0.3 + 1)),
     dot:  spline(cf4.k0[i], cf4.k1[i], cf4.k2[i], cf4.k3[i], cf4.t),
   }));
 
@@ -493,24 +546,51 @@ function ChartGrid({ active }) {
     x: spline(sf3.k0[i].x, sf3.k1[i].x, sf3.k2[i].x, sf3.k3[i].x, sf3.t),
     y: spline(sf3.k0[i].y, sf3.k1[i].y, sf3.k2[i].y, sf3.k3[i].y, sf3.t),
   }));
+  const scatterData4 = Array.from({ length: 8 }, (_, i) => ({
+    x: 34 + 28 * Math.sin(T * 0.35 + i * 0.78),
+    y: 48 + 26 * Math.cos(T * 0.42 + i * 0.6 + 1.1),
+  }));
+  const scatterData5 = Array.from({ length: 8 }, (_, i) => ({
+    x: 50 + 24 * Math.cos(T * 0.4 + i * 0.52 + 0.8),
+    y: 38 + 22 * Math.sin(T * 0.48 + i * 0.7 + 2),
+  }));
+  const scatterData6 = Array.from({ length: 8 }, (_, i) => ({
+    x: 18 + 68 * (0.5 + 0.5 * Math.sin(T * 0.3 + i * 0.42)),
+    y: 22 + 60 * (0.5 + 0.5 * Math.cos(T * 0.37 + i * 0.35 + 1.5)),
+  }));
 
   const rf = getFrame(RAD_KF);
   const radarData = RADAR_SUBJECTS.map((subject, i) => ({
     subject,
     v1: spline(rf.k0.v1[i], rf.k1.v1[i], rf.k2.v1[i], rf.k3.v1[i], rf.t),
     v2: spline(rf.k0.v2[i], rf.k1.v2[i], rf.k2.v2[i], rf.k3.v2[i], rf.t),
+    v3: 40 + 28 * (0.5 + 0.5 * Math.sin(T * 0.4 + i * 0.9)),
+    v4: 45 + 24 * (0.5 + 0.5 * Math.cos(T * 0.5 + i * 0.7 + 1)),
+    v5: 38 + 26 * (0.5 + 0.5 * Math.sin(T * 0.35 + i * 0.6 + 2)),
+    v6: 42 + 22 * (0.5 + 0.5 * Math.cos(T * 0.45 + i * 0.8 + 0.6)),
   }));
 
   return (
     <div className="charts-grid">
+      {selected && (
+        <button className="chart-reset-pill" onClick={() => setSelected(null)} aria-label="Réinitialiser la sélection">
+          <span className="chart-reset-dot" style={{ background: selected }} />
+          <span className="chart-reset-label">Reset</span>
+          <X size={12} />
+        </button>
+      )}
+
       {/* 1. Line */}
       <div className="chart-bare">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={lineData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
             <YAxis domain={[0, 50]} hide={true} />
-            <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
-            <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
-            <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} dot={false} isAnimationActive={false} strokeLinecap="round" />
+            <Line type="monotone" dataKey="a" stroke={CHART_COLORS[0]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[0])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[0])} style={{ cursor: "pointer" }} />
+            <Line type="monotone" dataKey="d" stroke={CHART_COLORS[1]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[1])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[1])} style={{ cursor: "pointer" }} />
+            <Line type="monotone" dataKey="e" stroke={CHART_COLORS[2]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[2])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[2])} style={{ cursor: "pointer" }} />
+            <Line type="monotone" dataKey="b" stroke={CHART_COLORS[3]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[3])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[3])} style={{ cursor: "pointer" }} />
+            <Line type="monotone" dataKey="c" stroke={CHART_COLORS[4]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[4])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[4])} style={{ cursor: "pointer" }} />
+            <Line type="monotone" dataKey="f" stroke={CHART_COLORS[5]} strokeWidth={2} strokeOpacity={strokeAlpha(CHART_COLORS[5])} dot={false} isAnimationActive={false} strokeLinecap="round" onClick={() => toggleColor(CHART_COLORS[5])} style={{ cursor: "pointer" }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -528,9 +608,18 @@ function ChartGrid({ active }) {
               endAngle={90 + T * 12 + 360}
               isAnimationActive={false}
             >
-              {pieData.map((_, i) => (
-                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-              ))}
+              {pieData.map((_, i) => {
+                const c = CHART_COLORS[i % CHART_COLORS.length];
+                return (
+                  <Cell
+                    key={i}
+                    fill={c}
+                    fillOpacity={fillAlpha(c)}
+                    onClick={() => toggleColor(c)}
+                    style={{ cursor: "pointer" }}
+                  />
+                );
+              })}
             </Pie>
           </PieChart>
         </ResponsiveContainer>
@@ -541,9 +630,18 @@ function ChartGrid({ active }) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={barData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }} barCategoryGap="18%">
             <Bar dataKey="v" radius={[3, 3, 0, 0]} isAnimationActive={false}>
-              {barData.map((_, i) => (
-                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-              ))}
+              {barData.map((_, i) => {
+                const c = CHART_COLORS[i % CHART_COLORS.length];
+                return (
+                  <Cell
+                    key={i}
+                    fill={c}
+                    fillOpacity={fillAlpha(c)}
+                    onClick={() => toggleColor(c)}
+                    style={{ cursor: "pointer" }}
+                  />
+                );
+              })}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
@@ -557,9 +655,15 @@ function ChartGrid({ active }) {
             <YAxis dataKey="y" yAxisId="a" type="number" domain={[0, 100]} hide={true} />
             <YAxis dataKey="y" yAxisId="b" orientation="right" type="number" domain={[0, 100]} hide={true} />
             <YAxis dataKey="y" yAxisId="c" orientation="right" type="number" domain={[0, 100]} hide={true} />
-            <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} isAnimationActive={false} />
-            <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} isAnimationActive={false} />
-            <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} isAnimationActive={false} />
+            <YAxis dataKey="y" yAxisId="d" orientation="right" type="number" domain={[0, 100]} hide={true} />
+            <YAxis dataKey="y" yAxisId="e" orientation="right" type="number" domain={[0, 100]} hide={true} />
+            <YAxis dataKey="y" yAxisId="f" orientation="right" type="number" domain={[0, 100]} hide={true} />
+            <Scatter yAxisId="a" data={scatterData1} fill={CHART_COLORS[0]} fillOpacity={fillAlpha(CHART_COLORS[0])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[0])} style={{ cursor: "pointer" }} />
+            <Scatter yAxisId="d" data={scatterData4} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[1])} style={{ cursor: "pointer" }} />
+            <Scatter yAxisId="e" data={scatterData5} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[2])} style={{ cursor: "pointer" }} />
+            <Scatter yAxisId="b" data={scatterData2} fill={CHART_COLORS[3]} fillOpacity={fillAlpha(CHART_COLORS[3])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[3])} style={{ cursor: "pointer" }} />
+            <Scatter yAxisId="c" data={scatterData3} fill={CHART_COLORS[4]} fillOpacity={fillAlpha(CHART_COLORS[4])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[4])} style={{ cursor: "pointer" }} />
+            <Scatter yAxisId="f" data={scatterData6} fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[5])} style={{ cursor: "pointer" }} />
           </ScatterChart>
         </ResponsiveContainer>
       </div>
@@ -569,25 +673,19 @@ function ChartGrid({ active }) {
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={composedData} margin={{ top: 6, right: 6, left: 6, bottom: 6 }}>
             <defs>
-              <linearGradient id="compAreaGrad" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={ACCENT1} stopOpacity={0.55} />
-                <stop offset="100%" stopColor={ACCENT1} stopOpacity={0.05} />
+              <linearGradient id="compAreaGrad0" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor={CHART_COLORS[0]} stopOpacity={0.55} />
+                <stop offset="100%" stopColor={CHART_COLORS[0]} stopOpacity={0.05} />
               </linearGradient>
             </defs>
             <XAxis dataKey="i" hide={true} />
             <YAxis domain={[0, 1300]} hide={true} />
-            <Area
-              type="monotone"
-              dataKey="area"
-              fill="url(#compAreaGrad)"
-              stroke={ACCENT1}
-              strokeWidth={1.5}
-              dot={false}
-              isAnimationActive={false}
-            />
-            <Bar dataKey="bar" barSize={8} fill={CHART_COLORS[1]} radius={[2, 2, 0, 0]} isAnimationActive={false} />
-            <Line type="monotone" dataKey="line" stroke={ACCENT2} strokeWidth={2} dot={false} isAnimationActive={false} />
-            <Scatter dataKey="dot" fill={CHART_COLORS[5]} isAnimationActive={false} />
+            <Area type="monotone" dataKey="area" fill="url(#compAreaGrad0)" fillOpacity={fillAlpha(CHART_COLORS[0])} stroke={CHART_COLORS[0]} strokeOpacity={strokeAlpha(CHART_COLORS[0])} strokeWidth={1.5} dot={false} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[0])} style={{ cursor: "pointer" }} />
+            <Bar dataKey="bar" barSize={7} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1])} radius={[2, 2, 0, 0]} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[1])} style={{ cursor: "pointer" }} />
+            <Bar dataKey="bar2" barSize={7} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2])} radius={[2, 2, 0, 0]} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[2])} style={{ cursor: "pointer" }} />
+            <Line type="monotone" dataKey="line" stroke={CHART_COLORS[3]} strokeOpacity={strokeAlpha(CHART_COLORS[3])} strokeWidth={2} dot={false} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[3])} style={{ cursor: "pointer" }} />
+            <Line type="monotone" dataKey="line2" stroke={CHART_COLORS[4]} strokeOpacity={strokeAlpha(CHART_COLORS[4])} strokeWidth={2} dot={false} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[4])} style={{ cursor: "pointer" }} />
+            <Scatter dataKey="dot" fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5])} isAnimationActive={false} onClick={() => toggleColor(CHART_COLORS[5])} style={{ cursor: "pointer" }} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -598,8 +696,12 @@ function ChartGrid({ active }) {
           <RadarChart data={radarData} outerRadius="54%" margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
             <PolarGrid stroke={`${ACCENT1}44`} />
             <PolarAngleAxis dataKey="subject" tick={false} />
-            <Radar dataKey="v1" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.35} isAnimationActive={false} dot={false} />
-            <Radar dataKey="v2" stroke={CHART_COLORS[4]} fill={CHART_COLORS[4]} fillOpacity={0.28} isAnimationActive={false} dot={false} />
+            <Radar dataKey="v1" stroke={CHART_COLORS[0]} strokeOpacity={strokeAlpha(CHART_COLORS[0])} fill={CHART_COLORS[0]} fillOpacity={fillAlpha(CHART_COLORS[0], 0.35)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[0])} style={{ cursor: "pointer" }} />
+            <Radar dataKey="v3" stroke={CHART_COLORS[1]} strokeOpacity={strokeAlpha(CHART_COLORS[1])} fill={CHART_COLORS[1]} fillOpacity={fillAlpha(CHART_COLORS[1], 0.25)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[1])} style={{ cursor: "pointer" }} />
+            <Radar dataKey="v4" stroke={CHART_COLORS[2]} strokeOpacity={strokeAlpha(CHART_COLORS[2])} fill={CHART_COLORS[2]} fillOpacity={fillAlpha(CHART_COLORS[2], 0.22)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[2])} style={{ cursor: "pointer" }} />
+            <Radar dataKey="v5" stroke={CHART_COLORS[3]} strokeOpacity={strokeAlpha(CHART_COLORS[3])} fill={CHART_COLORS[3]} fillOpacity={fillAlpha(CHART_COLORS[3], 0.22)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[3])} style={{ cursor: "pointer" }} />
+            <Radar dataKey="v2" stroke={CHART_COLORS[4]} strokeOpacity={strokeAlpha(CHART_COLORS[4])} fill={CHART_COLORS[4]} fillOpacity={fillAlpha(CHART_COLORS[4], 0.3)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[4])} style={{ cursor: "pointer" }} />
+            <Radar dataKey="v6" stroke={CHART_COLORS[5]} strokeOpacity={strokeAlpha(CHART_COLORS[5])} fill={CHART_COLORS[5]} fillOpacity={fillAlpha(CHART_COLORS[5], 0.22)} isAnimationActive={false} dot={false} onClick={() => toggleColor(CHART_COLORS[5])} style={{ cursor: "pointer" }} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
@@ -1179,24 +1281,35 @@ export default function HomePage() {
                   transition={{ duration: 0.22 }}
                 >
                   <h2 className="section-title mb-6">{t.stack.title}</h2>
-                  <div className="stack-grid">
-                    {t.stack.items.map((item, idx) => (
-                      <motion.div
-                        key={item.name}
-                        className="stack-card"
-                        initial={{ opacity: 0, y: 30, scale: 0.92 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ duration: 0.5, delay: idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                      >
-                        <div className="stack-card-inner">
-                          <span className="stack-card-name">{item.name}</span>
+                  <div className="stack-columns">
+                    {t.stack.columns.map((col, colIdx) => {
+                      let globalIdx = 0;
+                      for (let i = 0; i < colIdx; i++) globalIdx += t.stack.columns[i].items.length;
+                      return (
+                        <div key={col.title} className="stack-column">
+                          <h3 className="stack-column-title">{col.title}</h3>
+                          <div className="stack-column-cards">
+                            {col.items.map((item, idx) => (
+                              <motion.div
+                                key={item.name}
+                                className="stack-card"
+                                initial={{ opacity: 0, y: 30, scale: 0.92 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ duration: 0.5, delay: (globalIdx + idx) * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                              >
+                                <div className="stack-card-inner">
+                                  <span className="stack-card-name">{item.name}</span>
+                                </div>
+                                <div className="stack-card-reveal">
+                                  <span className="stack-card-reveal-name">{item.name}</span>
+                                  <p className="stack-card-desc">{item.desc}</p>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
                         </div>
-                        <div className="stack-card-reveal">
-                          <span className="stack-card-reveal-name">{item.name}</span>
-                          <p className="stack-card-desc">{item.desc}</p>
-                        </div>
-                      </motion.div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -1319,12 +1432,59 @@ export default function HomePage() {
           gap: 10px;
           flex: 1;
           height: calc(100vh - ${NAV_HEIGHT}px - 40px);
+          position: relative;
         }
 
         .chart-bare {
           background: transparent;
           overflow: hidden;
           min-height: 0;
+        }
+
+        .chart-bare :global(path),
+        .chart-bare :global(.recharts-rectangle),
+        .chart-bare :global(.recharts-symbols),
+        .chart-bare :global(.recharts-sector) {
+          transition: fill-opacity 0.22s ease, stroke-opacity 0.22s ease;
+        }
+
+        .chart-reset-pill {
+          position: absolute;
+          top: 6px;
+          right: 10px;
+          z-index: 10;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 12px;
+          border-radius: 999px;
+          border: 1px solid ${ACCENT1}55;
+          background: ${CARD_BG};
+          color: ${TITLES};
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.62rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          cursor: pointer;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .chart-reset-pill:hover {
+          transform: translateY(-1px);
+          border-color: ${ACCENT1}99;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-reset-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          box-shadow: 0 0 0 2px ${BG};
+        }
+
+        .chart-reset-label {
+          opacity: 0.75;
         }
 
         .chart-center {
@@ -1565,6 +1725,38 @@ export default function HomePage() {
           grid-template-rows: repeat(3, 130px);
           gap: 12px;
           width: 100%;
+        }
+
+        /* Stack columns */
+        .stack-columns {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 28px;
+          width: 100%;
+        }
+
+        .stack-column {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .stack-column-title {
+          font-family: var(--font-share-tech-mono);
+          font-size: 0.72rem;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: ${TITLES};
+          opacity: 0.55;
+          margin: 0 0 4px 0;
+          padding-bottom: 10px;
+          border-bottom: 1px solid ${ACCENT1}33;
+        }
+
+        .stack-column-cards {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
         }
 
         /* Stack cards — hover-reveal */
@@ -2025,6 +2217,18 @@ export default function HomePage() {
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(5, 1fr);
             gap: 6px;
+          }
+          .stack-columns {
+            grid-template-columns: 1fr;
+            gap: 18px;
+          }
+          .stack-column-cards {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+          }
+          .stack-column-title {
+            font-size: 0.62rem;
+            padding-bottom: 6px;
           }
           .stack-card {
             height: auto;
