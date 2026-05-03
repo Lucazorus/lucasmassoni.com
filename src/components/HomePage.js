@@ -749,12 +749,27 @@ export default function HomePage() {
   useEffect(() => {
     const THROTTLE = 1100;
     let lastWheel = 0;
+    const findScrollable = (el) => {
+      while (el && el.nodeType === 1 && el !== document.body) {
+        const cs = getComputedStyle(el);
+        if ((cs.overflowY === "auto" || cs.overflowY === "scroll") && el.scrollHeight > el.clientHeight + 1) return el;
+        el = el.parentElement;
+      }
+      return null;
+    };
     const onWheel = (e) => {
+      const delta = e.deltaY || e.deltaX;
+      const scrollable = findScrollable(e.target);
+      if (scrollable) {
+        const max = scrollable.scrollHeight - scrollable.clientHeight;
+        const cur = scrollable.scrollTop;
+        const atEdge = (delta > 0 && cur >= max - 1) || (delta < 0 && cur <= 1);
+        if (!atEdge) return;
+      }
       e.preventDefault();
       const now = Date.now();
       if (now - lastWheel < THROTTLE) return;
       lastWheel = now;
-      const delta = e.deltaY || e.deltaX;
       setCurrentSlide((prev) => {
         const next = delta > 0 ? Math.min(TOTAL_SLIDES - 1, prev + 1) : Math.max(0, prev - 1);
         if (trackRef.current) {
@@ -771,22 +786,40 @@ export default function HomePage() {
   useEffect(() => {
     let touchStartY = 0;
     let touchStartX = 0;
+    let scrollableEl = null;
+    let scrollTopAtStart = 0;
+    const findScrollable = (el) => {
+      while (el && el.nodeType === 1 && el !== document.body) {
+        const cs = getComputedStyle(el);
+        if ((cs.overflowY === "auto" || cs.overflowY === "scroll") && el.scrollHeight > el.clientHeight + 1) return el;
+        el = el.parentElement;
+      }
+      return null;
+    };
     const onTouchStart = (e) => {
       touchStartY = e.touches[0].clientY;
       touchStartX = e.touches[0].clientX;
+      scrollableEl = findScrollable(e.target);
+      scrollTopAtStart = scrollableEl ? scrollableEl.scrollTop : 0;
     };
     const onTouchEnd = (e) => {
       const dy = touchStartY - e.changedTouches[0].clientY;
       const dx = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
-        setCurrentSlide((prev) => {
-          const next = dy > 0 ? Math.min(TOTAL_SLIDES - 1, prev + 1) : Math.max(0, prev - 1);
-          if (trackRef.current) {
-            trackRef.current.style.transform = `translateY(-${next * 100}vh)`;
-          }
-          return next;
-        });
+      if (Math.abs(dy) <= Math.abs(dx) || Math.abs(dy) <= 40) return;
+      if (scrollableEl) {
+        const max = scrollableEl.scrollHeight - scrollableEl.clientHeight;
+        const cur = scrollableEl.scrollTop;
+        if (cur !== scrollTopAtStart) return;
+        const atEdge = (dy > 0 && cur >= max - 1) || (dy < 0 && cur <= 1);
+        if (!atEdge) return;
       }
+      setCurrentSlide((prev) => {
+        const next = dy > 0 ? Math.min(TOTAL_SLIDES - 1, prev + 1) : Math.max(0, prev - 1);
+        if (trackRef.current) {
+          trackRef.current.style.transform = `translateY(-${next * 100}vh)`;
+        }
+        return next;
+      });
     };
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
@@ -1033,7 +1066,7 @@ export default function HomePage() {
           height: `${TOTAL_SLIDES * 100}vh`,
           willChange: "transform",
           transition: "transform 0.9s cubic-bezier(0.65, 0, 0.35, 1)",
-          transform: "translateY(0vh)",
+          transform: `translateY(-${currentSlide * 100}vh)`,
         }}
       >
 
@@ -1179,7 +1212,8 @@ export default function HomePage() {
             backgroundImage: `radial-gradient(circle at 20% 50%, ${ACCENT1}08 0%, transparent 50%), radial-gradient(circle at 80% 20%, ${ACCENT2}06 0%, transparent 40%)`,
           }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", overflowY: "auto" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+            <div style={{ minHeight: "100%", display: "flex", alignItems: "center", padding: "24px 0" }}>
             <Container>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -1273,6 +1307,7 @@ export default function HomePage() {
                 </motion.div>
               </AnimatePresence>
             </Container>
+            </div>
           </div>
         </section>
 
@@ -1281,7 +1316,8 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, display: "flex", alignItems: "center", overflowY: "auto" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+            <div style={{ minHeight: "100%", display: "flex", alignItems: "center", padding: "24px 0" }}>
             <Container>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -1325,6 +1361,7 @@ export default function HomePage() {
                 </motion.div>
               </AnimatePresence>
             </Container>
+            </div>
           </div>
         </section>
 
@@ -1820,6 +1857,7 @@ export default function HomePage() {
           align-items: center;
           justify-content: center;
           gap: 8px;
+          overflow: hidden;
           transform: translateY(100%);
           transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
           border-radius: 16px;
