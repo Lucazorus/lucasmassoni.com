@@ -802,6 +802,12 @@ export default function HomePage() {
       scrollableEl = findScrollable(e.target);
       scrollTopAtStart = scrollableEl ? scrollableEl.scrollTop : 0;
     };
+    const onTouchMove = (e) => {
+      if (e.touches.length !== 1) return;
+      const dx = Math.abs(e.touches[0].clientX - touchStartX);
+      const dy = Math.abs(e.touches[0].clientY - touchStartY);
+      if (dx > dy && dx > 8 && e.cancelable) e.preventDefault();
+    };
     const onTouchEnd = (e) => {
       const dy = touchStartY - e.changedTouches[0].clientY;
       const dx = touchStartX - e.changedTouches[0].clientX;
@@ -820,9 +826,11 @@ export default function HomePage() {
       });
     };
     window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
     return () => {
       window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
     };
   }, []);
