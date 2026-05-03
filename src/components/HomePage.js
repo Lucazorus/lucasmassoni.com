@@ -902,7 +902,7 @@ export default function HomePage() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: BG, color: TEXT, position: "relative" }}>
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: BG, color: TEXT, position: "relative", touchAction: "pan-y" }}>
       <Analytics />
 
       {/* Page entrance overlay */}
@@ -1073,6 +1073,7 @@ export default function HomePage() {
           willChange: "transform",
           transition: "transform 0.9s cubic-bezier(0.65, 0, 0.35, 1)",
           transform: `translateY(-${currentSlide * 100}vh)`,
+          touchAction: "pan-y",
         }}
       >
 
@@ -1218,7 +1219,7 @@ export default function HomePage() {
             backgroundImage: `radial-gradient(circle at 20% 50%, ${ACCENT1}08 0%, transparent 50%), radial-gradient(circle at 80% 20%, ${ACCENT2}06 0%, transparent 40%)`,
           }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}>
             <div style={{ minHeight: "100%", display: "flex", alignItems: "center", padding: "24px 0" }}>
             <Container>
               <AnimatePresence mode="wait">
@@ -1322,7 +1323,7 @@ export default function HomePage() {
           id="stack"
           style={{ width: "100vw", height: "100vh", flexShrink: 0, overflow: "hidden", paddingTop: NAV_HEIGHT }}
         >
-          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+          <div style={{ height: `calc(100vh - ${NAV_HEIGHT}px)`, overflowY: "auto", overflowX: "hidden", WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}>
             <div style={{ minHeight: "100%", display: "flex", alignItems: "center", padding: "24px 0" }}>
             <Container>
               <AnimatePresence mode="wait">
