@@ -808,10 +808,8 @@ export default function HomePage() {
       if (Math.abs(dy) <= Math.abs(dx) || Math.abs(dy) <= 40) return;
       if (scrollableEl) {
         const max = scrollableEl.scrollHeight - scrollableEl.clientHeight;
-        const cur = scrollableEl.scrollTop;
-        if (cur !== scrollTopAtStart) return;
-        const atEdge = (dy > 0 && cur >= max - 1) || (dy < 0 && cur <= 1);
-        if (!atEdge) return;
+        const atEdgeAtStart = (dy > 0 && scrollTopAtStart >= max - 1) || (dy < 0 && scrollTopAtStart <= 1);
+        if (!atEdgeAtStart) return;
       }
       setCurrentSlide((prev) => {
         const next = dy > 0 ? Math.min(TOTAL_SLIDES - 1, prev + 1) : Math.max(0, prev - 1);
@@ -1449,6 +1447,8 @@ export default function HomePage() {
         html, body {
           overflow: hidden;
           height: 100%;
+          touch-action: pan-y;
+          overscroll-behavior: none;
         }
 
         /* Hero 2-col layout */
