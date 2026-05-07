@@ -171,7 +171,7 @@ export default async function Image() {
                     opacity: 0.7,
                   }}
                 >
-                  ANNÉES D'EXPÉRIENCE
+                  ANNÉES D&apos;EXPÉRIENCE
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
