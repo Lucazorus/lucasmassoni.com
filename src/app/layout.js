@@ -80,21 +80,12 @@ export const metadata = {
     title: "Lucas Massoni · Expert Salesforce, SAP & Analytics Freelance",
     description:
       "Consultant freelance — Salesforce (Sales Cloud, CPQ, Analytics, Apex/Flow/LWC, Data Migration) et SAP (S/4HANA, Fiori, ABAP, SAP BTP). 6+ ans d'expérience. Exécution rapide et orientée résultats.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Lucas Massoni — Expert Salesforce, SAP & Analytics Freelance",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Lucas Massoni · Expert Salesforce, SAP & Analytics Freelance",
     description:
       "Consultant freelance — Salesforce (Sales Cloud, CPQ, Analytics, Apex/Flow/LWC) et SAP (S/4HANA, Fiori, ABAP). 6+ ans d'expérience.",
-    images: ["/og-image.png"],
   },
   robots: {
     index: true,
