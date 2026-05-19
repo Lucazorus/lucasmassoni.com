@@ -31,10 +31,20 @@ import { Analytics } from "@vercel/analytics/react";
 // ================= COLORS =================
 const BG = "#FAF9F5";
 const ACCENT1 = "#7aa595";
+const ACCENT1_DEEP = "#5e8a7a";
 const ACCENT2 = "#FECF56";
 const TITLES = "#393E41";
 const TEXT = "#393E41";
-const CARD_BG = "#FFFFFF";
+const CARD_BG = "#FAF9F5";
+
+// Neumorphism shadow tokens — same hue as BG, just lighter/darker variants
+const SHADOW_DARK = "#d8d4ca";
+const SHADOW_LIGHT = "#ffffff";
+const SHADOW_OUT = `9px 9px 22px ${SHADOW_DARK}, -9px -9px 22px ${SHADOW_LIGHT}`;
+const SHADOW_OUT_LG = `14px 14px 32px ${SHADOW_DARK}, -14px -14px 32px ${SHADOW_LIGHT}`;
+const SHADOW_OUT_SM = `5px 5px 12px ${SHADOW_DARK}, -5px -5px 12px ${SHADOW_LIGHT}`;
+const SHADOW_IN = `inset 6px 6px 14px ${SHADOW_DARK}, inset -6px -6px 14px ${SHADOW_LIGHT}`;
+const SHADOW_IN_SM = `inset 3px 3px 7px ${SHADOW_DARK}, inset -3px -3px 7px ${SHADOW_LIGHT}`;
 
 const NAV_HEIGHT = 88;
 
@@ -255,7 +265,7 @@ const SERVICE_ICONS = {
 };
 
 const Container = ({ children }) => (
-  <div className="max-w-7xl mx-auto px-6 md:px-10">{children}</div>
+  <div className="max-w-7xl mx-auto px-6 md:px-10" style={{ width: "100%" }}>{children}</div>
 );
 
 // ================= LOADER LOGO =================
@@ -345,6 +355,406 @@ function MagneticButton({ children, className, style, ...props }) {
       {...props}
     >
       {children}
+    </div>
+  );
+}
+
+// ================= DATA FLOW ANIMATION =================
+// 3 phases en boucle (9s) : chaos → table structurée → combo bar+line
+function DataFlowAnimation({ active }) {
+  const dotsRef = useRef([]);
+  const barsRef = useRef([]);
+  const donutRefs = useRef([]);
+  const treemapRefs = useRef([]);
+  const line1Ref = useRef(null);
+  const line2Ref = useRef(null);
+  const gridRef = useRef(null);
+  const chartLayerRef = useRef(null);
+  const rafRef = useRef(null);
+  const tRef = useRef(0);
+
+  const N = 36;
+  // Dot index ranges per chart in the final chart phase
+  const LINE_DOTS = 8;        // 0-7  (2 series of 4)
+  const BAR_DOTS = 6;         // 8-13
+  const DONUT_DOTS = 6;       // 14-19
+  const SCATTER_DOTS = 8;     // 20-27
+  const TREEMAP_DOTS = 8;     // 28-35
+
+  const DOT_COLORS = ["#7aa595", "#fecf56", "#6fafac", "#5e8a7a", "#a8c5b8", "#6f9caf"];
+  const LINE_COLOR_1 = "#fecf56"; // jaune
+  const LINE_COLOR_2 = "#5e8a7a"; // vert profond
+
+  // Generate layouts once
+  const layouts = useMemo(() => {
+    let s = 1234;
+    const rng = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+
+    // Phase 1: chaos
+    const chaos = Array.from({ length: N }, () => ({
+      x: 80 + rng() * 640, y: 60 + rng() * 380, r: 5 + rng() * 4, alpha: 1,
+    }));
+
+    // Phase 2: structured table
+    const COLS = 6, ROWS = 6;
+    const colW = (680 - 120) / (COLS - 1);
+    const rowH = (440 - 120) / (ROWS - 1);
+    const structured = Array.from({ length: N }, (_, i) => {
+      const col = i % COLS;
+      const row = Math.floor(i / COLS);
+      return { x: 140 + col * colW, y: 120 + row * rowH, r: 5, alpha: 1 };
+    });
+
+    // Phase 3: 5 mini-charts in a 3-cell top row + 2-cell bottom row
+    const stages = {
+      line:    { x: 50,  y: 50,  w: 210, h: 180 },
+      bar:     { x: 290, y: 50,  w: 210, h: 180 },
+      donut:   { x: 530, y: 50,  w: 210, h: 180 },
+      scatter: { x: 50,  y: 275, w: 270, h: 190 },
+      treemap: { x: 350, y: 275, w: 400, h: 190 },
+    };
+
+    // --- LINE (8 dots: 2 series × 4 points)
+    const linePts = [];
+    for (let series = 0; series < 2; series++) {
+      for (let i = 0; i < 4; i++) {
+        const t = i / 3;
+        const baseY = stages.line.y + stages.line.h * (series === 0 ? 0.72 : 0.45);
+        const wobble = Math.sin(t * Math.PI * 1.8 + series * 1.4) * 28;
+        linePts.push({
+          x: stages.line.x + 10 + t * (stages.line.w - 20),
+          y: baseY + wobble - t * 35,
+        });
+      }
+    }
+
+    // --- BAR (6 dots → 6 bars)
+    const barPts = [];
+    const barSlot = stages.bar.w / BAR_DOTS;
+    const barW = barSlot * 0.6;
+    for (let i = 0; i < BAR_DOTS; i++) {
+      const t = i / (BAR_DOTS - 1);
+      const barH = 30 + t * 110 + Math.sin(i * 1.5) * 16;
+      const cx = stages.bar.x + (i + 0.5) * barSlot;
+      barPts.push({ x: cx, y: stages.bar.y + stages.bar.h - barH, barH });
+    }
+    const barTargets = barPts.map(p => ({
+      x: p.x - barW / 2,
+      y: p.y,
+      w: barW,
+      h: p.barH,
+    }));
+
+    // --- DONUT (6 dots → 6 sectors)
+    const dCx = stages.donut.x + stages.donut.w / 2;
+    const dCy = stages.donut.y + stages.donut.h / 2;
+    const dR = Math.min(stages.donut.w, stages.donut.h) / 2 * 0.78;
+    const dRi = dR * 0.56;
+    const dRmid = (dR + dRi) / 2;
+    const sectorSweeps = [1.2, 0.85, 1.15, 0.95, 1.05, 0.8]; // relative sizes
+    const sweepSum = sectorSweeps.reduce((a, b) => a + b, 0);
+    const sectorAngles = []; // [{ a1, a2, mid }]
+    let curA = -Math.PI / 2;
+    for (let i = 0; i < 6; i++) {
+      const sweep = (sectorSweeps[i] / sweepSum) * Math.PI * 2;
+      const a1 = curA;
+      const a2 = curA + sweep;
+      sectorAngles.push({ a1, a2, mid: (a1 + a2) / 2 });
+      curA = a2;
+    }
+    const donutPts = sectorAngles.map(({ mid }) => ({
+      x: dCx + Math.cos(mid) * dRmid,
+      y: dCy + Math.sin(mid) * dRmid,
+    }));
+    // Sector paths
+    const arcPath = (cx, cy, rOut, rIn, a1, a2) => {
+      const x1 = cx + Math.cos(a1) * rOut, y1 = cy + Math.sin(a1) * rOut;
+      const x2 = cx + Math.cos(a2) * rOut, y2 = cy + Math.sin(a2) * rOut;
+      const x3 = cx + Math.cos(a2) * rIn,  y3 = cy + Math.sin(a2) * rIn;
+      const x4 = cx + Math.cos(a1) * rIn,  y4 = cy + Math.sin(a1) * rIn;
+      const large = a2 - a1 > Math.PI ? 1 : 0;
+      return `M${x1.toFixed(2)},${y1.toFixed(2)} A${rOut},${rOut} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} L${x3.toFixed(2)},${y3.toFixed(2)} A${rIn},${rIn} 0 ${large} 0 ${x4.toFixed(2)},${y4.toFixed(2)} Z`;
+    };
+    const donutTargets = sectorAngles.map(({ a1, a2 }) => arcPath(dCx, dCy, dR, dRi, a1, a2));
+
+    // --- SCATTER (8 dots pseudo-random)
+    const scatterPts = [];
+    for (let i = 0; i < SCATTER_DOTS; i++) {
+      scatterPts.push({
+        x: stages.scatter.x + 18 + rng() * (stages.scatter.w - 36),
+        y: stages.scatter.y + 18 + rng() * (stages.scatter.h - 36),
+      });
+    }
+
+    // --- TREEMAP (8 tiles, non-uniform sizes)
+    // Custom layout: 3 tiles on top row + 2 tiles middle + 3 tiles bottom
+    // Simpler: column-pack approach for visual interest
+    const tmTiles = [
+      // 2 large tiles on the left taking 50% width
+      { gx: 0,    gy: 0,    gw: 0.42, gh: 0.55 },
+      { gx: 0,    gy: 0.55, gw: 0.42, gh: 0.45 },
+      // 4 tiles middle column
+      { gx: 0.42, gy: 0,    gw: 0.28, gh: 0.42 },
+      { gx: 0.42, gy: 0.42, gw: 0.28, gh: 0.32 },
+      { gx: 0.42, gy: 0.74, gw: 0.28, gh: 0.26 },
+      // 2 tiles right column
+      { gx: 0.70, gy: 0,    gw: 0.30, gh: 0.48 },
+      { gx: 0.70, gy: 0.48, gw: 0.30, gh: 0.30 },
+      { gx: 0.70, gy: 0.78, gw: 0.30, gh: 0.22 },
+    ];
+    const TM_PAD = 3;
+    const treemapTargets = tmTiles.map((t) => ({
+      x: stages.treemap.x + t.gx * stages.treemap.w + TM_PAD,
+      y: stages.treemap.y + t.gy * stages.treemap.h + TM_PAD,
+      w: t.gw * stages.treemap.w - TM_PAD * 2,
+      h: t.gh * stages.treemap.h - TM_PAD * 2,
+    }));
+    const treemapPts = treemapTargets.map(t => ({
+      x: t.x + t.w / 2,
+      y: t.y + t.h / 2,
+    }));
+
+    // --- Combined chart layout (36 dots)
+    const chart = [
+      ...linePts.map(p => ({ x: p.x, y: p.y, r: 4, alpha: 1 })),       // 0-7 line nodes (visible)
+      ...barPts.map(p => ({ x: p.x, y: p.y, r: 3, alpha: 0 })),        // 8-13 bar tops (hidden, bars draw)
+      ...donutPts.map(p => ({ x: p.x, y: p.y, r: 3, alpha: 0 })),      // 14-19 donut centroids (hidden, arcs draw)
+      ...scatterPts.map(p => ({ x: p.x, y: p.y, r: 4, alpha: 1 })),    // 20-27 scatter (visible as dots)
+      ...treemapPts.map(p => ({ x: p.x, y: p.y, r: 3, alpha: 0 })),    // 28-35 treemap centers (hidden, tiles draw)
+    ];
+
+    const KFS = [
+      { t: 0,    layout: chaos,      kind: "chaos", grid: 0, chart: 0 },
+      { t: 1.0,  layout: chaos,      kind: "chaos", grid: 0, chart: 0 },
+      { t: 3.0,  layout: chaos,      kind: "chaos", grid: 0, chart: 0 },
+      { t: 4.2,  layout: structured, kind: "table", grid: 1, chart: 0 },
+      { t: 5.8,  layout: structured, kind: "table", grid: 1, chart: 0 },
+      { t: 7.2,  layout: chart,      kind: "chart", grid: 0, chart: 1 },
+      { t: 8.7,  layout: chart,      kind: "chart", grid: 0, chart: 1 },
+      { t: 9.0,  layout: chaos,      kind: "chaos", grid: 0, chart: 0 },
+    ];
+
+    return { chaos, structured, chart, barTargets, donutTargets, treemapTargets, stages, KFS, TOTAL: 9 };
+  }, []);
+
+  useEffect(() => {
+    if (!active) return;
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+    const hexToRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+    const toHex = (n) => Math.round(n).toString(16).padStart(2, "0");
+    const lerpColor = (c1, c2, t) => {
+      const a = hexToRgb(c1), b = hexToRgb(c2);
+      return "#" + toHex(lerp(a[0], b[0], t)) + toHex(lerp(a[1], b[1], t)) + toHex(lerp(a[2], b[2], t));
+    };
+    const { KFS, TOTAL, barTargets, donutTargets, treemapTargets } = layouts;
+
+    const step = (ts) => {
+      if (tRef.current === 0) tRef.current = ts;
+      const time = (ts - tRef.current) / 1000;
+      const T = time % TOTAL;
+
+      let a = KFS[0], b = KFS[1];
+      for (let i = 0; i < KFS.length - 1; i++) {
+        if (T >= KFS[i].t && T < KFS[i + 1].t) { a = KFS[i]; b = KFS[i + 1]; break; }
+      }
+      const span = b.t - a.t;
+      const k = ease(span > 0 ? (T - a.t) / span : 0);
+
+      const chaosA = a.kind === "chaos" ? 1 : 0;
+      const chaosB = b.kind === "chaos" ? 1 : 0;
+      const chaosWeight = lerp(chaosA, chaosB, k);
+
+      for (let i = 0; i < N; i++) {
+        const A = a.layout[i], B = b.layout[i];
+        const dot = dotsRef.current[i];
+        if (!dot) continue;
+        let x = lerp(A.x, B.x, k);
+        let y = lerp(A.y, B.y, k);
+        if (chaosWeight > 0.01) {
+          const sx = 0.35 + (i % 7) * 0.08;
+          const sy = 0.28 + (i % 5) * 0.09;
+          const ampX = 9 + (i % 4) * 2;
+          const ampY = 7 + (i % 3) * 2;
+          x += Math.sin(time * sx + i * 0.73) * ampX * chaosWeight;
+          y += Math.cos(time * sy + i * 0.97) * ampY * chaosWeight;
+        }
+        dot.setAttribute("cx", x.toFixed(2));
+        dot.setAttribute("cy", y.toFixed(2));
+        dot.setAttribute("r", lerp(A.r ?? 5, B.r ?? 5, k).toFixed(2));
+        dot.setAttribute("opacity", lerp(A.alpha ?? 1, B.alpha ?? 1, k).toFixed(3));
+
+        // Line-node dots adopt the line color in chart phase
+        if (i < LINE_DOTS) {
+          const baseColor = DOT_COLORS[i % DOT_COLORS.length];
+          const seriesColor = i < 4 ? LINE_COLOR_1 : LINE_COLOR_2;
+          const colorTo = b.kind === "chart" ? seriesColor : baseColor;
+          const colorFrom = a.kind === "chart" ? seriesColor : baseColor;
+          dot.setAttribute("fill", lerpColor(colorFrom, colorTo, k));
+        }
+      }
+
+      if (gridRef.current) gridRef.current.setAttribute("opacity", lerp(a.grid, b.grid, k).toFixed(3));
+
+      const chartOp = lerp(a.chart, b.chart, k);
+      if (chartLayerRef.current) chartLayerRef.current.setAttribute("opacity", chartOp.toFixed(3));
+
+      if (chartOp > 0.02) {
+        // Line paths follow current dot positions (series 1: dots 0-3, series 2: dots 4-7)
+        const buildPath = (start, end) => {
+          let d = "";
+          for (let i = start; i < end; i++) {
+            const dot = dotsRef.current[i];
+            const cx = parseFloat(dot.getAttribute("cx"));
+            const cy = parseFloat(dot.getAttribute("cy"));
+            d += (i === start ? "M" : "L") + cx.toFixed(1) + "," + cy.toFixed(1) + " ";
+          }
+          return d.trim();
+        };
+        if (line1Ref.current) line1Ref.current.setAttribute("d", buildPath(0, 4));
+        if (line2Ref.current) line2Ref.current.setAttribute("d", buildPath(4, 8));
+
+        // Bars grow from baseline with stagger
+        barsRef.current.forEach((rect, i) => {
+          if (!rect) return;
+          const stagger = (i / (BAR_DOTS - 1)) * 0.3;
+          const localK = Math.max(0, Math.min(1, (chartOp - stagger) / (1 - stagger)));
+          const target = barTargets[i];
+          const baseline = layouts.stages.bar.y + layouts.stages.bar.h;
+          rect.setAttribute("y", (baseline - target.h * localK).toFixed(2));
+          rect.setAttribute("height", (target.h * localK).toFixed(2));
+          rect.setAttribute("opacity", localK.toFixed(3));
+        });
+
+        // Donut sectors fade in with stagger
+        donutRefs.current.forEach((path, i) => {
+          if (!path) return;
+          const stagger = (i / (DONUT_DOTS - 1)) * 0.3;
+          const localK = Math.max(0, Math.min(1, (chartOp - stagger) / (1 - stagger)));
+          if (chartOp > stagger) {
+            path.setAttribute("d", donutTargets[i]);
+          }
+          path.setAttribute("opacity", localK.toFixed(3));
+        });
+
+        // Treemap tiles grow in with stagger
+        treemapRefs.current.forEach((rect, i) => {
+          if (!rect) return;
+          const stagger = (i / (TREEMAP_DOTS - 1)) * 0.35;
+          const localK = Math.max(0, Math.min(1, (chartOp - stagger) / (1 - stagger)));
+          rect.setAttribute("opacity", localK.toFixed(3));
+        });
+      } else {
+        barsRef.current.forEach((rect) => {
+          if (rect) { rect.setAttribute("opacity", 0); rect.setAttribute("height", 0); }
+        });
+        donutRefs.current.forEach((path) => { if (path) path.setAttribute("opacity", 0); });
+        treemapRefs.current.forEach((rect) => { if (rect) rect.setAttribute("opacity", 0); });
+      }
+
+      rafRef.current = requestAnimationFrame(step);
+    };
+
+    rafRef.current = requestAnimationFrame(step);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      tRef.current = 0;
+    };
+  }, [active, layouts]);
+
+  const DONUT_COLORS = ["#7aa595", "#fecf56", "#6fafac", "#a8c5b8", "#5e8a7a", "#cbe2d4"];
+  const TREEMAP_COLORS = ["#7aa595", "#a8c5b8", "#fecf56", "#6fafac", "#cbe2d4", "#5e8a7a", "#bdd7c8", "#f0d98a"];
+
+  return (
+    <div className="data-flow-wrap">
+      <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet" className="data-flow-svg">
+        {/* Background table grid (visible only in structured phase) */}
+        <g ref={gridRef} opacity="0">
+          <g stroke="#cbc7be" strokeWidth="0.6" strokeDasharray="2 3" opacity="0.6">
+            {[90, 160, 230, 300, 370, 440].map((y) => (
+              <line key={`h${y}`} x1="120" y1={y} x2="680" y2={y} />
+            ))}
+            {[200, 320, 440, 560, 680].map((x) => (
+              <line key={`v${x}`} x1={x} y1="60" x2={x} y2="450" />
+            ))}
+          </g>
+          <g fontFamily="Share Tech Mono, monospace" fontSize="11" letterSpacing="1.5" fill="#9ca0a3">
+            <text x="140" y="78">ID</text>
+            <text x="240" y="78">AMOUNT</text>
+            <text x="360" y="78">DATE</text>
+            <text x="480" y="78">REGION</text>
+            <text x="600" y="78">SCORE</text>
+          </g>
+        </g>
+
+        {/* Chart layer: 5 mini-charts */}
+        <g ref={chartLayerRef} opacity="0">
+          {/* Bars (rendered behind dots) */}
+          {Array.from({ length: BAR_DOTS }).map((_, i) => {
+            const t = layouts.barTargets[i];
+            return (
+              <rect
+                key={`bar${i}`}
+                ref={(el) => { barsRef.current[i] = el; }}
+                x={t.x}
+                y={t.y + t.h}
+                width={t.w}
+                height={0}
+                rx={3}
+                fill={i % 2 === 0 ? "#a8c5b8" : "#cbe2d4"}
+                opacity={0}
+              />
+            );
+          })}
+
+          {/* Donut sectors */}
+          {Array.from({ length: DONUT_DOTS }).map((_, i) => (
+            <path
+              key={`donut${i}`}
+              ref={(el) => { donutRefs.current[i] = el; }}
+              d=""
+              fill={DONUT_COLORS[i % DONUT_COLORS.length]}
+              opacity={0}
+            />
+          ))}
+
+          {/* Treemap tiles */}
+          {Array.from({ length: TREEMAP_DOTS }).map((_, i) => {
+            const t = layouts.treemapTargets[i];
+            return (
+              <rect
+                key={`tm${i}`}
+                ref={(el) => { treemapRefs.current[i] = el; }}
+                x={t.x}
+                y={t.y}
+                width={t.w}
+                height={t.h}
+                rx={4}
+                fill={TREEMAP_COLORS[i % TREEMAP_COLORS.length]}
+                opacity={0}
+              />
+            );
+          })}
+
+          {/* Line paths (above dots so they connect through them) */}
+          <path ref={line1Ref} d="" fill="none" stroke={LINE_COLOR_1} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+          <path ref={line2Ref} d="" fill="none" stroke={LINE_COLOR_2} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+
+        {/* Dots */}
+        <g>
+          {Array.from({ length: N }).map((_, i) => (
+            <circle
+              key={`dot${i}`}
+              ref={(el) => { dotsRef.current[i] = el; }}
+              cx={400}
+              cy={250}
+              r={6}
+              fill={DOT_COLORS[i % DOT_COLORS.length]}
+            />
+          ))}
+        </g>
+      </svg>
     </div>
   );
 }
@@ -448,9 +858,8 @@ function ChartGrid({ active }) {
   const tRef = useRef(0);
   const [, setFrame] = useState(0);
   const [selected, setSelected] = useState(null);
-  const [hovering, setHovering] = useState(false);
 
-  const animationPaused = !!selected || hovering;
+  const animationPaused = !!selected;
 
   useEffect(() => {
     if (!active || animationPaused) return;
@@ -577,12 +986,7 @@ function ChartGrid({ active }) {
   }));
 
   return (
-    <div
-      className="charts-grid"
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      onTouchStart={() => setHovering(true)}
-    >
+    <div className="charts-grid">
       {selected && (
         <button className="chart-reset-pill" onPointerDown={(e) => { e.stopPropagation(); setSelected(null); }} aria-label="Réinitialiser la sélection">
           <span className="chart-reset-dot" style={{ background: selected }} />
@@ -726,7 +1130,6 @@ export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const trackRef = useRef(null);
-  const cursorGlowRef = useRef(null);
 
   const t = translations[lang];
 
@@ -858,21 +1261,6 @@ export default function HomePage() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // ── Cursor glow (desktop only) ───────────────────────────────────────────
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(hover: hover)");
-    if (!mq.matches) return;
-    const onMove = (e) => {
-      if (cursorGlowRef.current) {
-        cursorGlowRef.current.style.left = e.clientX + "px";
-        cursorGlowRef.current.style.top = e.clientY + "px";
-      }
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
   // ── Page entrance ─────────────────────────────────────────────────────────
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 4000);
@@ -945,19 +1333,17 @@ export default function HomePage() {
         )}
       </AnimatePresence>
 
-      {/* Cursor glow */}
-      <div ref={cursorGlowRef} className="cursor-glow" />
 
       {/* NAV */}
       <nav
         className="fixed w-full z-50 transition-all duration-500"
         style={{
           height: NAV_HEIGHT,
-          background: currentSlide > 0 ? `${BG}f8` : `${BG}ee`,
-          borderBottom: `1px solid ${currentSlide > 0 ? ACCENT1 + "44" : ACCENT1 + "33"}`,
-          backdropFilter: "blur(14px)",
-          boxShadow: currentSlide > 0 ? "0 1px 12px rgba(0,0,0,0.04)" : "none",
-          transition: "background 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease, opacity 0.3s ease",
+          background: BG,
+          boxShadow: currentSlide > 0
+            ? `0 6px 18px ${SHADOW_DARK}, 0 -1px 0 ${SHADOW_LIGHT}`
+            : `0 3px 12px ${SHADOW_DARK}`,
+          transition: "box-shadow 0.5s ease, opacity 0.3s ease",
           opacity: loaded ? 1 : 0,
         }}
       >
@@ -1017,22 +1403,24 @@ export default function HomePage() {
         {isMenuOpen && (
           <div
             className="md:hidden"
-            style={{ background: `${BG}f6`, borderTop: `1px solid ${ACCENT1}33`, backdropFilter: "blur(14px)" }}
+            style={{ background: BG, boxShadow: `0 8px 22px ${SHADOW_DARK}` }}
           >
             <Container>
-              <div className="py-5 flex flex-col gap-2">
+              <div className="py-5 flex flex-col gap-3">
                 {NAV_SLIDES.map((item) => (
                   <button
                     key={item.idx}
                     onClick={() => { goToSlide(item.idx); closeMenu(); }}
-                    className="font-tech-upper px-3 py-3 rounded-xl text-left"
+                    className="font-tech-upper px-4 py-3 text-left"
                     style={{
-                      color: TITLES,
+                      color: currentSlide === item.idx ? ACCENT1_DEEP : TITLES,
                       letterSpacing: "0.14em",
-                      background: currentSlide === item.idx ? `${ACCENT1}22` : `${ACCENT1}0c`,
-                      border: `1px solid ${ACCENT1}22`,
+                      background: BG,
+                      border: "none",
+                      borderRadius: 14,
                       cursor: "pointer",
                       width: "100%",
+                      boxShadow: currentSlide === item.idx ? SHADOW_IN_SM : SHADOW_OUT_SM,
                     }}
                   >
                     {item.label}
@@ -1146,17 +1534,13 @@ export default function HomePage() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.75, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <MagneticButton>
-                      <button onClick={() => goToSlide(3)} className="btn-primary btn-hover" style={{ border: "none", cursor: "pointer" }}>
-                        {t.hero.ctaPrimary}
-                        <ArrowRight size={18} />
-                      </button>
-                    </MagneticButton>
-                    <MagneticButton>
-                      <button onClick={() => goToSlide(1)} className="btn-secondary btn-hover" style={{ cursor: "pointer" }}>
-                        {t.hero.ctaSecondary}
-                      </button>
-                    </MagneticButton>
+                    <button onClick={() => goToSlide(3)} className="btn-primary btn-hover" style={{ border: "none", cursor: "pointer" }}>
+                      {t.hero.ctaPrimary}
+                      <ArrowRight size={18} />
+                    </button>
+                    <button onClick={() => goToSlide(1)} className="btn-secondary btn-hover" style={{ cursor: "pointer" }}>
+                      {t.hero.ctaSecondary}
+                    </button>
                   </motion.div>
 
                   {/* Metrics bar */}
@@ -1192,7 +1576,7 @@ export default function HomePage() {
                   }}
                   transition={{ duration: 0.9, ease: [0.65, 0, 0.35, 1] }}
                 >
-                  <ChartGrid active={currentSlide === 0} />
+                  <DataFlowAnimation active={currentSlide === 0} />
                 </motion.div>
               </div>
             </Container>
@@ -1351,13 +1735,8 @@ export default function HomePage() {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 transition={{ duration: 0.5, delay: (globalIdx + idx) * 0.05, ease: [0.22, 1, 0.36, 1] }}
                               >
-                                <div className="stack-card-inner">
-                                  <span className="stack-card-name">{item.name}</span>
-                                </div>
-                                <div className="stack-card-reveal">
-                                  <span className="stack-card-reveal-name">{item.name}</span>
-                                  <p className="stack-card-desc">{item.desc}</p>
-                                </div>
+                                <span className="stack-card-name">{item.name}</span>
+                                <p className="stack-card-desc">{item.desc}</p>
                               </motion.div>
                             ))}
                           </div>
@@ -1486,16 +1865,39 @@ export default function HomePage() {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           grid-template-rows: 1fr 1fr;
-          gap: 10px;
+          gap: 18px;
           flex: 1;
           height: calc(100vh - ${NAV_HEIGHT}px - 40px);
           position: relative;
         }
 
         .chart-bare {
-          background: transparent;
+          background: ${BG};
+          border-radius: 18px;
+          box-shadow: ${SHADOW_IN_SM};
+          padding: 14px;
           overflow: hidden;
           min-height: 0;
+        }
+
+        /* DataFlowAnimation — replaces the chart grid in the hero */
+        .data-flow-wrap {
+          flex: 1;
+          width: 100%;
+          height: calc(100vh - ${NAV_HEIGHT}px - 40px);
+          background: ${BG};
+          border-radius: 24px;
+          box-shadow: ${SHADOW_IN};
+          padding: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .data-flow-svg {
+          width: 100%;
+          height: 100%;
+          display: block;
         }
 
         .chart-bare :global(path),
@@ -1513,24 +1915,23 @@ export default function HomePage() {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 6px 12px;
+          padding: 7px 13px;
           border-radius: 999px;
-          border: 1px solid ${ACCENT1}55;
-          background: ${CARD_BG};
+          border: none;
+          background: ${BG};
           color: ${TITLES};
           font-family: var(--font-share-tech-mono);
           font-size: 0.62rem;
           letter-spacing: 0.12em;
           text-transform: uppercase;
           cursor: pointer;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+          box-shadow: ${SHADOW_OUT_SM};
+          transition: box-shadow 0.2s ease, color 0.2s ease;
         }
 
         .chart-reset-pill:hover {
-          transform: translateY(-1px);
-          border-color: ${ACCENT1}99;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+          box-shadow: ${SHADOW_IN_SM};
+          color: ${ACCENT1_DEEP};
         }
 
         .chart-reset-dot {
@@ -1579,14 +1980,15 @@ export default function HomePage() {
 
         /* Badges */
         .badge {
-          padding: 6px 12px;
+          padding: 8px 14px;
           border-radius: 999px;
-          border: 1px solid ${ACCENT1}44;
-          background: ${ACCENT1}14;
+          border: none;
+          background: ${BG};
+          box-shadow: ${SHADOW_IN_SM};
           font-family: var(--font-share-tech-mono);
-          font-size: 0.72rem;
-          letter-spacing: 0.12em;
-          color: ${TITLES};
+          font-size: 0.7rem;
+          letter-spacing: 0.13em;
+          color: ${ACCENT1_DEEP};
         }
 
         /* Lang toggle */
@@ -1594,24 +1996,22 @@ export default function HomePage() {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 7px 13px;
+          padding: 8px 14px;
           border-radius: 999px;
           font-family: var(--font-share-tech-mono);
           font-size: 0.72rem;
           letter-spacing: 0.12em;
           font-weight: 700;
           color: ${TITLES};
-          background: ${CARD_BG};
-          border: 1px solid ${ACCENT1}44;
+          background: ${BG};
+          border: none;
           cursor: pointer;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-          transition: transform 0.16s cubic-bezier(0.4, 2, 0.6, 1),
-            box-shadow 0.18s ease,
-            border-color 0.18s ease;
+          box-shadow: ${SHADOW_OUT_SM};
+          transition: box-shadow 0.2s ease, color 0.2s ease;
         }
         .lang-toggle:hover {
-          border-color: ${ACCENT1}99;
-          box-shadow: 0 8px 22px rgba(122, 165, 149, 0.2);
+          box-shadow: ${SHADOW_IN_SM};
+          color: ${ACCENT1_DEEP};
         }
 
         /* Buttons */
@@ -1631,34 +2031,41 @@ export default function HomePage() {
 
         .btn-primary {
           background: ${ACCENT1};
-          color: ${BG};
-          box-shadow: 0 10px 28px rgba(122, 165, 149, 0.25);
-          border: 1px solid ${ACCENT1};
+          color: #fff;
+          border: none;
+          box-shadow:
+            8px 8px 20px ${SHADOW_DARK},
+            -8px -8px 20px ${SHADOW_LIGHT},
+            inset 1px 1px 2px rgba(255,255,255,0.35),
+            inset -1px -1px 2px rgba(0,0,0,0.12);
         }
 
         .btn-secondary {
-          border: 1px solid ${ACCENT1};
+          border: none;
           color: ${TITLES};
-          background: ${CARD_BG};
-          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+          background: ${BG};
+          box-shadow: ${SHADOW_OUT};
         }
 
         .btn-hover {
-          transition: transform 0.16s cubic-bezier(0.4, 2, 0.6, 1),
-            box-shadow 0.18s cubic-bezier(0.4, 2, 0.6, 1),
-            filter 0.18s cubic-bezier(0.4, 2, 0.6, 1);
-          will-change: transform, box-shadow, filter;
+          transition: box-shadow 0.22s ease, color 0.22s ease;
+          will-change: box-shadow;
         }
 
         .btn-hover:hover {
-          transform: scale(1.045);
-          box-shadow: 0 16px 42px rgba(122, 165, 149, 0.32);
-          filter: saturate(1.06);
+          box-shadow: ${SHADOW_IN};
+          color: ${ACCENT1_DEEP};
+        }
+
+        .btn-primary.btn-hover:hover {
+          color: #fff;
+          box-shadow:
+            inset 4px 4px 10px ${ACCENT1_DEEP},
+            inset -4px -4px 10px #95c2b1;
         }
 
         .btn-hover:active {
-          transform: scale(1.01);
-          box-shadow: 0 12px 34px rgba(122, 165, 149, 0.22);
+          box-shadow: ${SHADOW_IN};
         }
 
         .btn-hover:focus-visible {
@@ -1668,14 +2075,14 @@ export default function HomePage() {
 
         /* Cards */
         .service-card {
-          background: ${CARD_BG};
-          border-radius: 20px;
+          background: ${BG};
+          border-radius: 22px;
           padding: 24px;
           display: flex;
           flex-direction: column;
           gap: 0;
-          border: 1px solid ${ACCENT1}33;
-          box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
+          border: none;
+          box-shadow: ${SHADOW_OUT};
           position: relative;
           overflow: visible;
           z-index: 1;
@@ -1713,8 +2120,7 @@ export default function HomePage() {
         }
 
         .service-card:hover .icon {
-          background: ${ACCENT1}28;
-          border-color: ${ACCENT1}55;
+          color: ${ACCENT1_DEEP};
           transform: scale(1.08);
         }
 
@@ -1730,11 +2136,11 @@ export default function HomePage() {
           left: 50%;
           transform: translateX(-50%) translateY(6px);
           width: 420px;
-          background: ${CARD_BG};
-          border-radius: 14px;
-          border: 1px solid ${ACCENT1}33;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-          overflow: visible;
+          background: ${BG};
+          border-radius: 18px;
+          border: none;
+          box-shadow: ${SHADOW_OUT_LG};
+          overflow: hidden;
           opacity: 0;
           pointer-events: none;
           transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1);
@@ -1755,13 +2161,14 @@ export default function HomePage() {
         }
 
         .preview-label {
-          padding: 8px 12px;
+          padding: 10px 14px;
           font-family: var(--font-share-tech-mono);
           font-size: 0.68rem;
           letter-spacing: 0.1em;
           color: ${TITLES};
-          opacity: 0.6;
-          border-top: 1px solid ${ACCENT1}22;
+          opacity: 0.7;
+          background: ${BG};
+          box-shadow: inset 0 2px 6px ${SHADOW_DARK};
         }
 
         /* Stack slide wrapper — même marge gauche que Services */
@@ -1804,10 +2211,11 @@ export default function HomePage() {
           letter-spacing: 0.22em;
           text-transform: uppercase;
           color: ${TITLES};
-          opacity: 0.55;
+          opacity: 0.65;
           margin: 0 0 4px 0;
-          padding-bottom: 10px;
-          border-bottom: 1px solid ${ACCENT1}33;
+          padding-bottom: 14px;
+          border-bottom: none;
+          box-shadow: 0 1px 0 ${SHADOW_DARK}, 0 2px 0 ${SHADOW_LIGHT};
         }
 
         .stack-column-cards {
@@ -1816,98 +2224,88 @@ export default function HomePage() {
           gap: 12px;
         }
 
-        /* Stack cards — hover-reveal */
+        /* Stack cards — pressed + text morph */
         .stack-card {
           position: relative;
           overflow: hidden;
-          border-radius: 16px;
-          background: ${CARD_BG};
-          border: 1px solid ${ACCENT1}33;
-          box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
+          border-radius: 18px;
+          background: ${BG};
+          border: none;
+          box-shadow: ${SHADOW_OUT_SM};
           height: 130px;
           cursor: default;
-          transition: border-color 0.22s ease, box-shadow 0.22s ease;
+          transition: box-shadow 0.35s ease;
         }
 
         .stack-card:hover {
-          border-color: ${ACCENT1}66;
-          box-shadow: 0 22px 70px rgba(0, 0, 0, 0.1);
+          box-shadow: ${SHADOW_IN};
         }
 
-        .stack-card-inner {
-          height: 100%;
+        .stack-card-name,
+        .stack-card-desc {
+          position: absolute;
+          inset: 0;
           display: flex;
-          flex-direction: column;
-          justify-content: center;
           align-items: center;
-          padding: 16px;
-          transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .stack-card:hover .stack-card-inner {
-          opacity: 0;
+          justify-content: center;
+          padding: 14px;
+          margin: 0;
+          text-align: center;
+          transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), letter-spacing 0.35s ease;
         }
 
         .stack-card-name {
           font-family: var(--font-share-tech-mono);
           letter-spacing: 0.12em;
           color: ${TITLES};
-          text-align: center;
-          font-size: 1.1rem;
-        }
-
-        .stack-card-reveal {
-          position: absolute;
-          inset: 0;
-          background: ${ACCENT1};
-          padding: 14px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          overflow: hidden;
-          transform: translateY(100%);
-          transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-          border-radius: 16px;
-        }
-
-        .stack-card:hover .stack-card-reveal {
-          transform: translateY(0);
-        }
-
-        .stack-card-reveal-name {
-          font-family: var(--font-share-tech-mono);
-          font-size: 0.85rem;
-          font-weight: 700;
-          letter-spacing: 0.14em;
-          color: ${BG};
+          font-size: 1.05rem;
           text-transform: uppercase;
+          opacity: 1;
+          transform: translateY(0) scale(1);
         }
 
         .stack-card-desc {
+          font-family: var(--font-body, 'Inter', sans-serif);
           font-size: 0.78rem;
-          line-height: 1.5;
-          color: ${BG};
-          margin: 0;
-          text-align: center;
+          line-height: 1.45;
+          color: ${TEXT};
+          opacity: 0;
+          transform: translateY(6px) scale(0.96);
+          letter-spacing: 0;
+        }
+
+        .stack-card:hover .stack-card-name {
+          opacity: 0;
+          transform: translateY(-6px) scale(0.96);
+          letter-spacing: 0.22em;
+        }
+
+        .stack-card:hover .stack-card-desc {
+          opacity: 0.85;
+          transform: translateY(0) scale(1);
         }
 
         @media (hover: none) {
-          .stack-card:active .stack-card-inner {
-            transform: translateY(-12px);
+          .stack-card:active {
+            box-shadow: ${SHADOW_IN};
           }
-          .stack-card:active .stack-card-reveal {
-            transform: translateY(0);
+          .stack-card:active .stack-card-name {
+            opacity: 0;
+          }
+          .stack-card:active .stack-card-desc {
+            opacity: 0.85;
+            transform: translateY(0) scale(1);
           }
         }
 
         .contact-box {
-          background: ${CARD_BG};
-          border-radius: 24px;
+          background: ${BG};
+          border-radius: 28px;
           padding: 48px;
-          border: 1px solid ${ACCENT1}33;
-          box-shadow: 0 18px 60px rgba(0, 0, 0, 0.07);
+          border: none;
+          box-shadow: ${SHADOW_OUT_LG};
+          position: relative;
+          overflow: hidden;
         }
 
         /* Contact gradient orbs */
@@ -1938,20 +2336,26 @@ export default function HomePage() {
         .availability-badge {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           font-family: var(--font-share-tech-mono);
-          font-size: 0.78rem;
-          letter-spacing: 0.1em;
-          color: #4ade80;
+          font-size: 0.74rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: ${TEXT};
           margin-top: 12px;
+          padding: 10px 20px;
+          border-radius: 999px;
+          background: ${BG};
+          box-shadow: ${SHADOW_IN_SM};
         }
 
         .availability-dot {
-          width: 8px;
-          height: 8px;
+          width: 9px;
+          height: 9px;
           border-radius: 50%;
           background: #4ade80;
           display: inline-block;
+          box-shadow: 0 0 0 1px ${SHADOW_DARK};
           animation: pulse-dot 2s ease-in-out infinite;
         }
 
@@ -1967,12 +2371,16 @@ export default function HomePage() {
         /* CTA glow */
         .btn-glow {
           background-size: 200% 200%;
-          background-image: linear-gradient(135deg, ${ACCENT1}, ${ACCENT1}dd, ${ACCENT1});
+          background-image: linear-gradient(135deg, ${ACCENT1}, ${ACCENT1_DEEP}, ${ACCENT1});
           animation: gradient-x 4s ease infinite;
         }
 
         .btn-glow:hover {
-          box-shadow: 0 0 0 4px ${ACCENT1}22, 0 16px 42px rgba(122, 165, 149, 0.32);
+          color: #fff;
+          box-shadow:
+            inset 4px 4px 10px ${ACCENT1_DEEP},
+            inset -4px -4px 10px #95c2b1,
+            0 0 0 6px ${ACCENT1}22;
         }
 
         @keyframes gradient-x {
@@ -1981,69 +2389,62 @@ export default function HomePage() {
         }
 
         .card-hover {
-          transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-            box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-            border-color 0.22s ease;
+          transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
           will-change: transform, box-shadow;
         }
 
         .card-hover:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 22px 70px rgba(0, 0, 0, 0.1);
-          border-color: ${ACCENT1}66;
+          transform: translateY(-3px);
+          box-shadow: ${SHADOW_OUT_LG};
         }
 
         /* Icons */
         .icon {
-          width: 44px;
-          height: 44px;
-          border-radius: 14px;
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: ${ACCENT1}14;
-          border: 1px solid ${ACCENT1}2a;
-          color: ${ACCENT1};
+          background: ${BG};
+          border: none;
+          box-shadow: ${SHADOW_IN_SM};
+          color: ${ACCENT1_DEEP};
           flex: 0 0 auto;
-          transition: all 0.25s ease;
+          transition: transform 0.25s ease, color 0.25s ease;
         }
 
         .service-title {
           font-family: var(--font-share-tech-mono);
           letter-spacing: 0.12em;
           font-weight: 700;
-          color: ${ACCENT1};
+          color: ${ACCENT1_DEEP};
           line-height: 1.2;
         }
 
         .service-text {
-          margin-top: 6px;
+          margin-top: 8px;
           line-height: 1.6;
           color: ${TEXT};
-          opacity: 0.92;
+          opacity: 0.78;
         }
 
-        /* Nav underline effect */
+        /* Nav links — neumorphism */
         .nav-link {
           position: relative;
           letter-spacing: 0.14em;
           text-decoration: none;
-          padding: 6px 2px;
+          padding: 8px 18px;
+          border-radius: 999px;
+          background: transparent;
+          font-size: 0.78rem;
+          transition: box-shadow 0.22s ease, color 0.22s ease;
         }
 
-        .nav-link::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          bottom: -2px;
-          width: 0;
-          height: 2px;
-          background: ${ACCENT1};
-          transition: width 0.22s ease;
-        }
-
-        .nav-link:hover::after {
-          width: 100%;
+        .nav-link:hover {
+          box-shadow: ${SHADOW_IN_SM};
+          color: ${ACCENT1_DEEP};
         }
 
         /* Slide dots — vertical, côté gauche de l'écran */
@@ -2060,25 +2461,18 @@ export default function HomePage() {
         }
 
         .slide-dots-line {
-          position: absolute;
-          width: 1px;
-          height: 100%;
-          background: ${ACCENT1}22;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          pointer-events: none;
+          display: none;
         }
 
         .slide-dot {
-          width: 7px;
-          height: 7px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
-          background: ${ACCENT1};
+          background: ${BG};
           border: none;
           cursor: pointer;
           padding: 0;
-          opacity: 0.3;
+          box-shadow: ${SHADOW_OUT_SM};
           transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
           position: relative;
           display: flex;
@@ -2086,10 +2480,11 @@ export default function HomePage() {
         }
 
         .slide-dot-active {
-          width: 7px;
-          height: 20px;
-          border-radius: 4px;
-          opacity: 1;
+          width: 10px;
+          height: 26px;
+          border-radius: 6px;
+          box-shadow: ${SHADOW_IN_SM};
+          background: ${ACCENT1};
         }
 
         .slide-dot-label {
@@ -2119,50 +2514,42 @@ export default function HomePage() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 20px;
+          gap: 28px;
         }
 
         .page-loader-rive {
-          width: 120px;
-          height: 120px;
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+          background: ${BG};
+          box-shadow: ${SHADOW_OUT_LG};
+          padding: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .page-loader-name {
           font-family: var(--font-share-tech-mono);
           font-size: 1.1rem;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.22em;
           font-weight: 700;
           color: ${TITLES};
           text-transform: uppercase;
+          margin-top: 4px;
         }
 
         .page-loader-title {
           font-family: var(--font-share-tech-mono);
-          font-size: 0.72rem;
+          font-size: 0.7rem;
           letter-spacing: 0.26em;
-          color: ${ACCENT1};
+          color: ${ACCENT1_DEEP};
           text-transform: uppercase;
+          padding: 9px 22px;
+          border-radius: 999px;
+          background: ${BG};
+          box-shadow: ${SHADOW_IN_SM};
           margin-top: -8px;
-          opacity: 0.9;
-        }
-
-        /* Cursor glow */
-        .cursor-glow {
-          position: fixed;
-          pointer-events: none;
-          width: 400px;
-          height: 400px;
-          border-radius: 50%;
-          background: radial-gradient(circle, ${ACCENT1}06, transparent 70%);
-          z-index: 1;
-          transform: translate(-50%, -50%);
-          will-change: left, top;
-        }
-
-        @media (hover: none) {
-          .cursor-glow {
-            display: none;
-          }
         }
 
         /* Dot grid background */
@@ -2170,8 +2557,8 @@ export default function HomePage() {
           position: absolute;
           inset: 0;
           z-index: 0;
-          opacity: 0.4;
-          background-image: radial-gradient(circle, ${ACCENT1}20 1px, transparent 1px);
+          opacity: 0.35;
+          background-image: radial-gradient(circle, ${SHADOW_DARK} 1px, transparent 1px);
           background-size: 40px 40px;
           animation: dotGridDrift 20s linear infinite;
         }
@@ -2183,33 +2570,39 @@ export default function HomePage() {
 
         /* Metrics bar */
         .metrics-bar {
-          display: flex;
-          gap: 32px;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
           margin-top: 40px;
-          padding-top: 24px;
-          border-top: 1px solid ${ACCENT1}22;
+          padding: 22px 28px;
+          border-radius: 24px;
+          background: ${BG};
+          box-shadow: ${SHADOW_IN};
+          max-width: 560px;
         }
 
         .metric-item {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 6px;
+          text-align: center;
         }
 
         .metric-value {
           font-family: var(--font-share-tech-mono);
-          font-size: 1.4rem;
+          font-size: 1.5rem;
           font-weight: 700;
           letter-spacing: 0.1em;
-          color: ${ACCENT1};
+          color: ${ACCENT1_DEEP};
         }
 
         .metric-label {
           font-family: var(--font-share-tech-mono);
-          font-size: 0.68rem;
-          letter-spacing: 0.1em;
+          font-size: 0.65rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
           color: ${TITLES};
-          opacity: 0.6;
+          opacity: 0.65;
         }
 
         /* Scroll indicator */
