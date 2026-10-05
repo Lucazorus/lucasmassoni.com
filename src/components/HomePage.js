@@ -95,10 +95,11 @@ const translations = {
         },
         {
           key: "mobile",
-          title: "Développement d'application mobile",
-          desc: "Conception et développement d'applications iOS/Android, de l'idée au déploiement sur l'App Store.",
+          title: "Applications mobiles et produits web",
+          desc: "Conception et développement d'applications iOS/Android et de produits web, de l'idée à la mise en ligne. Par exemple Anima Apnea sur l'App Store, et Spokedex, l'index des standards vélo en 7 langues.",
           cta: { label: "Anima Apnea", url: "https://www.animaapnea.com/" },
           cta2: { label: "App Store", sublabel: "Télécharger sur l'App Store", url: "https://apps.apple.com/fr/app/anima-apnea/id6760680506", appStore: true },
+          cta3: { label: "Spokedex", url: "https://spokedex.com/fr", preview: "/spokedex-preview.png", previewLabel: "spokedex.com" },
         },
       ],
     },
@@ -196,10 +197,11 @@ const translations = {
         },
         {
           key: "mobile",
-          title: "Mobile App Development",
-          desc: "Design and development of iOS/Android apps, from concept to App Store deployment.",
+          title: "Mobile Apps and Web Products",
+          desc: "Design and development of iOS/Android apps and web products, from idea to launch. For example Anima Apnea on the App Store, and Spokedex, the bike standards index in 7 languages.",
           cta: { label: "Anima Apnea", url: "https://www.animaapnea.com/" },
           cta2: { label: "App Store", sublabel: "Download on the App Store", url: "https://apps.apple.com/fr/app/anima-apnea/id6760680506", appStore: true },
+          cta3: { label: "Spokedex", url: "https://spokedex.com/en", preview: "/spokedex-preview.png", previewLabel: "spokedex.com" },
         },
       ],
     },
@@ -359,405 +361,1159 @@ function MagneticButton({ children, className, style, ...props }) {
   );
 }
 
-// ================= DATA FLOW ANIMATION =================
-// 3 phases en boucle (9s) : chaos → table structurée → combo bar+line
-function DataFlowAnimation({ active }) {
-  const dotsRef = useRef([]);
-  const barsRef = useRef([]);
-  const donutRefs = useRef([]);
-  const treemapRefs = useRef([]);
-  const line1Ref = useRef(null);
-  const line2Ref = useRef(null);
-  const gridRef = useRef(null);
-  const chartLayerRef = useRef(null);
-  const rafRef = useRef(null);
-  const tRef = useRef(0);
+// ================= DATA PIPELINE ANIMATION =================
+// Canvas cinématique en 6 actes, bouclés sur 16 s :
+// INGEST → CLEANSE → STRUCTURE → MODEL → VISUALIZE → IMPACT.
+// Moteur : système de particules à ressort. Chaque acte se contente de
+// fournir une cible (position / rayon / couleur / opacité) par particule ;
+// le ressort fait tout le morphing et absorbe les transitions d'acte.
 
-  const N = 36;
-  // Dot index ranges per chart in the final chart phase
-  const LINE_DOTS = 8;        // 0-7  (2 series of 4)
-  const BAR_DOTS = 6;         // 8-13
-  const DONUT_DOTS = 6;       // 14-19
-  const SCATTER_DOTS = 8;     // 20-27
-  const TREEMAP_DOTS = 8;     // 28-35
+const SCENE_W = 620;                    // largeur logique (la hauteur suit le conteneur)
+const PIPE_N = 62;                      // particules totales
+const PIPE_BAD = 12;                    // lignes rejetées au nettoyage
+const PIPE_CLEAN = PIPE_N - PIPE_BAD;   // 50 = 5 colonnes × 10 lignes
 
-  const DOT_COLORS = ["#7aa595", "#fecf56", "#6fafac", "#5e8a7a", "#a8c5b8", "#6f9caf"];
-  const LINE_COLOR_1 = "#fecf56"; // jaune
-  const LINE_COLOR_2 = "#5e8a7a"; // vert profond
+const ACTS = [
+  { key: "ingest",    t0: 0.0,  t1: 2.6 },
+  { key: "cleanse",   t0: 2.6,  t1: 5.2 },
+  { key: "structure", t0: 5.2,  t1: 7.8 },
+  { key: "model",     t0: 7.8,  t1: 10.4 },
+  { key: "visualize", t0: 10.4, t1: 13.4 },
+  { key: "impact",    t0: 13.4, t1: 16.2 },
+];
+const ACT_TOTAL = 16.2;
 
-  // Generate layouts once
-  const layouts = useMemo(() => {
-    let s = 1234;
-    const rng = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+// Palette dérivée de la charte neumorphism crème / vert sauge
+const P_SAGE = "#7aa595";
+const P_DEEP = "#5e8a7a";
+const P_MINT = "#6fafac";
+const P_PALE = "#a8c5b8";
+const P_BLUE = "#6f9caf";
+const P_YELL = "#fecf56";
+const P_MUTE = "#c6c2b9";
+const P_INK = "#393E41";
+const P_SUB = "#9ca0a3";
+const P_RULE = "#d8d4ca";
+const DOT_PALETTE = [P_SAGE, P_MINT, P_BLUE, P_PALE, P_DEEP, P_YELL];
 
-    // Phase 1: chaos
-    const chaos = Array.from({ length: N }, () => ({
-      x: 80 + rng() * 640, y: 60 + rng() * 380, r: 5 + rng() * 4, alpha: 1,
-    }));
+const PIPE_TXT = {
+  fr: {
+    kicker: "DATA PIPELINE",
+    rows: "LIGNES",
+    titles: ["INGESTION", "NETTOYAGE", "STRUCTURATION", "MODÉLISATION", "VISUALISATION", "IMPACT"],
+    subs: [
+      "Extraction de toutes vos sources",
+      "Doublons, nulls, normalisation",
+      "Mise en table & typage",
+      "Schéma en étoile",
+      "Dashboard temps réel",
+      "Ce que ça change",
+    ],
+    rail: ["INGEST", "CLEAN", "STRUCT", "MODEL", "VIZ", "IMPACT"],
+    sources: ["CRM", "ERP", "FICHIERS · API"],
+    cols: ["ID", "COMPTE", "MONTANT", "DATE", "SCORE"],
+    dims: ["COMPTE", "PRODUIT", "TEMPS", "RÉGION", "CANAL"],
+    fact: "FAITS",
+    charts: ["REVENU / MOIS", "VOLUME", "MIX", "CORRÉLATION"],
+    scan: "CONTRÔLE QUALITÉ",
+    nulls: "NULLS",
+    dupes: "DOUBLONS",
+    ok: "VALIDES",
+    kpiLabel: "IMPACT MESURÉ",
+    kpiSub: "de marge pilotée en temps réel",
+    chips: ["-62% DE DÉLAI", "0 PERTE", "12 SOURCES"],
+  },
+  en: {
+    kicker: "DATA PIPELINE",
+    rows: "ROWS",
+    titles: ["INGEST", "CLEANSE", "STRUCTURE", "MODEL", "VISUALIZE", "IMPACT"],
+    subs: [
+      "Extract from every source",
+      "Duplicates, nulls, normalisation",
+      "Typed, tabular, trusted",
+      "Star schema",
+      "Live dashboard",
+      "What it changes",
+    ],
+    rail: ["INGEST", "CLEAN", "STRUCT", "MODEL", "VIZ", "IMPACT"],
+    sources: ["CRM", "ERP", "FILES · API"],
+    cols: ["ID", "ACCOUNT", "AMOUNT", "DATE", "SCORE"],
+    dims: ["ACCOUNT", "PRODUCT", "TIME", "REGION", "CHANNEL"],
+    fact: "FACTS",
+    charts: ["REVENUE / MONTH", "VOLUME", "MIX", "CORRELATION"],
+    scan: "QUALITY SCAN",
+    nulls: "NULLS",
+    dupes: "DUPES",
+    ok: "CLEAN",
+    kpiLabel: "MEASURED IMPACT",
+    kpiSub: "of margin steered in real time",
+    chips: ["-62% LEAD TIME", "ZERO LOSS", "12 SOURCES"],
+  },
+};
 
-    // Phase 2: structured table
-    const COLS = 6, ROWS = 6;
-    const colW = (680 - 120) / (COLS - 1);
-    const rowH = (440 - 120) / (ROWS - 1);
-    const structured = Array.from({ length: N }, (_, i) => {
-      const col = i % COLS;
-      const row = Math.floor(i / COLS);
-      return { x: 140 + col * colW, y: 120 + row * rowH, r: 5, alpha: 1 };
-    });
+// Séries de démo du dashboard (acte 5)
+const VIZ_LINE = [0.22, 0.34, 0.28, 0.46, 0.4, 0.58, 0.52, 0.68, 0.62, 0.8, 0.88, 1.0];
+const VIZ_BARS = [0.36, 0.54, 0.45, 0.7, 0.58, 0.84, 0.72, 0.96];
+const VIZ_PIE = [1.3, 0.95, 1.1, 0.8, 1.0, 0.72];
+const VIZ_SPARK = [0.18, 0.3, 0.24, 0.38, 0.33, 0.47, 0.44, 0.58, 0.63, 0.57, 0.74, 0.82, 0.9, 1.0];
 
-    // Phase 3: 5 mini-charts in a 3-cell top row + 2-cell bottom row
-    const stages = {
-      line:    { x: 50,  y: 50,  w: 210, h: 180 },
-      bar:     { x: 290, y: 50,  w: 210, h: 180 },
-      donut:   { x: 530, y: 50,  w: 210, h: 180 },
-      scatter: { x: 50,  y: 275, w: 270, h: 190 },
-      treemap: { x: 350, y: 275, w: 400, h: 190 },
-    };
+function DataFlowAnimation({ active, lang = "fr" }) {
+  const wrapRef = useRef(null);
+  const canvasRef = useRef(null);
+  const langRef = useRef(lang);
+  langRef.current = lang;
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
-    // --- LINE (8 dots: 2 series × 4 points)
-    const linePts = [];
-    for (let series = 0; series < 2; series++) {
-      for (let i = 0; i < 4; i++) {
-        const t = i / 3;
-        const baseY = stages.line.y + stages.line.h * (series === 0 ? 0.72 : 0.45);
-        const wobble = Math.sin(t * Math.PI * 1.8 + series * 1.4) * 28;
-        linePts.push({
-          x: stages.line.x + 10 + t * (stages.line.w - 20),
-          y: baseY + wobble - t * 35,
-        });
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const canvas = canvasRef.current;
+    if (!wrap || !canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ---- helpers ----------------------------------------------------------
+    const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+    const TAU = Math.PI * 2;
+
+    const rgbCache = new Map();
+    const hexRgb = (h) => {
+      let v = rgbCache.get(h);
+      if (!v) {
+        v = [
+          parseInt(h.slice(1, 3), 16),
+          parseInt(h.slice(3, 5), 16),
+          parseInt(h.slice(5, 7), 16),
+        ];
+        rgbCache.set(h, v);
       }
-    }
-
-    // --- BAR (6 dots → 6 bars)
-    const barPts = [];
-    const barSlot = stages.bar.w / BAR_DOTS;
-    const barW = barSlot * 0.6;
-    for (let i = 0; i < BAR_DOTS; i++) {
-      const t = i / (BAR_DOTS - 1);
-      const barH = 30 + t * 110 + Math.sin(i * 1.5) * 16;
-      const cx = stages.bar.x + (i + 0.5) * barSlot;
-      barPts.push({ x: cx, y: stages.bar.y + stages.bar.h - barH, barH });
-    }
-    const barTargets = barPts.map(p => ({
-      x: p.x - barW / 2,
-      y: p.y,
-      w: barW,
-      h: p.barH,
-    }));
-
-    // --- DONUT (6 dots → 6 sectors)
-    const dCx = stages.donut.x + stages.donut.w / 2;
-    const dCy = stages.donut.y + stages.donut.h / 2;
-    const dR = Math.min(stages.donut.w, stages.donut.h) / 2 * 0.78;
-    const dRi = dR * 0.56;
-    const dRmid = (dR + dRi) / 2;
-    const sectorSweeps = [1.2, 0.85, 1.15, 0.95, 1.05, 0.8]; // relative sizes
-    const sweepSum = sectorSweeps.reduce((a, b) => a + b, 0);
-    const sectorAngles = []; // [{ a1, a2, mid }]
-    let curA = -Math.PI / 2;
-    for (let i = 0; i < 6; i++) {
-      const sweep = (sectorSweeps[i] / sweepSum) * Math.PI * 2;
-      const a1 = curA;
-      const a2 = curA + sweep;
-      sectorAngles.push({ a1, a2, mid: (a1 + a2) / 2 });
-      curA = a2;
-    }
-    const donutPts = sectorAngles.map(({ mid }) => ({
-      x: dCx + Math.cos(mid) * dRmid,
-      y: dCy + Math.sin(mid) * dRmid,
-    }));
-    // Sector paths
-    const arcPath = (cx, cy, rOut, rIn, a1, a2) => {
-      const x1 = cx + Math.cos(a1) * rOut, y1 = cy + Math.sin(a1) * rOut;
-      const x2 = cx + Math.cos(a2) * rOut, y2 = cy + Math.sin(a2) * rOut;
-      const x3 = cx + Math.cos(a2) * rIn,  y3 = cy + Math.sin(a2) * rIn;
-      const x4 = cx + Math.cos(a1) * rIn,  y4 = cy + Math.sin(a1) * rIn;
-      const large = a2 - a1 > Math.PI ? 1 : 0;
-      return `M${x1.toFixed(2)},${y1.toFixed(2)} A${rOut},${rOut} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} L${x3.toFixed(2)},${y3.toFixed(2)} A${rIn},${rIn} 0 ${large} 0 ${x4.toFixed(2)},${y4.toFixed(2)} Z`;
+      return v;
     };
-    const donutTargets = sectorAngles.map(({ a1, a2 }) => arcPath(dCx, dCy, dR, dRi, a1, a2));
+    const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
 
-    // --- SCATTER (8 dots pseudo-random)
-    const scatterPts = [];
-    for (let i = 0; i < SCATTER_DOTS; i++) {
-      scatterPts.push({
-        x: stages.scatter.x + 18 + rng() * (stages.scatter.w - 36),
-        y: stages.scatter.y + 18 + rng() * (stages.scatter.h - 36),
+    const rrect = (x, y, w, h, r) => {
+      const rr = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.arcTo(x + w, y, x + w, y + h, rr);
+      ctx.arcTo(x + w, y + h, x, y + h, rr);
+      ctx.arcTo(x, y + h, x, y, rr);
+      ctx.arcTo(x, y, x + w, y, rr);
+      ctx.closePath();
+    };
+
+    // Police mono : next/font renomme la famille, on la lit sur le body
+    let MONO = "'Share Tech Mono', Menlo, monospace";
+    try {
+      const v = getComputedStyle(document.body)
+        .getPropertyValue("--font-share-tech-mono")
+        .trim();
+      if (v) MONO = `${v}, Menlo, monospace`;
+    } catch (e) { /* valeur par défaut */ }
+
+    // Texte mono avec interlettrage manuel (letterSpacing canvas peu portable)
+    const txt = (s, x, y, o = {}) => {
+      const { size = 12, sp = 1.8, color = P_SUB, align = "left", alpha = 1 } = o;
+      if (alpha <= 0.004) return;
+      const chars = String(s).split("");
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = color;
+      ctx.font = `${size}px ${MONO}`;
+      let total = 0;
+      const ws = chars.map((c) => {
+        const w = ctx.measureText(c).width;
+        total += w + sp;
+        return w;
+      });
+      total -= sp;
+      let cx = align === "center" ? x - total / 2 : align === "right" ? x - total : x;
+      for (let i = 0; i < chars.length; i++) {
+        ctx.fillText(chars[i], cx, y);
+        cx += ws[i] + sp;
+      }
+      ctx.restore();
+    };
+
+    // ---- géométrie (recalculée à chaque resize, la hauteur est variable) ---
+    let L = null;
+    const buildLayout = (H) => {
+      const W = SCENE_W;
+      let seed = 20260920;
+      const rng = () => {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      };
+
+      const ST = { x: 26, y: 118, w: W - 52 };
+      ST.h = Math.max(320, H - ST.y - 104);
+      ST.x2 = ST.x + ST.w;
+      ST.y2 = ST.y + ST.h;
+      ST.cx = ST.x + ST.w / 2;
+
+      // -- acte 1 : sources en haut
+      const srcY = ST.y + 34;
+      const sources = [0.17, 0.5, 0.83].map((f, i) => ({
+        x: ST.x + ST.w * f,
+        y: srcY,
+        w: 164,
+        h: 44,
+        color: [P_SAGE, P_BLUE, P_YELL][i],
+      }));
+
+      // -- acte 1/2 : nuage chaotique
+      const cloudTop = ST.y + 118;
+      const cloudH = ST.h - 150;
+      const chaos = Array.from({ length: PIPE_N }, () => ({
+        x: ST.x + 26 + rng() * (ST.w - 52),
+        y: cloudTop + rng() * cloudH,
+      }));
+
+      // -- acte 3 : table 5 colonnes × 10 lignes
+      const tb = { x: ST.x + 18, y: ST.y + 74, w: ST.w - 36 };
+      tb.h = ST.h - 110;
+      const COLS = 5;
+      const ROWS = 10;
+      const colW = tb.w / COLS;
+      const headY = tb.y + 22;
+      const bodyY = tb.y + 44;
+      const rowH = (tb.h - 54) / ROWS;
+      const cells = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          cells.push({ x: tb.x + (c + 0.5) * colW, y: bodyY + (r + 0.5) * rowH });
+        }
+      }
+
+      // -- acte 4 : schéma en étoile
+      const star = { cx: ST.cx, cy: ST.y + ST.h * 0.5 };
+      const starR = Math.min(ST.w * 0.42, ST.h * 0.33);
+      const dims = Array.from({ length: 5 }, (_, i) => {
+        const a = -Math.PI / 2 + (i * TAU) / 5;
+        return { x: star.cx + Math.cos(a) * starR, y: star.cy + Math.sin(a) * starR, a };
+      });
+
+      // -- acte 5 : dashboard 3 bandes
+      const gap = 16;
+      const dashH = ST.h - 2 * gap;
+      const h1 = dashH * 0.32;
+      const h2 = dashH * 0.36;
+      const h3 = dashH * 0.32;
+      const cardA = { x: ST.x, y: ST.y, w: ST.w, h: h1 };
+      const halfW = (ST.w - gap) / 2;
+      const cardB = { x: ST.x, y: ST.y + h1 + gap, w: halfW, h: h2 };
+      const cardC = { x: ST.x + halfW + gap, y: cardB.y, w: halfW, h: h2 };
+      const cardD = { x: ST.x, y: cardB.y + h2 + gap, w: ST.w, h: h3 };
+      const plotOf = (c, padT = 38, padB = 20, padX = 20) => ({
+        x: c.x + padX,
+        y: c.y + padT,
+        w: c.w - padX * 2,
+        h: c.h - padT - padB,
+      });
+      const pA = plotOf(cardA);
+      const pB = plotOf(cardB);
+      const pD = plotOf(cardD);
+
+      const linePts = VIZ_LINE.map((v, i) => ({
+        x: pA.x + (i / (VIZ_LINE.length - 1)) * pA.w,
+        y: pA.y + pA.h * (1 - v) * 0.9 + pA.h * 0.05,
+      }));
+      const barSlot = pB.w / VIZ_BARS.length;
+      const barW = Math.min(20, barSlot * 0.56);
+      const barBase = pB.y + pB.h;
+      const barPts = VIZ_BARS.map((v, i) => ({
+        x: pB.x + (i + 0.5) * barSlot,
+        y: barBase - pB.h * v * 0.92,
+      }));
+
+      const donut = {
+        cx: cardC.x + cardC.w / 2,
+        cy: cardC.y + 38 + (cardC.h - 58) / 2,
+      };
+      donut.r = Math.min(cardC.w * 0.34, (cardC.h - 58) * 0.46);
+      donut.ri = donut.r * 0.56;
+      const pieSum = VIZ_PIE.reduce((a, b) => a + b, 0);
+      let ang = -Math.PI / 2;
+      const sectors = VIZ_PIE.map((v) => {
+        const a0 = ang;
+        const a1 = ang + (v / pieSum) * TAU;
+        ang = a1;
+        return { a0, a1, mid: (a0 + a1) / 2 };
+      });
+      const piePts = sectors.map((s) => ({
+        x: donut.cx + Math.cos(s.mid) * ((donut.r + donut.ri) / 2),
+        y: donut.cy + Math.sin(s.mid) * ((donut.r + donut.ri) / 2),
+      }));
+
+      const scatterPts = Array.from({ length: 20 }, (_, i) => {
+        const t = i / 19;
+        return {
+          x: pD.x + 10 + (t * 0.78 + rng() * 0.2) * (pD.w - 20),
+          y: pD.y + pD.h - 8 - (t * 0.62 + rng() * 0.34) * (pD.h - 18),
+        };
+      });
+
+      // -- acte 6 : carte KPI
+      const kpiW = Math.min(ST.w, 430);
+      const kpiH = Math.min(ST.h * 0.72, 380);
+      const kpi = {
+        x: ST.cx - kpiW / 2,
+        y: ST.y + (ST.h - kpiH) / 2,
+        w: kpiW,
+        h: kpiH,
+      };
+      const spark = { x: kpi.x + 40, y: kpi.y + kpi.h * 0.56, w: kpi.w - 80, h: kpi.h * 0.2 };
+      const sparkPts = VIZ_SPARK.map((v, i) => ({
+        x: spark.x + (i / (VIZ_SPARK.length - 1)) * spark.w,
+        y: spark.y + spark.h * (1 - v),
+      }));
+
+      return {
+        W, H, ST, sources, chaos, tb, COLS, ROWS, colW, headY, bodyY, rowH, cells,
+        star, starR, dims, cardA, cardB, cardC, cardD, pA, pB, pD,
+        linePts, barPts, barW, barBase, donut, sectors, piePts, scatterPts,
+        kpi, spark, sparkPts,
+      };
+    };
+
+    // ---- particules -------------------------------------------------------
+    const badSet = new Set();
+    for (let i = 0; i < PIPE_BAD; i++) badSet.add(Math.floor((i * PIPE_N) / PIPE_BAD) + 2);
+    const parts = [];
+    let cleanCursor = 0;
+    for (let i = 0; i < PIPE_N; i++) {
+      const bad = badSet.has(i);
+      parts.push({
+        i,
+        bad,
+        ci: bad ? -1 : cleanCursor++,          // index parmi les lignes propres
+        src: i % 3,
+        x: 0, y: 0, vx: 0, vy: 0,
+        r: 4, tr: 4,
+        a: 0, ta: 0,
+        c: hexRgb(DOT_PALETTE[i % DOT_PALETTE.length]),
+        tc: hexRgb(DOT_PALETTE[i % DOT_PALETTE.length]),
+        base: DOT_PALETTE[i % DOT_PALETTE.length],
+        kj: 0.82 + ((i * 37) % 100) / 260,     // jitter de raideur → stagger naturel
+        dep: 0.1 + (i % 22) * 0.052,           // départ échelonné à l'ingestion
+        okT: -9, rejT: -9,
       });
     }
 
-    // --- TREEMAP (8 tiles, non-uniform sizes)
-    // Custom layout: 3 tiles on top row + 2 tiles middle + 3 tiles bottom
-    // Simpler: column-pack approach for visual interest
-    const tmTiles = [
-      // 2 large tiles on the left taking 50% width
-      { gx: 0,    gy: 0,    gw: 0.42, gh: 0.55 },
-      { gx: 0,    gy: 0.55, gw: 0.42, gh: 0.45 },
-      // 4 tiles middle column
-      { gx: 0.42, gy: 0,    gw: 0.28, gh: 0.42 },
-      { gx: 0.42, gy: 0.42, gw: 0.28, gh: 0.32 },
-      { gx: 0.42, gy: 0.74, gw: 0.28, gh: 0.26 },
-      // 2 tiles right column
-      { gx: 0.70, gy: 0,    gw: 0.30, gh: 0.48 },
-      { gx: 0.70, gy: 0.48, gw: 0.30, gh: 0.30 },
-      { gx: 0.70, gy: 0.78, gw: 0.30, gh: 0.22 },
-    ];
-    const TM_PAD = 3;
-    const treemapTargets = tmTiles.map((t) => ({
-      x: stages.treemap.x + t.gx * stages.treemap.w + TM_PAD,
-      y: stages.treemap.y + t.gy * stages.treemap.h + TM_PAD,
-      w: t.gw * stages.treemap.w - TM_PAD * 2,
-      h: t.gh * stages.treemap.h - TM_PAD * 2,
-    }));
-    const treemapPts = treemapTargets.map(t => ({
-      x: t.x + t.w / 2,
-      y: t.y + t.h / 2,
-    }));
+    // Accès direct par index de ligne propre (évite filter+sort à chaque frame)
+    const byCi = [];
+    for (const p of parts) if (!p.bad) byCi[p.ci] = p;
 
-    // --- Combined chart layout (36 dots)
-    const chart = [
-      ...linePts.map(p => ({ x: p.x, y: p.y, r: 4, alpha: 1 })),       // 0-7 line nodes (visible)
-      ...barPts.map(p => ({ x: p.x, y: p.y, r: 3, alpha: 0 })),        // 8-13 bar tops (hidden, bars draw)
-      ...donutPts.map(p => ({ x: p.x, y: p.y, r: 3, alpha: 0 })),      // 14-19 donut centroids (hidden, arcs draw)
-      ...scatterPts.map(p => ({ x: p.x, y: p.y, r: 4, alpha: 1 })),    // 20-27 scatter (visible as dots)
-      ...treemapPts.map(p => ({ x: p.x, y: p.y, r: 3, alpha: 0 })),    // 28-35 treemap centers (hidden, tiles draw)
-    ];
+    // ---- état du run ------------------------------------------------------
+    let dpr = 1;
+    let cw = 0;
+    let ch = 0;
+    let scale = 1;
+    let offX = 0;
+    let offY = 0;
+    let raf = 0;
+    let last = 0;
+    let elapsed = reduced ? 12.2 : 0;   // mouvement réduit → on fige sur le dashboard
+    let prevT = -1;
+    let settle = 0;
+    const pointer = { x: -999, y: -999, on: false };
 
-    const KFS = [
-      { t: 0,    layout: chaos,      kind: "chaos", grid: 0, chart: 0 },
-      { t: 1.0,  layout: chaos,      kind: "chaos", grid: 0, chart: 0 },
-      { t: 3.0,  layout: chaos,      kind: "chaos", grid: 0, chart: 0 },
-      { t: 4.2,  layout: structured, kind: "table", grid: 1, chart: 0 },
-      { t: 5.8,  layout: structured, kind: "table", grid: 1, chart: 0 },
-      { t: 7.2,  layout: chart,      kind: "chart", grid: 0, chart: 1 },
-      { t: 8.7,  layout: chart,      kind: "chart", grid: 0, chart: 1 },
-      { t: 9.0,  layout: chaos,      kind: "chaos", grid: 0, chart: 0 },
-    ];
+    const resize = () => {
+      const rect = wrap.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cw = rect.width;
+      ch = rect.height;
+      canvas.width = Math.round(cw * dpr);
+      canvas.height = Math.round(ch * dpr);
+      scale = cw / SCENE_W;
+      offX = 0;
+      offY = 0;
+      const first = !L;
+      L = buildLayout(ch / scale);
+      if (first) resetParticles();
+    };
 
-    return { chaos, structured, chart, barTargets, donutTargets, treemapTargets, stages, KFS, TOTAL: 9 };
+    function resetParticles() {
+      if (!L) return;
+      for (const p of parts) {
+        const s = L.sources[p.src];
+        p.x = s.x + (Math.random() - 0.5) * 40;
+        p.y = s.y;
+        p.vx = 0;
+        p.vy = 0;
+        p.a = 0;
+        p.okT = -9;
+        p.rejT = -9;
+      }
+    }
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(wrap);
+    resize();
+
+    const onMove = (e) => {
+      const rect = wrap.getBoundingClientRect();
+      pointer.x = (e.clientX - rect.left - offX) / scale;
+      pointer.y = (e.clientY - rect.top - offY) / scale;
+      pointer.on = true;
+    };
+    const onLeave = () => {
+      pointer.on = false;
+      pointer.x = -999;
+      pointer.y = -999;
+    };
+    wrap.addEventListener("pointermove", onMove);
+    wrap.addEventListener("pointerleave", onLeave);
+
+    // ---- cibles par acte --------------------------------------------------
+    const target = { x: 0, y: 0, r: 4, a: 1, c: P_SAGE, k: 70 };
+
+    const setTarget = (p, actKey, lp, T) => {
+      const S = L;
+      target.c = p.base;
+      target.a = 1;
+      target.k = 70;
+
+      if (actKey === "ingest") {
+        const s = S.sources[p.src];
+        if (T < p.dep) {
+          target.x = s.x;
+          target.y = s.y;
+          target.r = 2.6;
+          target.a = 0;
+          target.k = 240;
+        } else {
+          target.x = S.chaos[p.i].x;
+          target.y = S.chaos[p.i].y;
+          target.r = 4.4;
+          target.k = 46;
+        }
+        return;
+      }
+
+      if (actKey === "cleanse") {
+        const beamY = lerp(S.ST.y + 10, S.ST.y2 - 4, easeInOut(clamp01(lp / 0.82)));
+        const crossed = p.y < beamY;
+        if (crossed && p.bad) {
+          if (p.rejT < 0) p.rejT = T;
+          target.x = p.x < S.ST.cx ? S.ST.x - 90 : S.ST.x2 + 90;
+          target.y = p.y + 60;
+          target.r = 2;
+          target.a = 0;
+          target.c = P_MUTE;
+          target.k = 34;
+        } else {
+          if (crossed && p.okT < 0) p.okT = T;
+          target.x = S.chaos[p.i].x;
+          target.y = S.chaos[p.i].y;
+          target.r = crossed ? 4.6 : 4.2;
+          target.c = crossed ? P_SAGE : p.base;
+          target.k = 58;
+        }
+        return;
+      }
+
+      if (p.bad) {
+        target.x = p.x;
+        target.y = p.y;
+        target.r = 1.5;
+        target.a = 0;
+        target.k = 20;
+        return;
+      }
+
+      if (actKey === "structure") {
+        const cell = S.cells[p.ci];
+        target.x = cell.x;
+        target.y = cell.y;
+        target.r = 3.6;
+        target.c = p.ci % 5 === 2 ? P_YELL : p.base;
+        target.k = 128;
+        return;
+      }
+
+      if (actKey === "model") {
+        const edge = p.ci % 5;
+        const slot = Math.floor(p.ci / 5);
+        const d = S.dims[edge];
+        const u = ((slot / 10 + T * 0.3) % 1);
+        const f = 0.16 + u * 0.8;
+        const nx = -(d.y - S.star.cy);
+        const ny = d.x - S.star.cx;
+        const nl = Math.hypot(nx, ny) || 1;
+        const wob = Math.sin(u * Math.PI) * 9 * (edge % 2 ? 1 : -1);
+        target.x = lerp(S.star.cx, d.x, f) + (nx / nl) * wob;
+        target.y = lerp(S.star.cy, d.y, f) + (ny / nl) * wob;
+        target.r = 3.2;
+        target.c = [P_SAGE, P_MINT, P_BLUE, P_PALE, P_YELL][edge];
+        target.k = 190;
+        return;
+      }
+
+      if (actKey === "visualize") {
+        const c = p.ci;
+        if (c < 12) {                                  // 0-11 : courbe
+          const pt = S.linePts[c];
+          target.x = pt.x; target.y = pt.y; target.r = 3.6; target.c = P_DEEP; target.k = 96;
+        } else if (c < 20) {                           // 12-19 : sommets des barres
+          const pt = S.barPts[c - 12];
+          target.x = pt.x; target.y = pt.y; target.r = 2.6; target.a = 0; target.k = 84;
+        } else if (c < 26) {                           // 20-25 : secteurs du donut
+          const pt = S.piePts[c - 20];
+          target.x = pt.x; target.y = pt.y; target.r = 2.4; target.a = 0; target.k = 84;
+        } else if (c < 46) {                           // 26-45 : nuage de points
+          const pt = S.scatterPts[c - 26];
+          target.x = pt.x; target.y = pt.y; target.r = 3.8;
+          target.c = c % 3 === 0 ? P_YELL : P_MINT; target.k = 90;
+        } else {                                       // reliquat : hors champ
+          target.x = S.donut.cx; target.y = S.donut.cy; target.r = 1.5; target.a = 0; target.k = 40;
+        }
+        return;
+      }
+
+      // impact
+      const c = p.ci;
+      if (c < VIZ_SPARK.length) {
+        const pt = S.sparkPts[c];
+        target.x = pt.x; target.y = pt.y; target.r = 3; target.c = P_SAGE; target.k = 110;
+      } else {
+        target.x = S.kpi.x + S.kpi.w / 2;
+        target.y = S.kpi.y + S.kpi.h / 2;
+        target.r = 1.4;
+        target.a = 0;
+        target.k = 46;
+      }
+    };
+
+    // ---- chrome des actes -------------------------------------------------
+    const softShadow = (x, y, w, h, r, alpha) => {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = "rgba(216,212,202,0.55)";
+      rrect(x + 3, y + 4, w, h, r);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const card = (x, y, w, h, r, alpha, label, t) => {
+      softShadow(x, y, w, h, r, alpha * 0.7);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = "#FAF9F5";
+      rrect(x, y, w, h, r);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(216,212,202,0.85)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+      if (label) txt(label, x + 18, y + 25, { size: 11, sp: 1.9, color: P_SUB, alpha });
+      if (t !== undefined) txt(t, x + w - 18, y + 25, { size: 11, sp: 1.6, color: P_SAGE, align: "right", alpha });
+    };
+
+    const drawIngest = (pres, T) => {
+      if (pres <= 0.01) return;
+      const S = L;
+      const tx = PIPE_TXT[langRef.current] || PIPE_TXT.fr;
+      S.sources.forEach((s, i) => {
+        const x = s.x - s.w / 2;
+        const y = s.y - s.h / 2;
+        card(x, y, s.w, s.h, 12, pres);
+        ctx.save();
+        ctx.globalAlpha = pres;
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.arc(x + 18, s.y, 4.5, 0, TAU);
+        ctx.fill();
+        ctx.restore();
+        txt(tx.sources[i], x + 30, s.y + 4, { size: 11, sp: 1.4, color: P_INK, alpha: pres });
+
+        // conduite pointillée vers le nuage
+        ctx.save();
+        ctx.globalAlpha = pres * 0.5;
+        ctx.strokeStyle = P_RULE;
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([3, 5]);
+        ctx.lineDashOffset = -T * 42;
+        ctx.beginPath();
+        ctx.moveTo(s.x, y + s.h);
+        ctx.lineTo(s.x, y + s.h + 46);
+        ctx.stroke();
+        ctx.restore();
+      });
+    };
+
+    const drawCleanse = (pres, lp, T) => {
+      if (pres <= 0.01) return;
+      const S = L;
+      const tx = PIPE_TXT[langRef.current] || PIPE_TXT.fr;
+      const prog = easeInOut(clamp01(lp / 0.82));
+      const beamY = lerp(S.ST.y + 10, S.ST.y2 - 4, prog);
+
+      // bande scannée
+      ctx.save();
+      ctx.globalAlpha = pres;
+      const g = ctx.createLinearGradient(0, beamY - 64, 0, beamY + 8);
+      g.addColorStop(0, "rgba(122,165,149,0)");
+      g.addColorStop(1, "rgba(122,165,149,0.16)");
+      ctx.fillStyle = g;
+      ctx.fillRect(S.ST.x, beamY - 64, S.ST.w, 72);
+      ctx.strokeStyle = rgba(hexRgb(P_SAGE), 0.75);
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(S.ST.x, beamY);
+      ctx.lineTo(S.ST.x2, beamY);
+      ctx.stroke();
+      ctx.restore();
+      txt(tx.scan, S.ST.x, beamY - 10, { size: 10, sp: 2, color: P_SAGE, alpha: pres * 0.9 });
+
+      // compteurs de rejets
+      const done = clamp01(lp / 0.82);
+      const nulls = Math.round(7 * done);
+      const dupes = Math.round(5 * done);
+      const ok = Math.round(PIPE_CLEAN * done);
+      const bx = S.ST.x2 - 150;
+      const by = S.ST.y + 2;
+      card(bx, by, 150, 74, 12, pres * 0.95);
+      txt(`${tx.nulls} ${String(nulls).padStart(2, "0")}`, bx + 14, by + 26, { size: 10, sp: 1.6, color: P_SUB, alpha: pres });
+      txt(`${tx.dupes} ${String(dupes).padStart(2, "0")}`, bx + 14, by + 45, { size: 10, sp: 1.6, color: P_SUB, alpha: pres });
+      txt(`${tx.ok} ${String(ok).padStart(2, "0")}`, bx + 14, by + 64, { size: 10, sp: 1.6, color: P_SAGE, alpha: pres });
+
+      // croix des lignes rejetées
+      ctx.save();
+      ctx.lineWidth = 1.6;
+      for (const p of parts) {
+        if (!p.bad || p.rejT < 0) continue;
+        const age = T - p.rejT;
+        if (age < 0 || age > 0.7) continue;
+        const a = (1 - age / 0.7) * pres;
+        const s = 5 + age * 6;
+        ctx.globalAlpha = a;
+        ctx.strokeStyle = "#c98f7a";
+        ctx.beginPath();
+        ctx.moveTo(p.x - s, p.y - s); ctx.lineTo(p.x + s, p.y + s);
+        ctx.moveTo(p.x + s, p.y - s); ctx.lineTo(p.x - s, p.y + s);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // anneaux de validation
+      ctx.save();
+      ctx.lineWidth = 1.2;
+      for (const p of parts) {
+        if (p.bad || p.okT < 0) continue;
+        const age = T - p.okT;
+        if (age < 0 || age > 0.6) continue;
+        const a = (1 - age / 0.6) * pres * 0.8;
+        ctx.globalAlpha = a;
+        ctx.strokeStyle = P_SAGE;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5 + age * 22, 0, TAU);
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
+
+    const drawStructure = (pres, lp) => {
+      if (pres <= 0.01) return;
+      const S = L;
+      const tx = PIPE_TXT[langRef.current] || PIPE_TXT.fr;
+      const rev = easeOut(clamp01(lp / 0.45));
+      card(S.tb.x - 8, S.tb.y - 8, S.tb.w + 16, S.tb.h + 16, 16, pres);
+
+      ctx.save();
+      ctx.globalAlpha = pres * 0.75;
+      ctx.strokeStyle = P_RULE;
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([2, 4]);
+      for (let c = 1; c < S.COLS; c++) {
+        const x = S.tb.x + c * S.colW;
+        ctx.beginPath();
+        ctx.moveTo(x, S.bodyY - 8);
+        ctx.lineTo(x, S.bodyY - 8 + (S.tb.h - 46) * rev);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      for (let r = 1; r < S.ROWS; r++) {
+        const y = S.bodyY + r * S.rowH;
+        ctx.beginPath();
+        ctx.moveTo(S.tb.x, y);
+        ctx.lineTo(S.tb.x + S.tb.w * rev, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // en-têtes
+      ctx.save();
+      ctx.globalAlpha = pres;
+      ctx.strokeStyle = rgba(hexRgb(P_SAGE), 0.6);
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(S.tb.x, S.bodyY - 8);
+      ctx.lineTo(S.tb.x + S.tb.w * rev, S.bodyY - 8);
+      ctx.stroke();
+      ctx.restore();
+      tx.cols.forEach((c, i) => {
+        const a = pres * clamp01((rev - i * 0.14) / 0.2);
+        txt(c, S.tb.x + (i + 0.5) * S.colW, S.headY, { size: 10, sp: 1.6, color: P_SUB, align: "center", alpha: a });
+      });
+
+      // bande de lecture qui balaie les lignes
+      const band = (lp * 1.5) % 1;
+      const by = S.bodyY + band * (S.tb.h - 54);
+      ctx.save();
+      ctx.globalAlpha = pres * 0.5;
+      ctx.fillStyle = rgba(hexRgb(P_SAGE), 0.12);
+      ctx.fillRect(S.tb.x, by, S.tb.w, S.rowH);
+      ctx.restore();
+    };
+
+    const drawModel = (pres, lp, T) => {
+      if (pres <= 0.01) return;
+      const S = L;
+      const tx = PIPE_TXT[langRef.current] || PIPE_TXT.fr;
+      const rev = easeOut(clamp01(lp / 0.4));
+
+      // arêtes
+      ctx.save();
+      ctx.globalAlpha = pres * 0.8;
+      ctx.strokeStyle = P_RULE;
+      ctx.lineWidth = 1.3;
+      S.dims.forEach((d) => {
+        ctx.beginPath();
+        ctx.moveTo(S.star.cx, S.star.cy);
+        ctx.lineTo(lerp(S.star.cx, d.x, rev), lerp(S.star.cy, d.y, rev));
+        ctx.stroke();
+      });
+      ctx.restore();
+
+      // onde depuis la table de faits
+      const pulse = (T * 0.7) % 1;
+      ctx.save();
+      ctx.globalAlpha = pres * (1 - pulse) * 0.5;
+      ctx.strokeStyle = P_SAGE;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(S.star.cx, S.star.cy, 30 + pulse * S.starR, 0, TAU);
+      ctx.stroke();
+      ctx.restore();
+
+      // dimensions
+      S.dims.forEach((d, i) => {
+        const a = pres * clamp01((rev - i * 0.1) / 0.3);
+        const w = 104;
+        const h = 32;
+        card(d.x - w / 2, d.y - h / 2, w, h, 10, a);
+        txt(tx.dims[i], d.x, d.y + 4, { size: 10, sp: 1.4, color: P_INK, align: "center", alpha: a });
+      });
+
+      // table de faits
+      const fw = 116;
+      const fh = 56;
+      softShadow(S.star.cx - fw / 2, S.star.cy - fh / 2, fw, fh, 14, pres * 0.8);
+      ctx.save();
+      ctx.globalAlpha = pres;
+      ctx.fillStyle = P_SAGE;
+      rrect(S.star.cx - fw / 2, S.star.cy - fh / 2, fw, fh, 14);
+      ctx.fill();
+      ctx.restore();
+      txt(tx.fact, S.star.cx, S.star.cy - 2, { size: 12, sp: 2, color: "#FAF9F5", align: "center", alpha: pres });
+      txt(`${PIPE_CLEAN} × 5`, S.star.cx, S.star.cy + 16, { size: 10, sp: 1.6, color: "rgba(250,249,245,0.75)", align: "center", alpha: pres });
+    };
+
+    const drawVizBack = (pres, lp) => {
+      if (pres <= 0.01) return;
+      const S = L;
+      const tx = PIPE_TXT[langRef.current] || PIPE_TXT.fr;
+      const rev = easeOut(clamp01(lp / 0.5));
+
+      card(S.cardA.x, S.cardA.y, S.cardA.w, S.cardA.h, 16, pres, tx.charts[0], "+38%");
+      card(S.cardB.x, S.cardB.y, S.cardB.w, S.cardB.h, 16, pres, tx.charts[1]);
+      card(S.cardC.x, S.cardC.y, S.cardC.w, S.cardC.h, 16, pres, tx.charts[2]);
+      card(S.cardD.x, S.cardD.y, S.cardD.w, S.cardD.h, 16, pres, tx.charts[3]);
+
+      // lignes de repère
+      ctx.save();
+      ctx.globalAlpha = pres * 0.55;
+      ctx.strokeStyle = P_RULE;
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([2, 4]);
+      [0.25, 0.5, 0.75].forEach((f) => {
+        [S.pA, S.pB, S.pD].forEach((pl) => {
+          const y = pl.y + pl.h * f;
+          ctx.beginPath();
+          ctx.moveTo(pl.x, y);
+          ctx.lineTo(pl.x + pl.w, y);
+          ctx.stroke();
+        });
+      });
+      ctx.restore();
+
+      // aire sous la courbe (suit les particules en direct)
+      const lp0 = byCi.slice(0, 12);
+      if (rev > 0.05) {
+        ctx.save();
+        ctx.globalAlpha = pres * rev;
+        const g = ctx.createLinearGradient(0, S.pA.y, 0, S.pA.y + S.pA.h);
+        g.addColorStop(0, "rgba(122,165,149,0.3)");
+        g.addColorStop(1, "rgba(122,165,149,0.02)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(lp0[0].x, S.pA.y + S.pA.h);
+        lp0.forEach((p) => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(lp0[11].x, S.pA.y + S.pA.h);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // barres (hauteur pilotée par les particules cachées)
+      const bp = byCi.slice(12, 20);
+      ctx.save();
+      bp.forEach((p, i) => {
+        const st = clamp01((rev - i * 0.07) / 0.5);
+        if (st <= 0) return;
+        ctx.globalAlpha = pres * st;
+        ctx.fillStyle = i % 2 ? P_PALE : P_SAGE;
+        const top = lerp(S.barBase, p.y, st);
+        rrect(p.x - S.barW / 2, top, S.barW, Math.max(1, S.barBase - top), 4);
+        ctx.fill();
+      });
+      ctx.restore();
+
+      // donut
+      ctx.save();
+      const dcol = [P_SAGE, P_YELL, P_MINT, P_PALE, P_DEEP, P_BLUE];
+      S.sectors.forEach((s, i) => {
+        const st = clamp01((rev - i * 0.08) / 0.5);
+        if (st <= 0) return;
+        ctx.globalAlpha = pres * st;
+        ctx.fillStyle = dcol[i];
+        ctx.beginPath();
+        ctx.arc(S.donut.cx, S.donut.cy, S.donut.r, s.a0, lerp(s.a0, s.a1, st));
+        ctx.arc(S.donut.cx, S.donut.cy, S.donut.ri, lerp(s.a0, s.a1, st), s.a0, true);
+        ctx.closePath();
+        ctx.fill();
+      });
+      ctx.restore();
+      txt("6", S.donut.cx, S.donut.cy + 2, { size: 16, sp: 0, color: P_INK, align: "center", alpha: pres * rev });
+      txt("SEG", S.donut.cx, S.donut.cy + 18, { size: 9, sp: 1.6, color: P_SUB, align: "center", alpha: pres * rev });
+
+      // tendance du nuage de points
+      ctx.save();
+      ctx.globalAlpha = pres * rev * 0.8;
+      ctx.strokeStyle = P_YELL;
+      ctx.lineWidth = 1.6;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(S.pD.x + 8, S.pD.y + S.pD.h - 6);
+      ctx.lineTo(S.pD.x + S.pD.w - 8, S.pD.y + 12);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const drawVizFront = (pres, lp) => {
+      if (pres <= 0.01) return;
+      const rev = easeOut(clamp01(lp / 0.5));
+      const lp0 = byCi.slice(0, 12);
+      ctx.save();
+      ctx.globalAlpha = pres * rev;
+      ctx.strokeStyle = P_DEEP;
+      ctx.lineWidth = 2.2;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      lp0.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const drawImpact = (pres, lp) => {
+      if (pres <= 0.01) return;
+      const S = L;
+      const tx = PIPE_TXT[langRef.current] || PIPE_TXT.fr;
+      const rev = easeOut(clamp01(lp / 0.45));
+      card(S.kpi.x, S.kpi.y, S.kpi.w, S.kpi.h, 20, pres);
+
+      txt(tx.kpiLabel, S.kpi.x + S.kpi.w / 2, S.kpi.y + 46, { size: 11, sp: 2.2, color: P_SUB, align: "center", alpha: pres });
+
+      const val = 38 * easeOut(clamp01(lp / 0.55));
+      ctx.save();
+      ctx.globalAlpha = pres;
+      ctx.fillStyle = P_INK;
+      ctx.font = `${Math.round(S.kpi.h * 0.24)}px ${MONO}`;
+      ctx.textAlign = "center";
+      ctx.fillText(`+${val.toFixed(0)}%`, S.kpi.x + S.kpi.w / 2, S.kpi.y + S.kpi.h * 0.36);
+      ctx.restore();
+      txt(tx.kpiSub, S.kpi.x + S.kpi.w / 2, S.kpi.y + S.kpi.h * 0.42, { size: 10, sp: 1.5, color: P_SUB, align: "center", alpha: pres });
+
+      // sparkline sur les particules
+      const sp = byCi.slice(0, VIZ_SPARK.length);
+      {
+        ctx.save();
+        ctx.globalAlpha = pres * rev;
+        const g = ctx.createLinearGradient(0, S.spark.y, 0, S.spark.y + S.spark.h);
+        g.addColorStop(0, "rgba(122,165,149,0.28)");
+        g.addColorStop(1, "rgba(122,165,149,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(sp[0].x, S.spark.y + S.spark.h);
+        sp.forEach((p) => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(sp[sp.length - 1].x, S.spark.y + S.spark.h);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = P_SAGE;
+        ctx.lineWidth = 2;
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        sp.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // puces de résultat
+      const cy = S.kpi.y + S.kpi.h - 34;
+      const cw2 = (S.kpi.w - 60) / 3;
+      tx.chips.forEach((c, i) => {
+        const a = pres * clamp01((rev - 0.3 - i * 0.12) / 0.3);
+        const x = S.kpi.x + 30 + i * cw2;
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.fillStyle = "rgba(122,165,149,0.12)";
+        rrect(x, cy - 13, cw2 - 8, 26, 13);
+        ctx.fill();
+        ctx.restore();
+        txt(c, x + (cw2 - 8) / 2, cy + 4, { size: 9, sp: 1.2, color: P_DEEP, align: "center", alpha: a });
+      });
+    };
+
+    // ---- HUD --------------------------------------------------------------
+    const drawHud = (T, idx, lp) => {
+      const S = L;
+      const tx = PIPE_TXT[langRef.current] || PIPE_TXT.fr;
+
+      txt(tx.kicker, S.ST.x, 30, { size: 10, sp: 2.6, color: P_SUB });
+      txt(`${String(idx + 1).padStart(2, "0")} / 06`, S.ST.x2, 30, { size: 10, sp: 2.2, color: P_SAGE, align: "right" });
+
+      // titre de l'acte, révélé caractère par caractère
+      const title = tx.titles[idx];
+      const shown = Math.max(1, Math.round(title.length * clamp01(lp / 0.22)));
+      txt(title.slice(0, shown), S.ST.x, 62, { size: 20, sp: 2.4, color: P_INK });
+      txt(tx.subs[idx], S.ST.x, 84, { size: 10, sp: 1.4, color: P_SUB, alpha: clamp01((lp - 0.12) / 0.2) });
+
+      // compteur de lignes
+      let rows = 1248;
+      if (idx === 0) rows = Math.round(1248 * easeOut(clamp01(lp)));
+      else if (idx === 1) rows = 1248 - Math.round(12 * clamp01(lp / 0.82));
+      else rows = 1236;
+      txt(`${tx.rows} ${rows.toLocaleString("fr-FR").replace(/ |,/g, " ")}`, S.ST.x2, 62, {
+        size: 12, sp: 1.6, color: P_INK, align: "right",
+      });
+
+      // rail des 6 étapes
+      const railY = S.H - 52;
+      const segW = (S.ST.w - 5 * 6) / 6;
+      for (let i = 0; i < 6; i++) {
+        const x = S.ST.x + i * (segW + 6);
+        const done = i < idx;
+        const cur = i === idx;
+        ctx.save();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = done ? rgba(hexRgb(P_SAGE), 0.4) : "rgba(216,212,202,0.55)";
+        rrect(x, railY, segW, 3, 1.5);
+        ctx.fill();
+        if (cur) {
+          ctx.fillStyle = P_SAGE;
+          rrect(x, railY, segW * clamp01(lp), 3, 1.5);
+          ctx.fill();
+        }
+        ctx.restore();
+        txt(tx.rail[i], x + segW / 2, railY + 20, {
+          size: 8.5, sp: 1.2,
+          color: cur ? P_INK : P_SUB,
+          align: "center",
+          alpha: cur ? 1 : 0.5,
+        });
+      }
+    };
+
+    const drawBackdrop = (T) => {
+      const S = L;
+      // halos lents
+      ctx.save();
+      const blobs = [
+        { x: S.W * 0.25 + Math.sin(T * 0.11) * 60, y: S.H * 0.3 + Math.cos(T * 0.09) * 70, c: "122,165,149" },
+        { x: S.W * 0.75 + Math.cos(T * 0.13) * 60, y: S.H * 0.68 + Math.sin(T * 0.1) * 80, c: "254,207,86" },
+      ];
+      blobs.forEach((b) => {
+        const r = Math.min(S.W, S.H) * 0.5;
+        const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, r);
+        g.addColorStop(0, `rgba(${b.c},0.07)`);
+        g.addColorStop(1, `rgba(${b.c},0)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, S.W, S.H);
+      });
+      ctx.restore();
+
+      // trame de points
+      ctx.save();
+      ctx.fillStyle = "rgba(216,212,202,0.5)";
+      const step = 26;
+      for (let x = S.ST.x; x <= S.ST.x2; x += step) {
+        for (let y = S.ST.y; y <= S.ST.y2; y += step) {
+          ctx.fillRect(x, y, 1.2, 1.2);
+        }
+      }
+      ctx.restore();
+    };
+
+    // ---- boucle -----------------------------------------------------------
+    const frame = (ts) => {
+      // Hors du slide hero : on gèle le temps et on garde la dernière image
+      if (!L || !activeRef.current) {
+        last = 0;
+        raf = requestAnimationFrame(frame);
+        return;
+      }
+      if (!last) last = ts;
+      const raw = (ts - last) / 1000;
+      last = ts;
+      // Temps narratif : suit l'horloge réelle (le scénario ne dérive pas si
+      // des frames sautent). Pas de physique : borné pour rester stable.
+      if (!reduced) elapsed += Math.min(raw, 0.5);
+      const dt = Math.min(raw, 1 / 20);
+
+      const T = reduced ? elapsed : elapsed % ACT_TOTAL;
+      if (T < prevT) {
+        for (const p of parts) { p.okT = -9; p.rejT = -9; }
+      }
+      prevT = T;
+
+      let idx = 0;
+      for (let i = 0; i < ACTS.length; i++) if (T >= ACTS[i].t0) idx = i;
+      const act = ACTS[idx];
+      const lp = clamp01((T - act.t0) / (act.t1 - act.t0));
+      const presOf = (a, fi = 0.45, fo = 0.45) =>
+        clamp01((T - a.t0) / fi) * clamp01((a.t1 - T) / fo);
+
+      // Physique : pas fixe de 1/60 s, sous-échantillonné. À 60 fps c'est un
+      // seul pas ; si des frames sautent on en enchaîne plusieurs (plafonné,
+      // pour ne pas partir en vrille après un onglet en arrière-plan).
+      const FIXED = 1 / 60;
+      let steps = Math.min(8, Math.max(1, Math.round(dt / FIXED)));
+      while (steps--) {
+        for (const p of parts) {
+          setTarget(p, act.key, lp, T);
+          const k = target.k * p.kj;
+          const d = 2 * Math.sqrt(k) * 0.92;
+          let ax = (target.x - p.x) * k - p.vx * d;
+          let ay = (target.y - p.y) * k - p.vy * d;
+
+          if (pointer.on && target.a > 0.1) {
+            const dx = p.x - pointer.x;
+            const dy = p.y - pointer.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < 15000 && d2 > 0.01) {
+              const f = (1 - d2 / 15000) * 2600;
+              const inv = 1 / Math.sqrt(d2);
+              ax += dx * inv * f;
+              ay += dy * inv * f;
+            }
+          }
+
+          p.vx += ax * FIXED;
+          p.vy += ay * FIXED;
+          p.x += p.vx * FIXED;
+          p.y += p.vy * FIXED;
+
+          p.r += (target.r - p.r) * (FIXED * 9);
+          p.a += (target.a - p.a) * (FIXED * 7);
+          const tc = hexRgb(target.c);
+          const cr = FIXED * 6;
+          p.c[0] += (tc[0] - p.c[0]) * cr;
+          p.c[1] += (tc[1] - p.c[1]) * cr;
+          p.c[2] += (tc[2] - p.c[2]) * cr;
+        }
+      }
+
+      // rendu
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.setTransform(dpr * scale, 0, 0, dpr * scale, dpr * offX, dpr * offY);
+
+      drawBackdrop(T);
+      drawStructure(presOf(ACTS[2]), lp);
+      drawModel(presOf(ACTS[3]), lp, T);
+      drawVizBack(presOf(ACTS[4]), lp);
+      drawImpact(presOf(ACTS[5], 0.45, 0.35), lp);
+      drawIngest(presOf(ACTS[0], 0.35, 0.6), T);
+
+      // particules : halo + traînée + noyau
+      for (const p of parts) {
+        if (p.a <= 0.01) continue;
+        const col = p.c;
+        const sp = Math.hypot(p.vx, p.vy);
+        if (sp > 40) {
+          ctx.save();
+          ctx.globalAlpha = Math.min(0.45, sp / 900) * p.a;
+          ctx.strokeStyle = rgba(col, 1);
+          ctx.lineWidth = p.r * 1.3;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(p.x - p.vx * 0.032, p.y - p.vy * 0.032);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.save();
+        ctx.globalAlpha = p.a * 0.14;
+        ctx.fillStyle = rgba(col, 1);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 2.9, 0, TAU);
+        ctx.fill();
+        ctx.globalAlpha = p.a;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, TAU);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      drawVizFront(presOf(ACTS[4]), lp);
+      drawCleanse(presOf(ACTS[1], 0.3, 0.45), lp, T);
+      drawHud(T, idx, lp);
+
+      if (reduced) {
+        settle += dt;
+        if (settle > 3) return;
+      }
+      raf = requestAnimationFrame(frame);
+    };
+
+    raf = requestAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      wrap.removeEventListener("pointermove", onMove);
+      wrap.removeEventListener("pointerleave", onLeave);
+    };
   }, []);
 
-  useEffect(() => {
-    if (!active) return;
-    const lerp = (a, b, t) => a + (b - a) * t;
-    const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-    const hexToRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-    const toHex = (n) => Math.round(n).toString(16).padStart(2, "0");
-    const lerpColor = (c1, c2, t) => {
-      const a = hexToRgb(c1), b = hexToRgb(c2);
-      return "#" + toHex(lerp(a[0], b[0], t)) + toHex(lerp(a[1], b[1], t)) + toHex(lerp(a[2], b[2], t));
-    };
-    const { KFS, TOTAL, barTargets, donutTargets, treemapTargets } = layouts;
-
-    const step = (ts) => {
-      if (tRef.current === 0) tRef.current = ts;
-      const time = (ts - tRef.current) / 1000;
-      const T = time % TOTAL;
-
-      let a = KFS[0], b = KFS[1];
-      for (let i = 0; i < KFS.length - 1; i++) {
-        if (T >= KFS[i].t && T < KFS[i + 1].t) { a = KFS[i]; b = KFS[i + 1]; break; }
-      }
-      const span = b.t - a.t;
-      const k = ease(span > 0 ? (T - a.t) / span : 0);
-
-      const chaosA = a.kind === "chaos" ? 1 : 0;
-      const chaosB = b.kind === "chaos" ? 1 : 0;
-      const chaosWeight = lerp(chaosA, chaosB, k);
-
-      for (let i = 0; i < N; i++) {
-        const A = a.layout[i], B = b.layout[i];
-        const dot = dotsRef.current[i];
-        if (!dot) continue;
-        let x = lerp(A.x, B.x, k);
-        let y = lerp(A.y, B.y, k);
-        if (chaosWeight > 0.01) {
-          const sx = 0.35 + (i % 7) * 0.08;
-          const sy = 0.28 + (i % 5) * 0.09;
-          const ampX = 9 + (i % 4) * 2;
-          const ampY = 7 + (i % 3) * 2;
-          x += Math.sin(time * sx + i * 0.73) * ampX * chaosWeight;
-          y += Math.cos(time * sy + i * 0.97) * ampY * chaosWeight;
-        }
-        dot.setAttribute("cx", x.toFixed(2));
-        dot.setAttribute("cy", y.toFixed(2));
-        dot.setAttribute("r", lerp(A.r ?? 5, B.r ?? 5, k).toFixed(2));
-        dot.setAttribute("opacity", lerp(A.alpha ?? 1, B.alpha ?? 1, k).toFixed(3));
-
-        // Line-node dots adopt the line color in chart phase
-        if (i < LINE_DOTS) {
-          const baseColor = DOT_COLORS[i % DOT_COLORS.length];
-          const seriesColor = i < 4 ? LINE_COLOR_1 : LINE_COLOR_2;
-          const colorTo = b.kind === "chart" ? seriesColor : baseColor;
-          const colorFrom = a.kind === "chart" ? seriesColor : baseColor;
-          dot.setAttribute("fill", lerpColor(colorFrom, colorTo, k));
-        }
-      }
-
-      if (gridRef.current) gridRef.current.setAttribute("opacity", lerp(a.grid, b.grid, k).toFixed(3));
-
-      const chartOp = lerp(a.chart, b.chart, k);
-      if (chartLayerRef.current) chartLayerRef.current.setAttribute("opacity", chartOp.toFixed(3));
-
-      if (chartOp > 0.02) {
-        // Line paths follow current dot positions (series 1: dots 0-3, series 2: dots 4-7)
-        const buildPath = (start, end) => {
-          let d = "";
-          for (let i = start; i < end; i++) {
-            const dot = dotsRef.current[i];
-            const cx = parseFloat(dot.getAttribute("cx"));
-            const cy = parseFloat(dot.getAttribute("cy"));
-            d += (i === start ? "M" : "L") + cx.toFixed(1) + "," + cy.toFixed(1) + " ";
-          }
-          return d.trim();
-        };
-        if (line1Ref.current) line1Ref.current.setAttribute("d", buildPath(0, 4));
-        if (line2Ref.current) line2Ref.current.setAttribute("d", buildPath(4, 8));
-
-        // Bars grow from baseline with stagger
-        barsRef.current.forEach((rect, i) => {
-          if (!rect) return;
-          const stagger = (i / (BAR_DOTS - 1)) * 0.3;
-          const localK = Math.max(0, Math.min(1, (chartOp - stagger) / (1 - stagger)));
-          const target = barTargets[i];
-          const baseline = layouts.stages.bar.y + layouts.stages.bar.h;
-          rect.setAttribute("y", (baseline - target.h * localK).toFixed(2));
-          rect.setAttribute("height", (target.h * localK).toFixed(2));
-          rect.setAttribute("opacity", localK.toFixed(3));
-        });
-
-        // Donut sectors fade in with stagger
-        donutRefs.current.forEach((path, i) => {
-          if (!path) return;
-          const stagger = (i / (DONUT_DOTS - 1)) * 0.3;
-          const localK = Math.max(0, Math.min(1, (chartOp - stagger) / (1 - stagger)));
-          if (chartOp > stagger) {
-            path.setAttribute("d", donutTargets[i]);
-          }
-          path.setAttribute("opacity", localK.toFixed(3));
-        });
-
-        // Treemap tiles grow in with stagger
-        treemapRefs.current.forEach((rect, i) => {
-          if (!rect) return;
-          const stagger = (i / (TREEMAP_DOTS - 1)) * 0.35;
-          const localK = Math.max(0, Math.min(1, (chartOp - stagger) / (1 - stagger)));
-          rect.setAttribute("opacity", localK.toFixed(3));
-        });
-      } else {
-        barsRef.current.forEach((rect) => {
-          if (rect) { rect.setAttribute("opacity", 0); rect.setAttribute("height", 0); }
-        });
-        donutRefs.current.forEach((path) => { if (path) path.setAttribute("opacity", 0); });
-        treemapRefs.current.forEach((rect) => { if (rect) rect.setAttribute("opacity", 0); });
-      }
-
-      rafRef.current = requestAnimationFrame(step);
-    };
-
-    rafRef.current = requestAnimationFrame(step);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      tRef.current = 0;
-    };
-  }, [active, layouts]);
-
-  const DONUT_COLORS = ["#7aa595", "#fecf56", "#6fafac", "#a8c5b8", "#5e8a7a", "#cbe2d4"];
-  const TREEMAP_COLORS = ["#7aa595", "#a8c5b8", "#fecf56", "#6fafac", "#cbe2d4", "#5e8a7a", "#bdd7c8", "#f0d98a"];
-
   return (
-    <div className="data-flow-wrap">
-      <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet" className="data-flow-svg">
-        {/* Background table grid (visible only in structured phase) */}
-        <g ref={gridRef} opacity="0">
-          <g stroke="#cbc7be" strokeWidth="0.6" strokeDasharray="2 3" opacity="0.6">
-            {[90, 160, 230, 300, 370, 440].map((y) => (
-              <line key={`h${y}`} x1="120" y1={y} x2="680" y2={y} />
-            ))}
-            {[200, 320, 440, 560, 680].map((x) => (
-              <line key={`v${x}`} x1={x} y1="60" x2={x} y2="450" />
-            ))}
-          </g>
-          <g fontFamily="Share Tech Mono, monospace" fontSize="11" letterSpacing="1.5" fill="#9ca0a3">
-            <text x="140" y="78">ID</text>
-            <text x="240" y="78">AMOUNT</text>
-            <text x="360" y="78">DATE</text>
-            <text x="480" y="78">REGION</text>
-            <text x="600" y="78">SCORE</text>
-          </g>
-        </g>
-
-        {/* Chart layer: 5 mini-charts */}
-        <g ref={chartLayerRef} opacity="0">
-          {/* Bars (rendered behind dots) */}
-          {Array.from({ length: BAR_DOTS }).map((_, i) => {
-            const t = layouts.barTargets[i];
-            return (
-              <rect
-                key={`bar${i}`}
-                ref={(el) => { barsRef.current[i] = el; }}
-                x={t.x}
-                y={t.y + t.h}
-                width={t.w}
-                height={0}
-                rx={3}
-                fill={i % 2 === 0 ? "#a8c5b8" : "#cbe2d4"}
-                opacity={0}
-              />
-            );
-          })}
-
-          {/* Donut sectors */}
-          {Array.from({ length: DONUT_DOTS }).map((_, i) => (
-            <path
-              key={`donut${i}`}
-              ref={(el) => { donutRefs.current[i] = el; }}
-              d=""
-              fill={DONUT_COLORS[i % DONUT_COLORS.length]}
-              opacity={0}
-            />
-          ))}
-
-          {/* Treemap tiles */}
-          {Array.from({ length: TREEMAP_DOTS }).map((_, i) => {
-            const t = layouts.treemapTargets[i];
-            return (
-              <rect
-                key={`tm${i}`}
-                ref={(el) => { treemapRefs.current[i] = el; }}
-                x={t.x}
-                y={t.y}
-                width={t.w}
-                height={t.h}
-                rx={4}
-                fill={TREEMAP_COLORS[i % TREEMAP_COLORS.length]}
-                opacity={0}
-              />
-            );
-          })}
-
-          {/* Line paths (above dots so they connect through them) */}
-          <path ref={line1Ref} d="" fill="none" stroke={LINE_COLOR_1} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-          <path ref={line2Ref} d="" fill="none" stroke={LINE_COLOR_2} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-        </g>
-
-        {/* Dots */}
-        <g>
-          {Array.from({ length: N }).map((_, i) => (
-            <circle
-              key={`dot${i}`}
-              ref={(el) => { dotsRef.current[i] = el; }}
-              cx={400}
-              cy={250}
-              r={6}
-              fill={DOT_COLORS[i % DOT_COLORS.length]}
-            />
-          ))}
-        </g>
-      </svg>
+    <div ref={wrapRef} className="data-flow-wrap">
+      <canvas ref={canvasRef} className="data-flow-canvas" />
     </div>
   );
 }
+
 
 // ================= CHART GRID (isolated animation) =================
 const CHART_COLORS = ["#6f9caf", "#70aaaf", "#6fafac", "#70af84", "#ffcf56", "#a8c5b8"];
@@ -1576,7 +2332,7 @@ export default function HomePage() {
                   }}
                   transition={{ duration: 0.9, ease: [0.65, 0, 0.35, 1] }}
                 >
-                  <DataFlowAnimation active={currentSlide === 0} />
+                  <DataFlowAnimation active={currentSlide === 0} lang={lang} />
                 </motion.div>
               </div>
             </Container>
@@ -1635,7 +2391,7 @@ export default function HomePage() {
                             </div>
                           </div>
 
-                          {(s.cta?.url || s.cta2?.url) && (
+                          {(s.cta?.url || s.cta2?.url || s.cta3?.url) && (
                             <div style={{ display: "flex", gap: "8px", justifyContent: "center", alignItems: "center", marginTop: "auto", paddingTop: "16px" }}>
                               {s.cta?.url && (
                                 <div className="preview-wrapper">
@@ -1688,6 +2444,25 @@ export default function HomePage() {
                                     )}
                                   </div>
                                 )
+                              )}
+                              {s.cta3?.url && (
+                                <div className="preview-wrapper">
+                                  <a
+                                    href={s.cta3.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn-secondary btn-hover preview-trigger"
+                                    style={{ padding: "8px 12px", fontSize: "0.72rem" }}
+                                  >
+                                    {s.cta3.label}
+                                  </a>
+                                  {s.cta3.preview && (
+                                    <div className="preview-tooltip">
+                                      <img src={s.cta3.preview} alt="Aperçu du site" className="preview-img" />
+                                      <div className="preview-label">{s.cta3.previewLabel}</div>
+                                    </div>
+                                  )}
+                                </div>
                               )}
                             </div>
                           )}
@@ -1857,6 +2632,12 @@ export default function HomePage() {
 
         .hero-right {
           flex: 0 0 560px;
+          min-width: 0;
+          max-width: 560px;
+          /* Ne pas s'étirer sur la hauteur de la colonne de gauche : sur écran
+             court le panneau débordait vers le haut et se faisait rogner. */
+          align-self: center;
+          max-height: calc(100vh - ${NAV_HEIGHT}px - 40px);
           display: flex;
           flex-direction: column;
         }
@@ -1882,19 +2663,24 @@ export default function HomePage() {
 
         /* DataFlowAnimation — replaces the chart grid in the hero */
         .data-flow-wrap {
-          flex: 1;
+          flex: 0 0 auto;
           width: 100%;
+          min-width: 0;
           height: calc(100vh - ${NAV_HEIGHT}px - 40px);
           background: ${BG};
           border-radius: 24px;
           box-shadow: ${SHADOW_IN};
-          padding: 22px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          display: block;
+          position: relative;
+          overflow: hidden;
+          contain: strict;
         }
 
-        .data-flow-svg {
+        /* Absolu : le canvas ne doit jamais peser sur la largeur du flex parent
+           (sinon boucle resize ↔ layout). */
+        .data-flow-canvas {
+          position: absolute;
+          inset: 0;
           width: 100%;
           height: 100%;
           display: block;
