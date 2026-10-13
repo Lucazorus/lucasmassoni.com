@@ -96,7 +96,7 @@ const translations = {
         {
           key: "mobile",
           title: "Applications mobiles et produits web",
-          desc: "Conception et développement d'applications iOS/Android et de produits web, de l'idée à la mise en ligne. Par exemple Anima Apnea sur l'App Store, et Spokedia, l'index des standards vélo en 7 langues.",
+          desc: "Conception et développement d'applications iOS/Android et de produits web, de l'idée à la mise en ligne. Par exemple Anima Apnea sur l'App Store, et Spokedia, l'index des standards vélo.",
           cta: { label: "Anima Apnea", url: "https://www.animaapnea.com/" },
           cta2: { label: "App Store", sublabel: "Télécharger sur l'App Store", url: "https://apps.apple.com/fr/app/anima-apnea/id6760680506", appStore: true },
           cta3: { label: "Spokedia", url: "https://spokedia.com/fr", preview: "/spokedia-preview.png", previewLabel: "spokedia.com" },
