@@ -3,9 +3,9 @@ import GuideShell from "../../components/GuideShell";
 import { guides, SITE_URL, AUTHOR } from "../../content/guides";
 
 export const metadata = {
-  title: "Guides Salesforce, SAP et data : réponses aux questions des équipes",
+  title: { absolute: "Guides Salesforce, data et analytics · Lucas Massoni" },
   description:
-    "Migration de données, devis, CPQ et Revenue Cloud, intégration SAP, facturation électronique, doublons, automatisation Flow ou Apex, tableaux de bord : des guides pratiques rédigés par un consultant Salesforce freelance.",
+    "Migration de données, devis, Revenue Cloud, facturation électronique, intégration ERP, tableaux de bord et Power BI : des guides pratiques sur Salesforce.",
   alternates: { canonical: `${SITE_URL}/guides` },
   openGraph: {
     type: "website",
@@ -45,8 +45,8 @@ export default function GuidesPage() {
           </nav>
           <h1 className="display display-xl">Les questions que se posent les équipes, et des réponses concrètes.</h1>
           <p className="lead">
-            Migration de données, devis, Revenue Cloud, intégration SAP, facturation électronique, doublons, automatisation, tableaux de bord.
-            Des guides rédigés à partir de missions réelles, pour décider avant de lancer un projet Salesforce.
+            Migration de données, devis, Revenue Cloud, facturation électronique, intégration ERP, tableaux de bord, Power BI et indicateurs commerciaux.
+            Des réponses concrètes pour décider avant de lancer un projet Salesforce.
           </p>
         </div>
       </section>

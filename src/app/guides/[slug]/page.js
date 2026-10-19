@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import GuideShell from "../../../components/GuideShell";
-import { guides, getGuide, SITE_URL, AUTHOR } from "../../../content/guides";
+import { guides, getGuide, plainText, SITE_URL, AUTHOR } from "../../../content/guides";
 import { figures } from "../../../content/figures";
 import Figure from "../../../components/GuideFigures";
 
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
   if (!g) return {};
   const url = `${SITE_URL}/guides/${g.slug}`;
   return {
-    title: g.title,
+    title: { absolute: g.seoTitle },
     description: g.description,
     keywords: g.keywords,
     alternates: { canonical: url },
@@ -37,6 +37,21 @@ export async function generateMetadata({ params }) {
 
 const dateFr = (iso) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
+// Texte avec liens internes au format [texte](/chemin)
+function Rich({ text }) {
+  const out = [];
+  const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let last = 0;
+  let m;
+  while ((m = re.exec(text))) {
+    if (m.index > last) out.push(text.slice(last, m.index));
+    out.push(<Link key={m.index} href={m[2]} className="prose-link">{m[1]}</Link>);
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+
 export default async function GuidePage({ params }) {
   const { slug } = await params;
   const g = getGuide(slug);
@@ -54,8 +69,9 @@ export default async function GuidePage({ params }) {
     inLanguage: "fr-FR",
     datePublished: g.date,
     dateModified: g.updated,
-    author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
+    author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url, jobTitle: AUTHOR.jobTitle, sameAs: [AUTHOR.linkedin] },
     publisher: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
+    wordCount: g.words,
     mainEntityOfPage: url,
     keywords: g.keywords.join(", "),
   };
@@ -66,7 +82,7 @@ export default async function GuidePage({ params }) {
         mainEntity: g.faq.map((f) => ({
           "@type": "Question",
           name: f.q,
-          acceptedAnswer: { "@type": "Answer", text: f.a },
+          acceptedAnswer: { "@type": "Answer", text: plainText(f.a) },
         })),
       }
     : null;
@@ -109,18 +125,18 @@ export default async function GuidePage({ params }) {
         <div className="section section-rule">
           <div className="container article-grid">
             <div className="prose">
-              <p className="prose-intro">{g.intro}</p>
+              <p className="prose-intro"><Rich text={g.intro} /></p>
               {figsAfter("intro")}
               {g.sections.map((sec, si) => (
                 <section key={sec.h2}>
                   <h2>{sec.h2}</h2>
-                  {sec.paragraphs?.map((p) => <p key={p}>{p}</p>)}
+                  {sec.paragraphs?.map((p) => <p key={p}><Rich text={p} /></p>)}
                   {sec.list && (
                     <ul>
-                      {sec.list.map((li) => <li key={li}>{li}</li>)}
+                      {sec.list.map((li) => <li key={li}><Rich text={li} /></li>)}
                     </ul>
                   )}
-                  {sec.paragraphsAfter?.map((p) => <p key={p}>{p}</p>)}
+                  {sec.paragraphsAfter?.map((p) => <p key={p}><Rich text={p} /></p>)}
                   {figsAfter(si)}
                 </section>
               ))}
@@ -131,11 +147,18 @@ export default async function GuidePage({ params }) {
                   {g.faq.map((f) => (
                     <div key={f.q} className="faq-item">
                       <h3>{f.q}</h3>
-                      <p>{f.a}</p>
+                      <p><Rich text={f.a} /></p>
                     </div>
                   ))}
                 </section>
               )}
+
+              <section className="author-box" aria-label="À propos de l'auteur">
+                <p className="footer-label">À propos de l&apos;auteur</p>
+                <p className="author-name">{AUTHOR.name}</p>
+                <p className="author-bio">{AUTHOR.bio}</p>
+                <a href={AUTHOR.linkedin} target="_blank" rel="noopener noreferrer" className="aside-link">Profil LinkedIn</a>
+              </section>
             </div>
 
             <aside className="article-aside">

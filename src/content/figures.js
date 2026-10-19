@@ -1,14 +1,17 @@
 // Figures des guides, par slug. `after` : "intro" ou l'index (0-based) de la
 // section après laquelle la figure s'affiche. Types : voir GuideFigures.js.
+// Aucune statistique inventée : les chiffres affichés reprennent ceux du texte
+// ou sont signalés comme exemples.
 
 export const figures = {
   "comment-migrer-ses-donnees-vers-salesforce": [
     {
       after: "intro",
       type: "steps",
-      title: "Les sept étapes d'une migration",
+      title: "Les huit étapes d'une migration",
       steps: [
         { label: "Audit", note: "sources, volumes, qualité" },
+        { label: "Périmètre", note: "migrer, archiver, abandonner" },
         { label: "Mapping", note: "champ par champ, validé métier" },
         { label: "Staging SQL", note: "transformations rejouables" },
         { label: "Dédoublonnage", note: "règles explicites, journal" },
@@ -18,26 +21,32 @@ export const figures = {
       ],
     },
     {
-      after: 6,
-      type: "bars",
-      title: "Répartition type de l'effort",
-      unit: " %",
-      max: 30,
-      rows: [
-        { label: "Audit des sources", value: 20 },
-        { label: "Mapping", value: 25, tone: "bright" },
-        { label: "Staging et nettoyage", value: 20 },
-        { label: "Chargement", value: 10, tone: "blue" },
-        { label: "Recette", value: 15 },
-        { label: "Bascule et rollback", value: 10, tone: "amber" },
+      after: 5,
+      type: "flow",
+      title: "L'ordre de chargement, dicté par les relations",
+      height: 230,
+      nodes: [
+        { id: "ref", x: 110, y: 60, label: "Référentiels", sub: "utilisateurs, produits" },
+        { id: "acc", x: 360, y: 60, label: "Comptes", sub: "Account", tone: "accent" },
+        { id: "con", x: 610, y: 60, label: "Contacts", sub: "Contact" },
+        { id: "opp", x: 110, y: 170, label: "Opportunités", sub: "et lignes de produits" },
+        { id: "ctr", x: 360, y: 170, label: "Requêtes, contrats", sub: "objets métier" },
+        { id: "act", x: 610, y: 170, label: "Activités, fichiers", sub: "en dernier" },
       ],
-      caption: "Ordre de grandeur constaté sur des migrations multi-sources : la préparation pèse plus que le chargement lui-même.",
+      edges: [
+        { from: "ref", to: "acc" },
+        { from: "acc", to: "con" },
+        { from: "acc", to: "opp", dashed: true },
+        { from: "opp", to: "ctr" },
+        { from: "ctr", to: "act" },
+      ],
+      caption: "Chaque objet est chargé après ceux qu'il référence ; les identifiants créés alimentent le lot suivant.",
     },
   ],
 
   "comment-charger-des-donnees-dans-salesforce": [
     {
-      after: 1,
+      after: 2,
       type: "compare",
       title: "Data Loader ou script, selon le besoin",
       options: ["Data Loader", "Script Python"],
@@ -53,7 +62,7 @@ export const figures = {
       caption: "Niveau de 0 à 3 : capacité de l'outil à couvrir le besoin sans contournement.",
     },
     {
-      after: 3,
+      after: 4,
       type: "flow",
       title: "Chaîne de chargement par script",
       height: 140,
@@ -79,17 +88,214 @@ export const figures = {
       before: 18,
       after2: 13,
       groups: [[1, 7, 13], [4, 10], [8, 14, 16]],
-      caption: "Chaque fusion garde un enregistrement survivant et réaffecte l'historique.",
+      caption: "Illustration : chaque groupe garde un enregistrement survivant, qui récupère l'historique des autres.",
     },
     {
-      after: 3,
+      after: 5,
       type: "steps",
       title: "La méthode en quatre temps",
       steps: [
         { label: "Mesurer", note: "doublons par clé" },
         { label: "Définir les règles", note: "exact, fort, faible" },
-        { label: "Nettoyer en staging", note: "fusion journalisée" },
-        { label: "Poser le filet", note: "Duplicate Rules" },
+        { label: "Fusionner", note: "en staging ou par lots" },
+        { label: "Poser le filet", note: "règles de doublons" },
+      ],
+    },
+  ],
+
+  "pourquoi-mon-salesforce-cpq-est-devenu-ingerable": [
+    {
+      after: 0,
+      type: "steps",
+      title: "La cascade de prix de CPQ",
+      steps: [
+        { label: "Prix catalogue", note: "List Price" },
+        { label: "Prix spécial", note: "prix négociés, options" },
+        { label: "Prorata", note: "durée d'abonnement" },
+        { label: "Prix standard", note: "barèmes de remise" },
+        { label: "Prix client", note: "remise additionnelle" },
+        { label: "Prix partenaire", note: "remise partenaire" },
+        { label: "Prix net", note: "remise distributeur" },
+      ],
+      caption: "Chaque règle de prix doit écrire dans le bon champ, à la bonne étape de la cascade.",
+    },
+    {
+      after: 8,
+      type: "steps",
+      title: "Remettre le paramétrage sous contrôle",
+      steps: [
+        { label: "Inventaire", note: "règles, templates, intégrations" },
+        { label: "Numérotation", note: "ordre et convention" },
+        { label: "Suppression", note: "règles mortes et doublons" },
+        { label: "Jeu de devis réels", note: "rejoué à chaque changement" },
+      ],
+    },
+  ],
+
+  "comment-automatiser-salesforce-flow-ou-apex": [
+    {
+      after: 1,
+      type: "matrix",
+      title: "Où se situe votre besoin",
+      xLabel: "Complexité de la logique",
+      yLabel: "Volume, asynchrone, intégrations",
+      quadrants: [
+        { label: "Flow", note: "logique simple, volumes modérés" },
+        { label: "Apex", note: "logique complexe, volumes modérés" },
+        { label: "Flow + action Apex", note: "logique simple, gros volumes" },
+        { label: "Apex", note: "logique complexe, gros volumes", tone: "accent" },
+      ],
+      points: [
+        { x: 18, y: 22, label: "Mise à jour de champs", tone: "sage" },
+        { x: 42, y: 70, label: "Chargement de masse", tone: "blue" },
+        { x: 78, y: 82, label: "Intégration avec reprise", tone: "amber" },
+        { x: 72, y: 30, label: "Calcul de commissions", tone: "bright" },
+      ],
+    },
+    {
+      after: 6,
+      type: "steps",
+      title: "La grille de décision",
+      steps: [
+        { label: "Déclaratif et admin", note: "Flow" },
+        { label: "Calculs et intégrations", note: "Apex" },
+        { label: "Logique partagée", note: "action Apex invocable" },
+        { label: "Dans tous les cas", note: "tests, documentation, propriétaire" },
+      ],
+    },
+  ],
+
+  "comment-faire-un-tableau-de-bord-commercial-salesforce": [
+    {
+      after: "intro",
+      type: "dash",
+      title: "Ce qu'une direction commerciale attend d'un tableau de bord",
+      kpis: [
+        { label: "Chiffre d'affaires", value: "48,2 M€", delta: "+6,1 %" },
+        { label: "Marge brute", value: "31,4 %", delta: "+2,3 pts" },
+        { label: "Délai de devis", value: "2,1 j", delta: "−62 %" },
+        { label: "Transformation", value: "27 %", delta: "+4 pts" },
+      ],
+      series: [21.6, 22.4, 22.1, 23.5, 24.2, 24.0, 25.1, 26.3, 26.0, 27.4, 28.2, 29.1],
+      target: 26,
+      caption: "Exemple fictif : peu d'indicateurs, chacun avec sa tendance et son objectif.",
+    },
+    {
+      after: 3,
+      type: "compare",
+      title: "Rapports standard, CRM Analytics, Tableau ou Power BI",
+      options: ["Rapports standard", "CRM Analytics", "Tableau", "Power BI"],
+      criteria: [
+        { label: "Suivi opérationnel quotidien", levels: [3, 3, 2, 2] },
+        { label: "Croisements multi-objets", levels: [1, 3, 3, 3] },
+        { label: "Sources externes, ERP", levels: [0, 2, 3, 3] },
+        { label: "Historique et tendances", levels: [1, 3, 3, 3] },
+        { label: "Action depuis le tableau de bord", levels: [2, 3, 1, 1] },
+        { label: "Partage hors Salesforce", levels: [0, 1, 3, 3] },
+      ],
+      caption: "Niveau de 0 à 3 : capacité de l'outil à couvrir le besoin sans contournement.",
+    },
+  ],
+
+  "quels-kpi-suivre-pour-piloter-une-equipe-commerciale": [
+    {
+      after: 1,
+      type: "flow",
+      title: "Où se mesure chaque conversion",
+      height: 150,
+      nodes: [
+        { id: "lead", x: 90, y: 75, label: "Lead", sub: "Lead" },
+        { id: "opp", x: 270, y: 75, label: "Opportunité", sub: "qualifiée" },
+        { id: "quo", x: 450, y: 75, label: "Devis", sub: "envoyé" },
+        { id: "won", x: 630, y: 75, label: "Gagnée", sub: "Closed Won", tone: "accent" },
+      ],
+      edges: [
+        { from: "lead", to: "opp", label: "conversion" },
+        { from: "opp", to: "quo", label: "étape" },
+        { from: "quo", to: "won", label: "transformation" },
+      ],
+      caption: "Chaque transition a son taux ; c'est l'étape où il chute qu'il faut traiter en premier.",
+    },
+    {
+      after: 6,
+      type: "steps",
+      title: "La fiche d'un indicateur",
+      steps: [
+        { label: "Question", note: "à quoi il sert" },
+        { label: "Formule", note: "avec les filtres" },
+        { label: "Date de référence", note: "création, clôture, étape" },
+        { label: "Source", note: "et fréquence" },
+        { label: "Propriétaire", note: "et seuil d'alerte" },
+      ],
+    },
+  ],
+
+  "comment-connecter-salesforce-a-power-bi": [
+    {
+      after: "intro",
+      type: "flow",
+      title: "Les trois chemins de Salesforce vers Power BI",
+      height: 230,
+      nodes: [
+        { id: "sf", x: 110, y: 70, label: "Salesforce", sub: "objets, rapports" },
+        { id: "pbi", x: 610, y: 70, label: "Power BI", sub: "modèle, sécurité", tone: "accent" },
+        { id: "dw", x: 360, y: 180, label: "Entrepôt", sub: "SQL, Fabric, Snowflake" },
+      ],
+      edges: [
+        { from: "sf", to: "pbi", label: "connecteurs Objects ou Reports" },
+        { from: "sf", to: "dw", label: "extraction incrémentale", tone: "blue" },
+        { from: "dw", to: "pbi", label: "modèle historisé", tone: "blue" },
+      ],
+      caption: "Le connecteur direct suffit pour démarrer ; l'entrepôt s'impose avec les volumes, l'historique ou l'ERP.",
+    },
+    {
+      after: 3,
+      type: "compare",
+      title: "Les trois méthodes comparées",
+      options: ["Connecteur Objects", "Connecteur Reports", "Entrepôt"],
+      criteria: [
+        { label: "Mise en place rapide", levels: [3, 3, 1] },
+        { label: "Gros volumes", levels: [1, 0, 3] },
+        { label: "Analyse détaillée", levels: [2, 0, 3] },
+        { label: "Croisement avec l'ERP", levels: [1, 0, 3] },
+        { label: "Historique des données", levels: [1, 0, 3] },
+        { label: "Maîtrise des appels API", levels: [1, 2, 3] },
+      ],
+      caption: "Le connecteur Reports est limité à 2 000 lignes par l'API des rapports.",
+    },
+  ],
+
+  "comment-integrer-salesforce-avec-sap": [
+    {
+      after: "intro",
+      type: "flow",
+      title: "Qui fait foi, et dans quel sens circulent les données",
+      height: 230,
+      nodes: [
+        { id: "sap", x: 120, y: 115, label: "ERP, SAP S/4HANA", sub: "clients, produits, factures", tone: "accent" },
+        { id: "mw", x: 360, y: 115, label: "Middleware", sub: "routage, journal, rejeu" },
+        { id: "sf", x: 600, y: 115, label: "Salesforce", sub: "leads, devis, commandes", tone: "accent" },
+      ],
+      edges: [
+        { from: "sap", to: "mw", label: "référentiels", labelDy: -34, tone: "blue" },
+        { from: "mw", to: "sf", label: "statuts, factures", labelDy: -34, tone: "blue" },
+        { from: "sf", to: "mw", label: "commandes", labelDy: 34, dur: 3 },
+        { from: "mw", to: "sap", label: "commandes", labelDy: 34, dur: 3 },
+      ],
+      caption: "Chaque objet a un seul système maître ; les flux sont journalisés et rejouables au même endroit.",
+    },
+    {
+      after: 4,
+      type: "compare",
+      title: "Point à point ou middleware",
+      options: ["Point à point", "Middleware"],
+      criteria: [
+        { label: "Un ou deux flux simples", levels: [3, 2] },
+        { label: "Plusieurs flux et systèmes", levels: [1, 3] },
+        { label: "Supervision et journal centralisés", levels: [1, 3] },
+        { label: "Reprise sur erreur", levels: [1, 3] },
+        { label: "Coût de départ", levels: [3, 1] },
+        { label: "Réutilisation des connecteurs", levels: [0, 3] },
       ],
     },
   ],
@@ -98,34 +304,101 @@ export const figures = {
     {
       after: 1,
       type: "compare",
-      title: "Quotes standard, CPQ ou Revenue Cloud",
-      options: ["Quotes standard", "Salesforce CPQ", "Revenue Cloud"],
+      title: "Quotes standard ou Revenue Cloud",
+      options: ["Quotes standard", "Revenue Cloud"],
       criteria: [
-        { label: "Catalogue simple, prix fixes", levels: [3, 3, 3] },
-        { label: "Bundles et options", levels: [0, 3, 3] },
-        { label: "Règles de prix complexes", levels: [1, 3, 3] },
-        { label: "Abonnements et avenants", levels: [0, 2, 3] },
-        { label: "Facturation intégrée", levels: [0, 1, 3] },
-        { label: "Vente multicanale, API", levels: [1, 1, 3] },
-        { label: "Rapidité de mise en place", levels: [3, 1, 1] },
+        { label: "Catalogue simple, prix fixes", levels: [3, 3] },
+        { label: "Bundles et options", levels: [0, 3] },
+        { label: "Règles de prix complexes", levels: [1, 3] },
+        { label: "Abonnements et avenants", levels: [0, 3] },
+        { label: "Facturation intégrée", levels: [0, 3] },
+        { label: "Vente multicanale, API", levels: [1, 3] },
+        { label: "Rapidité de mise en place", levels: [3, 1] },
       ],
+      caption: "Niveau de 0 à 3. Salesforce CPQ reste utilisable par les clients déjà équipés.",
     },
     {
-      after: 2,
+      after: 3,
       type: "flow",
       title: "Du devis à la facture",
       height: 140,
       nodes: [
         { id: "opp", x: 90, y: 70, label: "Opportunité" },
         { id: "quo", x: 270, y: 70, label: "Devis", sub: "catalogue, remises", tone: "accent" },
-        { id: "ord", x: 450, y: 70, label: "Commande", sub: "ERP" },
-        { id: "inv", x: 630, y: 70, label: "Facture", sub: "ERP ou Billing" },
+        { id: "ord", x: 450, y: 70, label: "Commande", sub: "transmise à l'ERP" },
+        { id: "inv", x: 630, y: 70, label: "Facture", sub: "ERP ou Revenue Cloud" },
       ],
       edges: [
         { from: "opp", to: "quo" },
         { from: "quo", to: "ord", label: "signature" },
         { from: "ord", to: "inv" },
       ],
+    },
+  ],
+
+  "facturation-electronique-obligatoire-salesforce-erp": [
+    {
+      after: 0,
+      type: "timeline",
+      title: "Le calendrier de la réforme",
+      items: [
+        { date: "1er sept. 2026", label: "Réception obligatoire pour toutes les entreprises", note: "En vigueur", tone: "amber" },
+        { date: "1er sept. 2026", label: "Émission et e-reporting pour les grandes entreprises et les ETI", note: "En vigueur", tone: "amber" },
+        { date: "1er sept. 2027", label: "Émission et e-reporting pour les PME et micro-entreprises" },
+      ],
+      caption: "Calendrier fixé par la loi de finances pour 2024. Vérifiez les textes en vigueur au moment de votre projet.",
+    },
+    {
+      after: 3,
+      type: "flow",
+      title: "Qui produit quoi",
+      height: 150,
+      nodes: [
+        { id: "sf", x: 90, y: 75, label: "Salesforce", sub: "client, devis, commande" },
+        { id: "erp", x: 290, y: 75, label: "ERP", sub: "facture structurée", tone: "accent" },
+        { id: "pa", x: 490, y: 75, label: "Plateforme agréée", sub: "Factur-X, UBL, CII" },
+        { id: "cli", x: 650, y: 75, label: "Client", sub: "et administration" },
+      ],
+      edges: [
+        { from: "sf", to: "erp" },
+        { from: "erp", to: "pa" },
+        { from: "pa", to: "cli" },
+      ],
+      caption: "Salesforce transmet les données client et la commande ; les statuts de la facture repartent de la plateforme vers l'ERP, puis vers Salesforce.",
+    },
+  ],
+
+  "combien-coute-un-consultant-salesforce-freelance": [
+    {
+      after: 0,
+      type: "range",
+      title: "Fourchette de tarif journalier en France",
+      min: 400,
+      max: 1000,
+      unit: " €",
+      band: [500, 900],
+      marks: [
+        { value: 500, label: "Bas de fourchette" },
+        { value: 900, label: "Haut de fourchette" },
+      ],
+      caption: "Hors taxes, par jour. Ordres de grandeur indicatifs, selon la spécialité et le contexte.",
+    },
+    {
+      after: 1,
+      type: "bars",
+      title: "Durées typiques par mission",
+      unit: " j",
+      max: 120,
+      range: true,
+      rows: [
+        { label: "Audit, diagnostic", from: 2, to: 10, tone: "blue" },
+        { label: "Devis, Quotes standard", from: 5, to: 10 },
+        { label: "Tableaux de bord", from: 3, to: 20 },
+        { label: "Migration de données", from: 15, to: 90, tone: "bright" },
+        { label: "Intégration ERP", from: 15, to: 90 },
+        { label: "Revenue Cloud", from: 40, to: 120, tone: "amber" },
+      ],
+      caption: "En jours ouvrés, ordres de grandeur repris des durées indiquées dans le texte.",
     },
   ],
 
@@ -140,7 +413,7 @@ export const figures = {
         { id: "pri", x: 300, y: 60, label: "Tarification", sub: "procédures de prix" },
         { id: "cfg", x: 490, y: 60, label: "Configurateur", sub: "bundles, options" },
         { id: "txn", x: 110, y: 170, label: "Devis et commandes", sub: "transactions" },
-        { id: "ctr", x: 300, y: 170, label: "Contrats", sub: "abonnements", tone: "accent" },
+        { id: "ctr", x: 300, y: 170, label: "Orchestration", sub: "actifs, activation", tone: "accent" },
         { id: "bil", x: 490, y: 170, label: "Facturation", sub: "récurrent, usage" },
         { id: "erp", x: 640, y: 170, label: "ERP", sub: "comptabilité" },
       ],
@@ -166,197 +439,6 @@ export const figures = {
         { label: "Facturation intégrée", levels: [1, 3] },
         { label: "Maturité des pratiques", levels: [3, 2] },
         { label: "Disponible aux nouveaux clients", levels: [0, 3] },
-      ],
-    },
-  ],
-
-  "facturation-electronique-salesforce-sap-comment-se-preparer": [
-    {
-      after: 0,
-      type: "timeline",
-      title: "Le calendrier de la réforme, en résumé",
-      items: [
-        { date: "Sept. 2026", label: "Réception obligatoire pour toutes les entreprises", tone: "amber" },
-        { date: "Sept. 2026", label: "Émission obligatoire pour les grandes entreprises et les ETI" },
-        { date: "Sept. 2027", label: "Émission obligatoire pour les PME et micro-entreprises" },
-      ],
-      caption: "Calendrier indicatif : vérifiez les échéances en vigueur auprès de l'administration fiscale.",
-    },
-    {
-      after: 1,
-      type: "flow",
-      title: "Qui produit quoi",
-      height: 150,
-      nodes: [
-        { id: "sf", x: 90, y: 75, label: "Salesforce", sub: "devis, commande" },
-        { id: "sap", x: 290, y: 75, label: "SAP", sub: "facture structurée", tone: "accent" },
-        { id: "pdp", x: 490, y: 75, label: "Plateforme agréée", sub: "Factur-X, UBL" },
-        { id: "cli", x: 650, y: 75, label: "Client" },
-      ],
-      edges: [
-        { from: "sf", to: "sap", label: "données client" },
-        { from: "sap", to: "pdp" },
-        { from: "pdp", to: "cli" },
-      ],
-    },
-  ],
-
-  "comment-integrer-salesforce-avec-sap": [
-    {
-      after: "intro",
-      type: "flow",
-      title: "Qui fait foi, et dans quel sens circulent les données",
-      height: 230,
-      nodes: [
-        { id: "sap", x: 120, y: 115, label: "SAP S/4HANA", sub: "clients, produits, factures", tone: "accent" },
-        { id: "mw", x: 360, y: 115, label: "Middleware", sub: "routage, journal, rejeu" },
-        { id: "sf", x: 600, y: 115, label: "Salesforce", sub: "leads, devis, commandes", tone: "accent" },
-      ],
-      edges: [
-        { from: "sap", to: "mw", label: "référentiels", labelDy: -34, tone: "blue" },
-        { from: "mw", to: "sf", label: "statuts, factures", labelDy: -34, tone: "blue" },
-        { from: "sf", to: "mw", label: "commandes", labelDy: 34, dur: 3 },
-        { from: "mw", to: "sap", label: "commandes", labelDy: 34, dur: 3 },
-      ],
-      caption: "Chaque objet a un seul système maître ; les flux sont journalisés et rejouables au même endroit.",
-    },
-    {
-      after: 3,
-      type: "compare",
-      title: "Point à point ou middleware",
-      options: ["Point à point", "Middleware"],
-      criteria: [
-        { label: "Un ou deux flux simples", levels: [3, 2] },
-        { label: "Plusieurs flux et systèmes", levels: [1, 3] },
-        { label: "Supervision et journal centralisés", levels: [1, 3] },
-        { label: "Reprise sur erreur", levels: [1, 3] },
-        { label: "Coût de départ", levels: [3, 1] },
-        { label: "Réutilisation des connecteurs", levels: [0, 3] },
-      ],
-    },
-  ],
-
-  "combien-coute-un-consultant-salesforce-freelance": [
-    {
-      after: 0,
-      type: "range",
-      title: "Tarif journalier constaté en France",
-      min: 400,
-      max: 1000,
-      unit: " €",
-      band: [500, 900],
-      marks: [
-        { value: 550, label: "Administration" },
-        { value: 700, label: "Développement, CPQ" },
-        { value: 850, label: "Fonctionnel, technique et data" },
-      ],
-      caption: "Hors taxes, par jour. Fourchettes indicatives selon la spécialité et le contexte.",
-    },
-    {
-      after: 1,
-      type: "bars",
-      title: "Durées typiques par mission",
-      unit: " j",
-      max: 120,
-      range: true,
-      rows: [
-        { label: "Audit, diagnostic", from: 2, to: 10, tone: "blue" },
-        { label: "Devis, Quotes standard", from: 5, to: 10 },
-        { label: "Tableaux de bord", from: 3, to: 20 },
-        { label: "Migration de données", from: 15, to: 90, tone: "bright" },
-        { label: "Intégration ERP", from: 15, to: 90 },
-        { label: "Salesforce CPQ ou Revenue Cloud", from: 40, to: 120, tone: "amber" },
-      ],
-    },
-  ],
-
-  "comment-faire-un-tableau-de-bord-commercial-salesforce": [
-    {
-      after: "intro",
-      type: "dash",
-      title: "Ce qu'une direction commerciale attend d'un tableau de bord",
-      kpis: [
-        { label: "Chiffre d'affaires", value: "48,2 M€", delta: "+6,1 %" },
-        { label: "Marge brute", value: "31,4 %", delta: "+2,3 pts" },
-        { label: "Délai de devis", value: "2,1 j", delta: "−62 %" },
-        { label: "Conversion", value: "27 %", delta: "+4 pts" },
-      ],
-      series: [21.6, 22.4, 22.1, 23.5, 24.2, 24.0, 25.1, 26.3, 26.0, 27.4, 28.2, 29.1],
-      target: 26,
-      caption: "Peu d'indicateurs, des définitions validées, une tendance et un objectif.",
-    },
-    {
-      after: 1,
-      type: "compare",
-      title: "Rapports standard, CRM Analytics ou Tableau",
-      options: ["Rapports standard", "CRM Analytics", "Tableau"],
-      criteria: [
-        { label: "Suivi opérationnel quotidien", levels: [3, 3, 2] },
-        { label: "Croisements multi-objets", levels: [1, 3, 3] },
-        { label: "Sources externes, ERP", levels: [0, 2, 3] },
-        { label: "Historique et tendances", levels: [1, 3, 3] },
-        { label: "Action depuis le tableau de bord", levels: [2, 3, 1] },
-        { label: "Partage hors Salesforce", levels: [0, 1, 3] },
-      ],
-    },
-  ],
-
-  "comment-automatiser-salesforce-flow-ou-apex": [
-    {
-      after: 1,
-      type: "matrix",
-      title: "Où se situe votre besoin",
-      xLabel: "Complexité de la logique",
-      yLabel: "Volume, asynchrone, intégrations",
-      quadrants: [
-        { label: "Flow", note: "logique simple, volumes modérés" },
-        { label: "Apex", note: "logique complexe, volumes modérés" },
-        { label: "Flow + Invocable Apex", note: "logique simple, gros volumes" },
-        { label: "Apex", note: "logique complexe, gros volumes", tone: "accent" },
-      ],
-      points: [
-        { x: 18, y: 22, label: "Mise à jour de champs", tone: "sage" },
-        { x: 42, y: 70, label: "Chargement de masse", tone: "blue" },
-        { x: 78, y: 82, label: "Intégration avec reprise", tone: "amber" },
-        { x: 72, y: 30, label: "Calcul de commissions", tone: "bright" },
-      ],
-    },
-    {
-      after: 3,
-      type: "steps",
-      title: "La grille de décision",
-      steps: [
-        { label: "Déclaratif et admin", note: "Flow" },
-        { label: "Calculs et intégrations", note: "Apex" },
-        { label: "Logique partagée", note: "Invocable Apex" },
-        { label: "Dans tous les cas", note: "documentation, propriétaire" },
-      ],
-    },
-  ],
-
-  "pourquoi-mon-salesforce-cpq-est-devenu-ingerable": [
-    {
-      after: "intro",
-      type: "bars",
-      title: "Ce qu'un audit retrouve en général",
-      unit: " %",
-      max: 100,
-      rows: [
-        { label: "Règles de prix actives et utiles", value: 55, tone: "bright" },
-        { label: "Règles redondantes ou en conflit", value: 25, tone: "amber" },
-        { label: "Règles mortes", value: 20, tone: "muted" },
-      ],
-      caption: "Ordre de grandeur sur des paramétrages de plus de trois ans sans revue.",
-    },
-    {
-      after: 7,
-      type: "steps",
-      title: "Remettre le paramétrage sous contrôle",
-      steps: [
-        { label: "Inventaire", note: "règles, templates, intégrations" },
-        { label: "Numérotation", note: "ordre et convention" },
-        { label: "Suppression", note: "règles mortes et doublons" },
-        { label: "Jeu de devis réels", note: "rejoué à chaque changement" },
       ],
     },
   ],
@@ -469,25 +551,25 @@ export const figures = {
       nodes: [
         { id: "cat", x: 80, y: 75, label: "Catalogue", sub: "ERP ou Revenue Cloud" },
         { id: "quo", x: 240, y: 75, label: "Devis", sub: "configurateur, prix" },
-        { id: "ctr", x: 400, y: 75, label: "Contrat", sub: "abonnements", tone: "accent" },
+        { id: "ord", x: 400, y: 75, label: "Commande", sub: "actifs, orchestration", tone: "accent" },
         { id: "inv", x: 560, y: 75, label: "Facture", sub: "récurrent, usage" },
         { id: "erp", x: 680, y: 75, label: "ERP" },
       ],
       edges: [
         { from: "cat", to: "quo" },
-        { from: "quo", to: "ctr", label: "signature" },
-        { from: "ctr", to: "inv" },
+        { from: "quo", to: "ord", label: "signature" },
+        { from: "ord", to: "inv" },
         { from: "inv", to: "erp" },
       ],
     },
     {
-      after: 5,
+      after: 6,
       type: "steps",
       title: "Un ordre de mise en place",
       steps: [
         { label: "Catalogue et prix", note: "validés sur devis réels" },
-        { label: "Devis", note: "approbations, templates" },
-        { label: "Contrats", note: "abonnements, orchestration" },
+        { label: "Devis", note: "approbations, documents" },
+        { label: "Commandes et actifs", note: "orchestration" },
         { label: "Facturation", note: "et intégration comptable" },
         { label: "Canaux", note: "portail, partenaires" },
       ],

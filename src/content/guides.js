@@ -1,32 +1,58 @@
 // Guides métier, en français. Contenu structuré : chaque guide a une
-// introduction, des sections (h2, paragraphes, listes, h3 optionnels),
-// une FAQ courte (balisée FAQPage) et des guides liés.
+// introduction, des sections (h2, paragraphes, listes), une FAQ courte et
+// des guides liés. `seoTitle` (60 caractères max) sert de balise <title> ;
+// `title` est la question complète affichée en H1.
+// Liens internes dans le texte : [texte](/guides/slug).
 
 export const SITE_URL = "https://www.lucasmassoni.com";
-export const AUTHOR = { name: "Lucas Massoni", url: SITE_URL };
+export const AUTHOR = {
+  name: "Lucas Massoni",
+  url: SITE_URL,
+  linkedin: "https://www.linkedin.com/in/lucas-massoni/",
+  jobTitle: "Consultant indépendant Salesforce, data et analytics",
+  bio: "Consultant indépendant spécialisé en Salesforce, en migration de données et en data visualisation. Il intervient du cadrage à la mise en production, sur le CRM, les devis, les intégrations avec l'ERP et les tableaux de bord.",
+};
+
+const D = "2026-10-19";
 
 const RAW = [
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-migrer-ses-donnees-vers-salesforce",
     title: "Comment migrer ses données vers Salesforce sans rien perdre ?",
+    seoTitle: "Migrer ses données vers Salesforce : la méthode",
     description:
-      "Audit, mapping, staging SQL, dédoublonnage, chargements batchés, recette et bascule avec plan de rollback : la méthode complète pour migrer des données vers Salesforce sans perte.",
+      "Audit, périmètre, mapping, staging SQL, dédoublonnage, chargement, recette et rollback : une méthode en huit étapes pour migrer vers Salesforce sans perte.",
     keywords: ["comment migrer vers Salesforce", "migration de données Salesforce", "data migration Salesforce", "reprise de données Salesforce", "mapping Salesforce", "staging SQL", "rollback migration"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 9,
+    date: D,
+    updated: D,
     intro:
-      "Une migration de données Salesforce ne se résume pas à un chargement de fichiers. C'est un projet à part entière, avec un périmètre, des règles de qualité, une recette et une bascule. Voici la méthode que j'applique sur chaque mission, de l'audit des sources au plan de retour arrière.",
+      "Une migration de données vers Salesforce ne se résume pas à un import de fichiers. C'est un projet à part entière, avec un périmètre, des règles de qualité, une recette et une bascule. Voici une méthode en huit étapes, de l'audit des sources au plan de retour arrière, suivie des erreurs qui reviennent le plus souvent.",
     sections: [
       {
-        h2: "1. Auditer les sources avant de parler d'outils",
+        h2: "1. Auditer les sources avant de choisir un outil",
         paragraphs: [
-          "La première semaine se passe dans les données, pas dans Salesforce. Pour chaque source (ancien CRM, ERP, fichiers Excel, exports d'outils métier), on inventorie les objets, les volumes, les clés d'identification et les règles de gestion implicites. On mesure aussi la qualité : taux de valeurs manquantes par champ, doublons évidents, formats hétérogènes (dates, téléphones, pays).",
-          "Cet audit produit deux livrables : un inventaire chiffré des sources et une liste des risques (données orphelines, références cassées, champs libres utilisés comme listes de valeurs). C'est sur cette base que l'on arbitre ce qui est migré, archivé ou abandonné.",
+          "La première étape se passe dans les données, pas dans Salesforce. Pour chaque source, qu'il s'agisse d'un ancien CRM, d'un ERP, de fichiers Excel ou d'exports d'outils métier, on inventorie les objets, les volumes et les règles de gestion implicites.",
+        ],
+        list: [
+          "Volumes par objet et par source, et leur évolution sur les derniers mois.",
+          "Clés d'identification : existe-t-il un identifiant stable pour chaque client, contact et contrat ?",
+          "Qualité par champ : taux de valeurs vides, formats hétérogènes pour les dates, téléphones et pays, valeurs hors liste.",
+          "Règles implicites : champs libres utilisés comme listes de valeurs, codes internes, conventions de saisie propres à une équipe.",
+        ],
+        paragraphsAfter: [
+          "Cet audit produit deux livrables : un inventaire chiffré des sources et une liste des risques, comme les données orphelines, les références cassées ou les doublons massifs. C'est sur cette base que l'on choisit les outils, et non l'inverse.",
         ],
       },
       {
-        h2: "2. Construire le mapping champ par champ",
+        h2: "2. Fixer le périmètre : migrer, archiver ou abandonner",
+        paragraphs: [
+          "Tout ne mérite pas d'être migré. Pour chaque objet, on décide ce qui part dans Salesforce, ce qui est archivé dans un stockage consultable et ce qui est abandonné. La question à poser pour chaque catégorie : sert-elle un processus actuel, une obligation légale ou une analyse historique ?",
+          "Un critère de date est souvent le plus simple à appliquer, par exemple les comptes actifs et les opportunités des trois dernières années. Le reste est exporté, documenté et rendu accessible en lecture. Moins de données migrées, c'est moins de règles de transformation, une recette plus courte et un risque plus faible.",
+        ],
+      },
+      {
+        h2: "3. Construire le mapping champ par champ",
         paragraphs: [
           "Le mapping est le contrat de la migration. Pour chaque champ cible Salesforce, il documente la source, la transformation appliquée et la règle en cas de valeur absente. Il est validé par les métiers, pas seulement par l'équipe technique.",
         ],
@@ -34,51 +60,80 @@ const RAW = [
           "Objets standard d'abord : Account, Contact, Lead, Opportunity, Case, puis les objets personnalisés.",
           "Listes de valeurs : on aligne les picklists cibles avant de transformer les valeurs sources.",
           "Identifiants externes : un champ External ID par objet migré, pour permettre les upserts et le rapprochement avec le système d'origine.",
-          "Relations : on documente l'ordre de chargement imposé par les lookups et les master-detail.",
+          "Relations : on documente l'ordre de chargement imposé par les lookups et les relations maître-détail.",
+          "Propriétaires : chaque enregistrement doit être rattaché à un utilisateur actif ; les anciens collaborateurs sont remappés vers un propriétaire défini.",
+          "Historique de création : la permission « Set Audit Fields upon Record Creation » permet de reprendre les dates et auteurs de création d'origine.",
+          "Types d'enregistrement et devises : à fixer avant le chargement, car ils conditionnent les listes de valeurs et les montants.",
         ],
       },
       {
-        h2: "3. Passer par un staging SQL",
+        h2: "4. Passer par un staging SQL",
         paragraphs: [
-          "Charger directement les fichiers sources dans Salesforce est la meilleure façon de perdre le contrôle. Je passe systématiquement par une base de staging (PostgreSQL ou SQL Server selon le client). Chaque source y est importée telle quelle, puis transformée par des vues ou des scripts versionnés.",
-          "Le staging permet de rejouer les transformations autant de fois que nécessaire, de produire des rapports d'écart et de conserver la traçabilité entre un enregistrement Salesforce et sa ligne d'origine.",
+          "Charger directement les fichiers sources dans Salesforce est la meilleure façon de perdre le contrôle. Une base de staging, PostgreSQL ou SQL Server par exemple, reçoit chaque source telle quelle, puis la transforme par des vues ou des scripts versionnés.",
+          "Concrètement, le staging contient trois couches : les données brutes telles qu'importées, les tables transformées au format Salesforce, et les tables de résultat qui reçoivent les identifiants Salesforce créés. Cette troisième couche sert à résoudre les relations entre objets et à préparer un éventuel retour arrière.",
+          "Le staging permet aussi de rejouer les transformations autant de fois que nécessaire, de produire des rapports d'écart et de conserver la traçabilité entre un enregistrement Salesforce et sa ligne d'origine.",
         ],
       },
       {
-        h2: "4. Dédoublonner avant de charger",
+        h2: "5. Dédoublonner avant de charger",
         paragraphs: [
-          "Les doublons se traitent dans le staging, avec des règles explicites : clé exacte (email, SIRET), puis rapprochements approximatifs sur le nom et l'adresse. Chaque fusion est journalisée. Les règles de doublons Salesforce (Duplicate Rules) servent ensuite de filet de sécurité, pas de méthode de nettoyage.",
+          "Les doublons se traitent dans le staging, avec des règles explicites : clé exacte comme l'email ou le SIRET, puis rapprochements approximatifs sur le nom et l'adresse. Chaque fusion est journalisée. Les règles de doublons de Salesforce servent ensuite de filet de sécurité, pas de méthode de nettoyage.",
+          "La méthode détaillée, avec les limites de la fusion native, est décrite dans le guide [pour supprimer les doublons dans Salesforce](/guides/comment-supprimer-les-doublons-dans-salesforce).",
         ],
       },
       {
-        h2: "5. Charger par lots, dans le bon ordre",
-        paragraphs: [
-          "Les chargements se font par lots, objet par objet, en respectant les dépendances : comptes, puis contacts et opportunités, puis les objets qui les référencent. Pour les volumes importants, l'API Bulk 2.0 est la voie normale ; les scripts Python ou Data Loader s'appuient dessus.",
+        h2: "6. Charger par lots, dans le bon ordre",
+        paragraphs: ["Les chargements suivent les dépendances entre objets. Un ordre type :"],
+        list: [
+          "Utilisateurs, rôles et données de référence, comme les produits et les catalogues de prix.",
+          "Comptes, puis contacts.",
+          "Opportunités, puis leurs lignes de produits.",
+          "Requêtes, contrats et objets personnalisés qui référencent les précédents.",
+          "Activités, notes et fichiers en dernier, car ils pointent vers tout le reste.",
+        ],
+        paragraphsAfter: [
+          "Pour les volumes importants, l'API Bulk 2.0 est la voie normale ; Data Loader et les scripts s'appuient dessus. Pendant les chargements de masse, les automatisations lourdes sont contournées pour l'utilisateur de chargement, puis réactivées. Le choix de l'outil est détaillé dans le guide [Data Loader ou script](/guides/comment-charger-des-donnees-dans-salesforce).",
           "Chaque lot produit un journal : identifiants créés, erreurs par ligne, durée. Ces journaux alimentent le rapport de recette et servent de base au rollback.",
         ],
       },
       {
-        h2: "6. Recetter avec les utilisateurs",
+        h2: "7. Recetter avec les utilisateurs",
         paragraphs: [
-          "La recette compare les comptages source et cible par objet, vérifie des échantillons choisis par les métiers et contrôle les relations (chaque contact est bien rattaché au bon compte, chaque opportunité au bon propriétaire). Elle se déroule d'abord dans un sandbox Full ou Partial, sur une copie complète des données, avant toute bascule en production.",
+          "La recette se déroule d'abord dans un sandbox Full ou Partial, sur une copie représentative des données, avant toute bascule en production. Elle combine des contrôles automatiques et des vérifications métier.",
+        ],
+        list: [
+          "Comptages source et cible par objet, avec une explication pour chaque écart.",
+          "Contrôle des relations : chaque contact rattaché au bon compte, chaque opportunité au bon propriétaire.",
+          "Échantillons choisis par les métiers, comparés champ par champ avec la source.",
+          "Tests de processus : un commercial retrouve ses comptes, un rapport redonne les totaux attendus.",
         ],
       },
       {
-        h2: "7. Basculer avec un plan de rollback",
+        h2: "8. Basculer avec un plan de rollback",
         paragraphs: [
-          "La bascule est planifiée à l'heure près : gel des saisies dans l'ancien système, dernier delta, chargement, contrôles, ouverture aux utilisateurs. Le plan de rollback décrit comment revenir en arrière si un contrôle échoue : sauvegarde préalable (export de données ou snapshot du sandbox), scripts de suppression par identifiants de lot, critères de décision.",
-          "Sur ma dernière mission, ce cadre a permis de migrer 1,5 million de documents, rattachés aux enregistrements Salesforce via un pipeline Python vers SharePoint, sans perte et sans interruption de service.",
+          "La bascule est planifiée à l'heure près : gel des saisies dans l'ancien système, dernier delta, chargement, contrôles, ouverture aux utilisateurs. Le plan de rollback décrit comment revenir en arrière si un contrôle échoue : sauvegarde préalable, scripts de suppression par identifiants de lot, critères de décision et personne habilitée à décider.",
+          "La période qui suit compte autant que la bascule : support renforcé pendant une à deux semaines, liste des anomalies remontées par les utilisateurs, corrections par lots journalisés.",
+        ],
+      },
+      {
+        h2: "Les erreurs les plus fréquentes",
+        list: [
+          "Choisir l'outil avant d'avoir audité les données.",
+          "Migrer tout l'historique par défaut, sans se demander à quoi il servira.",
+          "Charger directement en production sans répétition complète en sandbox.",
+          "Oublier les automatisations qui se déclenchent pendant le chargement : emails envoyés aux clients, tâches créées par milliers.",
+          "Perdre le lien entre chaque enregistrement Salesforce et sa ligne d'origine, ce qui rend toute correction ultérieure hasardeuse.",
         ],
       },
     ],
     faq: [
       {
         q: "Combien de temps dure une migration de données Salesforce ?",
-        a: "De quelques semaines pour un CRM simple à plusieurs mois pour un périmètre multi-sources. L'audit et le mapping représentent souvent la moitié de l'effort ; le chargement lui-même est rapide s'il est bien préparé.",
+        a: "De quelques semaines pour un CRM simple à plusieurs mois pour un périmètre multi-sources. L'audit et le mapping représentent souvent une large part de l'effort ; le chargement lui-même est rapide s'il est bien préparé.",
       },
       {
         q: "Faut-il migrer tout l'historique ?",
-        a: "Rarement. On migre ce qui sert aux processus actuels et on archive le reste dans un entrepôt consultable. Moins de données migrées, c'est moins de risques et une recette plus courte.",
+        a: "Rarement. On migre ce qui sert aux processus actuels et on archive le reste dans un stockage consultable. Moins de données migrées, c'est moins de risques et une recette plus courte.",
       },
       {
         q: "Peut-on migrer sans interrompre l'activité ?",
@@ -88,22 +143,23 @@ const RAW = [
     related: ["comment-charger-des-donnees-dans-salesforce", "comment-supprimer-les-doublons-dans-salesforce"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-charger-des-donnees-dans-salesforce",
     title: "Comment charger des données dans Salesforce : Data Loader ou script ?",
+    seoTitle: "Data Loader ou script : charger des données Salesforce",
     description:
-      "Data Loader, API Bulk 2.0, scripts Python avec simple-salesforce : comparatif des outils de chargement Salesforce selon le volume, la fréquence et la complexité des transformations.",
+      "Assistant d'importation, Data Loader, API Bulk 2.0 ou script Python : quel outil pour charger des données dans Salesforce, et comment choisir.",
     keywords: ["Data Loader Salesforce", "Bulk API 2.0", "simple-salesforce", "charger des données Salesforce", "import Salesforce Python", "upsert Salesforce"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 7,
+    date: D,
+    updated: D,
     intro:
-      "Data Loader suffit pour un import ponctuel. Dès que les volumes montent, que les transformations se compliquent ou que le chargement doit être rejoué, un script maîtrisé devient plus sûr. Voici comment choisir, et ce qui change entre les deux approches.",
+      "Data Loader suffit pour un import ponctuel. Dès que les volumes montent, que les transformations se compliquent ou que le chargement doit être rejoué, un script maîtrisé devient plus sûr. Voici ce que chaque option fait bien, ses limites, et comment choisir.",
     sections: [
       {
         h2: "Ce que Data Loader fait bien",
         paragraphs: [
-          "Data Loader est l'outil officiel de Salesforce pour insérer, mettre à jour, upserter, supprimer ou exporter des enregistrements à partir de fichiers CSV. Il gère le mapping de colonnes, l'authentification et les deux modes d'API : SOAP (lots de 200 enregistrements) et Bulk (lots jusqu'à 10 000).",
+          "Data Loader est l'outil officiel de Salesforce pour insérer, mettre à jour, upserter, supprimer ou exporter des enregistrements à partir de fichiers CSV. Il gère le mapping de colonnes, l'authentification et plusieurs modes d'API : SOAP, par lots de 200 enregistrements au plus ; Bulk, par lots jusqu'à 10 000 ; et Bulk 2.0 dans ses versions récentes, où Salesforce découpe lui-même les lots.",
         ],
         list: [
           "Imports ponctuels de quelques milliers à quelques centaines de milliers de lignes.",
@@ -113,9 +169,20 @@ const RAW = [
         ],
       },
       {
+        h2: "Ses limites",
+        paragraphs: [
+          "Data Loader charge ce qu'on lui donne. Il ne transforme rien, ne résout pas les relations entre objets à votre place et ne garde pas de mémoire d'une exécution à l'autre.",
+        ],
+        list: [
+          "Chaque exécution produit un fichier de succès et un fichier d'erreurs : la reprise consiste à corriger et recharger ces fichiers à la main.",
+          "Les chargements dépendants demandent plusieurs exécutions successives, avec report manuel des identifiants créés.",
+          "La ligne de commande se configure par fichiers XML, peu lisibles et difficiles à versionner proprement.",
+        ],
+      },
+      {
         h2: "Quand un script Python devient nécessaire",
         paragraphs: [
-          "Un script Python, avec une bibliothèque comme simple-salesforce ou un appel direct à l'API REST et à l'API Bulk 2.0, prend le relais dès que le chargement n'est plus une simple copie de fichier.",
+          "Un script Python, avec une bibliothèque comme simple-salesforce ou un appel direct aux API REST et Bulk 2.0, prend le relais dès que le chargement n'est plus une simple copie de fichier.",
         ],
         list: [
           "Transformations à la volée : normalisation des formats, calcul de champs, résolution de références par External ID.",
@@ -126,43 +193,58 @@ const RAW = [
         ],
       },
       {
-        h2: "Les règles communes aux deux approches",
+        h2: "Les autres options",
+        list: [
+          "L'assistant d'importation de données, intégré à Salesforce : simple, limité à 50 000 enregistrements par import et à certains objets.",
+          "Les outils ETL et d'intégration du marché : utiles quand les chargements deviennent récurrents et doivent être supervisés au même endroit que les autres flux.",
+          "Les outils en ligne bâtis sur les API Salesforce : pratiques pour des imports planifiés sans infrastructure à maintenir.",
+        ],
+      },
+      {
+        h2: "Les règles communes à tous les outils",
         paragraphs: [
-          "Quel que soit l'outil, les bonnes pratiques sont les mêmes. Utiliser des External ID et des upserts plutôt que des inserts aveugles, pour pouvoir rejouer un chargement sans créer de doublons. Désactiver temporairement les automatisations lourdes (Flows, triggers, règles de validation non indispensables) pendant les chargements de masse, puis les réactiver. Tester d'abord dans un sandbox avec un échantillon représentatif, puis avec le volume complet.",
+          "Quel que soit l'outil, les bonnes pratiques sont les mêmes. Utiliser des External ID et des upserts plutôt que des inserts aveugles, pour pouvoir rejouer un chargement sans créer de doublons. Tester d'abord dans un sandbox avec un échantillon représentatif, puis avec le volume complet.",
+          "Pendant les chargements de masse, les flows, triggers et règles de validation se déclenchent sur chaque enregistrement. Une permission personnalisée, vérifiée par ces automatisations, permet de les contourner pour l'utilisateur de chargement uniquement, sans toucher au paramétrage.",
           "Enfin, conserver un journal de chaque exécution : date, utilisateur, fichier source, nombre de lignes traitées, identifiants créés, erreurs. C'est ce journal qui rend possible un retour arrière propre.",
         ],
       },
       {
-        h2: "Mon choix en pratique",
-        paragraphs: [
-          "Sur une migration, j'utilise Data Loader pour les objets de référence simples et les vérifications rapides, et des scripts Python versionnés pour tout ce qui se rejoue : chargements dépendants, deltas, documents. Le script est livré avec sa documentation et son journal, pour que l'équipe interne puisse le réexécuter sans moi.",
+        h2: "Comment choisir",
+        list: [
+          "Import ponctuel, données déjà propres, un seul objet : assistant d'importation ou Data Loader.",
+          "Plusieurs objets liés, transformations, reprises à prévoir : script versionné.",
+          "Chargements récurrents à superviser : outil d'intégration, ou script planifié avec alertes.",
+        ],
+        paragraphsAfter: [
+          "Dans une migration, les deux cohabitent souvent : Data Loader pour les vérifications et les objets de référence, des scripts pour tout ce qui doit être rejoué. Le cadre complet est décrit dans le guide [pour migrer ses données vers Salesforce](/guides/comment-migrer-ses-donnees-vers-salesforce).",
         ],
       },
     ],
     faq: [
       {
         q: "Data Loader peut-il charger plusieurs millions de lignes ?",
-        a: "Oui en mode Bulk, mais le suivi des erreurs et la reprise deviennent fastidieux au-delà de quelques centaines de milliers de lignes. Un script apporte un journal et une reprise plus fins.",
+        a: "Oui avec les API Bulk, mais le suivi des erreurs et la reprise deviennent fastidieux au-delà de quelques centaines de milliers de lignes. Un script apporte un journal et une reprise plus fins.",
       },
       {
         q: "Quelle bibliothèque Python pour Salesforce ?",
-        a: "simple-salesforce couvre l'API REST et le Bulk pour la plupart des besoins. Pour l'API Bulk 2.0 avec de gros fichiers, un client HTTP direct reste simple à écrire et à maîtriser.",
+        a: "simple-salesforce couvre l'API REST et les API Bulk et Bulk 2.0, ce qui suffit à la plupart des chargements. Pour des besoins très spécifiques, un client HTTP direct sur l'API Bulk 2.0 reste simple à écrire.",
       },
     ],
     related: ["comment-migrer-ses-donnees-vers-salesforce", "comment-supprimer-les-doublons-dans-salesforce"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-supprimer-les-doublons-dans-salesforce",
     title: "Comment supprimer les doublons dans Salesforce, et éviter qu'ils reviennent ?",
+    seoTitle: "Doublons Salesforce : les supprimer et les éviter",
     description:
-      "Comment identifier et fusionner les doublons de comptes, contacts et leads dans Salesforce : règles de rapprochement, Duplicate Rules, nettoyage en staging avant migration et fusion contrôlée.",
+      "Règles de correspondance, fusion native et ses limites, nettoyage en staging et filet de sécurité : la méthode pour dédoublonner Salesforce.",
     keywords: ["doublons Salesforce", "dédoublonnage Salesforce", "Duplicate Rules", "Matching Rules", "fusion de comptes Salesforce", "qualité des données CRM"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 7,
+    date: D,
+    updated: D,
     intro:
-      "Les doublons coûtent cher : relances en double, reporting faux, commerciaux qui se marchent dessus. Salesforce fournit des règles de doublons, mais elles n'ont jamais nettoyé une base seules. Voici une méthode complète, du diagnostic à la fusion.",
+      "Les doublons coûtent cher : relances en double, reporting faux, commerciaux qui se marchent dessus. Salesforce fournit des outils pour les détecter et en fusionner quelques-uns, mais pas pour nettoyer une base en profondeur. Voici une méthode complète, du diagnostic à la fusion, et ce que la plateforme sait faire nativement.",
     sections: [
       {
         h2: "Mesurer avant de nettoyer",
@@ -178,56 +260,93 @@ const RAW = [
         list: [
           "Rapprochement exact : même email, même SIRET, même identifiant externe. Fusion automatique possible.",
           "Rapprochement fort : même nom normalisé et même code postal, ou même téléphone normalisé. Fusion après revue rapide.",
-          "Rapprochement faible : noms proches (distance de chaînes), même ville. Revue manuelle systématique.",
+          "Rapprochement faible : noms proches, même ville. Revue manuelle systématique.",
         ],
         paragraphsAfter: [
-          "La normalisation est la clé : minuscules, suppression des accents et des formes juridiques (SAS, SARL), formatage des téléphones au format international, nettoyage des espaces. Sans elle, la moitié des doublons passe entre les mailles.",
+          "La normalisation est la clé : minuscules, suppression des accents et des formes juridiques comme SAS ou SARL, téléphones au format international, espaces nettoyés. Sans elle, une grande partie des doublons passe entre les mailles.",
         ],
       },
       {
-        h2: "Nettoyer en staging, pas en production",
+        h2: "Ce que Salesforce sait faire nativement",
+        list: [
+          "Les règles de correspondance (Matching Rules) définissent quand deux enregistrements sont considérés comme identiques, de façon exacte ou approximative.",
+          "Les règles de doublons (Duplicate Rules) déclenchent une alerte ou un blocage à la création et à la modification, y compris par API.",
+          "Les tâches de doublons (Duplicate Jobs), disponibles dans les éditions Performance et Unlimited, analysent une base existante et produisent des listes de doublons.",
+          "La fusion native regroupe jusqu'à trois enregistrements à la fois, pour les comptes, contacts, leads et requêtes. Les objets personnalisés ne se fusionnent pas nativement.",
+        ],
+        paragraphsAfter: [
+          "Ces outils suffisent pour contenir le problème au quotidien. Pour une base qui compte des milliers de doublons, ou pour des objets personnalisés, il faut un traitement dédié.",
+        ],
+      },
+      {
+        h2: "Nettoyer en staging avant une migration",
         paragraphs: [
-          "Avant une migration, le nettoyage se fait dans la base de staging : on calcule les groupes de doublons, on choisit l'enregistrement survivant selon des critères définis (le plus récent, le plus complet, celui qui porte des opportunités), on fusionne les valeurs des champs et on réaffecte les enregistrements liés. Chaque fusion est journalisée avec les identifiants d'origine.",
-          "Sur une base déjà en production, la logique est la même, mais l'exécution passe par l'API de fusion de Salesforce ou par un outil dédié, par lots limités, avec un contrôle d'échantillon entre chaque lot.",
+          "Avant une migration, le nettoyage se fait dans la base de staging : on calcule les groupes de doublons, on choisit l'enregistrement survivant selon des critères définis, on fusionne les valeurs des champs et on réaffecte les enregistrements liés. Chaque fusion est journalisée avec les identifiants d'origine.",
+          "C'est l'une des huit étapes décrites dans le guide [pour migrer ses données vers Salesforce](/guides/comment-migrer-ses-donnees-vers-salesforce).",
+        ],
+      },
+      {
+        h2: "Fusionner une base déjà en production",
+        paragraphs: [
+          "Sur une base en production, la logique est la même, mais l'exécution passe par l'API de fusion de Salesforce, avec ses contraintes, ou par un traitement qui réaffecte les enregistrements liés avant de supprimer les doublons. On avance par lots limités, avec un contrôle d'échantillon entre chaque lot.",
+        ],
+        list: [
+          "Choisir le survivant selon des critères écrits : le plus récent, le plus complet, celui qui porte des opportunités ou un identifiant ERP.",
+          "Vérifier les références externes : un ERP ou un outil marketing qui pointe vers l'identifiant supprimé doit être mis à jour.",
+          "Contrôler les champs fusionnés : valeurs multiples, propriétaires, consentements marketing.",
+          "Prévenir les utilisateurs concernés, dont les listes et rapports peuvent changer.",
         ],
       },
       {
         h2: "Mettre en place le filet de sécurité",
         paragraphs: [
-          "Une fois la base propre, les Matching Rules et Duplicate Rules de Salesforce empêchent la réapparition des doublons à la saisie et lors des imports. On les configure en mode alerte d'abord, puis en blocage sur les cas sûrs. Les règles standard couvrent les comptes, contacts et leads ; des règles personnalisées complètent pour les objets métier.",
-          "Le dernier élément est organisationnel : une personne ou une équipe responsable de la qualité des données, un rapport hebdomadaire des doublons potentiels et une procédure de fusion connue des utilisateurs.",
+          "Une fois la base propre, les règles de correspondance et de doublons empêchent la réapparition des doublons à la saisie et lors des imports. On les configure en mode alerte d'abord, puis en blocage sur les cas sûrs. Les règles standard couvrent les comptes, contacts et leads ; des règles personnalisées complètent pour les objets métier.",
+          "Le dernier élément est organisationnel : une personne responsable de la qualité des données, un rapport hebdomadaire des doublons potentiels et une procédure de fusion connue des utilisateurs.",
         ],
       },
     ],
     faq: [
       {
         q: "Les Duplicate Rules suffisent-elles à nettoyer une base existante ?",
-        a: "Non. Elles signalent les doublons potentiels à la saisie et à l'import, mais elles ne fusionnent rien. Le nettoyage d'une base existante demande un traitement dédié.",
+        a: "Non. Elles signalent ou bloquent les doublons à la saisie et à l'import, mais elles ne fusionnent rien. Le nettoyage d'une base existante demande un traitement dédié.",
+      },
+      {
+        q: "Peut-on fusionner plus de trois enregistrements à la fois ?",
+        a: "Pas en une seule opération native. On fusionne par paliers successifs, ou on passe par un traitement dédié qui réaffecte les enregistrements liés puis supprime les doublons.",
       },
       {
         q: "Que devient l'historique lors d'une fusion ?",
-        a: "Les enregistrements liés (activités, opportunités, cas) sont réaffectés à l'enregistrement survivant. Il faut vérifier les champs à valeurs multiples et les pièces jointes au cas par cas.",
+        a: "Les enregistrements liés, comme les activités, opportunités et requêtes, sont réaffectés à l'enregistrement survivant. Les champs à valeurs multiples et les fichiers se vérifient au cas par cas.",
       },
     ],
     related: ["comment-migrer-ses-donnees-vers-salesforce", "comment-charger-des-donnees-dans-salesforce"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "pourquoi-mon-salesforce-cpq-est-devenu-ingerable",
     title: "Pourquoi mon paramétrage Salesforce CPQ est devenu ingérable ? 8 erreurs fréquentes",
+    seoTitle: "Salesforce CPQ ingérable : 8 erreurs de paramétrage",
     description:
-      "Règles de prix empilées, bundles mal structurés, approbations trop larges, templates de devis non maintenus : les erreurs de paramétrage Salesforce CPQ les plus fréquentes et comment les corriger.",
-    keywords: ["Salesforce CPQ", "paramétrage CPQ", "règles de prix CPQ", "bundles CPQ", "quote-to-cash", "devis Salesforce"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 8,
+      "Règles de prix empilées, bundles mal conçus, approbations trop larges, calculs lents : les erreurs de paramétrage CPQ et leurs corrections.",
+    keywords: ["Salesforce CPQ", "paramétrage CPQ", "règles de prix CPQ", "bundles CPQ", "cascade de prix CPQ", "quote-to-cash"],
+    date: D,
+    updated: D,
     intro:
-      "Salesforce CPQ est puissant, et c'est précisément pour cela qu'il se dégrade vite quand chaque demande métier est traitée par une règle de plus. Après plusieurs projets de mise en place et de reprise, voici les erreurs que je retrouve le plus souvent.",
+      "Salesforce CPQ est puissant, et c'est précisément pour cela qu'il se dégrade vite quand chaque demande métier est traitée par une règle de plus. Voici les huit erreurs de paramétrage les plus fréquentes et la façon de les corriger. Elles comptent aussi avant une [migration vers Revenue Cloud](/guides/comment-migrer-de-salesforce-cpq-vers-revenue-cloud), où il vaut mieux ne pas reproduire les défauts existants.",
     sections: [
+      {
+        h2: "Comprendre la cascade de prix",
+        paragraphs: [
+          "Beaucoup d'erreurs viennent d'une mauvaise compréhension de l'ordre de calcul. CPQ part du prix catalogue, applique les prix spéciaux comme les prix négociés, calcule le prorata, applique les barèmes de remise pour obtenir le prix standard, puis les remises additionnelles, partenaires et distributeurs jusqu'au prix net.",
+          "Une règle de prix qui écrit dans le mauvais champ, ou à la mauvaise étape du calcul, casse toute la cascade. Avant de corriger quoi que ce soit, on cartographie quelles règles interviennent à quelle étape.",
+        ],
+      },
       {
         h2: "1. Empiler les règles de prix sans ordre ni documentation",
         paragraphs: [
           "Les Price Rules s'exécutent selon leur ordre d'évaluation et leur événement de calcul. Quand personne ne sait plus pourquoi une remise s'applique, c'est que les règles ont été ajoutées une à une, sans convention de nommage ni journal des modifications. La correction passe par un inventaire, une numérotation explicite et la suppression des règles mortes.",
+          "Un bon test : chaque règle doit pouvoir être expliquée en une phrase par quelqu'un du métier.",
         ],
       },
       {
@@ -245,7 +364,7 @@ const RAW = [
       {
         h2: "4. Négliger le modèle de produits",
         paragraphs: [
-          "Codes produits incohérents, familles mal utilisées, attributs stockés dans des champs texte : le modèle de produits conditionne tout le reste (règles, rapports, intégration ERP). Il mérite une gouvernance et un responsable.",
+          "Codes produits incohérents, familles mal utilisées, attributs stockés dans des champs texte : le modèle de produits conditionne tout le reste, des règles aux rapports en passant par l'intégration ERP. Il mérite une gouvernance et un responsable.",
         ],
       },
       {
@@ -257,19 +376,19 @@ const RAW = [
       {
         h2: "6. Ignorer les performances de calcul",
         paragraphs: [
-          "Un devis de plusieurs centaines de lignes avec des dizaines de règles peut mettre des dizaines de secondes à se calculer. Les causes habituelles : règles de prix qui parcourent toutes les lignes, champs formule lourds, Lookup Queries non filtrées. On mesure, puis on simplifie.",
+          "Un devis de plusieurs centaines de lignes avec des dizaines de règles peut mettre de longues secondes à se calculer. Les causes habituelles : règles de prix qui parcourent toutes les lignes, champs formule lourds, Lookup Queries non filtrées, plugin de calcul JavaScript mal écrit. On mesure, puis on simplifie.",
         ],
       },
       {
         h2: "7. Oublier l'intégration en aval",
         paragraphs: [
-          "Le devis signé doit devenir une commande, une facture, un contrat. Si les champs nécessaires à l'ERP ne sont pas prévus dès le paramétrage CPQ, l'intégration se fait à coups de ressaisies. Le mapping vers l'ERP se conçoit avec le modèle de produits.",
+          "Le devis signé doit devenir une commande, une facture, un contrat. Si les champs nécessaires à l'ERP ne sont pas prévus dès le paramétrage, l'intégration se fait à coups de ressaisies. Le mapping vers l'ERP se conçoit avec le modèle de produits.",
         ],
       },
       {
         h2: "8. Ne pas tester avec des devis réels",
         paragraphs: [
-          "Les tests sur trois lignes de produits ne révèlent rien. On constitue un jeu de devis représentatifs, issus de la production, et on les rejoue à chaque modification de règle. C'est la seule façon de garantir qu'une correction n'en casse pas une autre.",
+          "Les tests sur trois lignes de produits ne révèlent rien. On constitue un jeu de devis représentatifs, issus de la production, et on les rejoue à chaque modification de règle. C'est le moyen le plus sûr de vérifier qu'une correction n'en casse pas une autre.",
         ],
       },
     ],
@@ -279,24 +398,25 @@ const RAW = [
         a: "Rarement. Un audit permet en général de supprimer une partie des règles, d'en regrouper d'autres et de documenter le reste. La refonte complète ne se justifie que si le modèle de produits lui-même est à revoir.",
       },
       {
-        q: "Combien de temps pour mettre en place Salesforce CPQ ?",
-        a: "De deux à six mois selon la complexité du catalogue et des règles de prix, en comptant la reprise des données produits et la formation des équipes.",
+        q: "Faut-il corriger CPQ ou passer à Revenue Cloud ?",
+        a: "CPQ n'est plus proposé aux nouveaux clients mais reste supporté pour les clients existants. Si le paramétrage répond aux besoins, une remise en ordre suffit à court terme. Si l'offre évolue fortement, mieux vaut préparer la [migration vers Revenue Cloud](/guides/comment-migrer-de-salesforce-cpq-vers-revenue-cloud) que refondre CPQ.",
       },
     ],
-    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "comment-automatiser-salesforce-flow-ou-apex"],
+    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "comment-migrer-de-salesforce-cpq-vers-revenue-cloud"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-automatiser-salesforce-flow-ou-apex",
     title: "Comment automatiser Salesforce : Flow ou Apex ?",
+    seoTitle: "Flow ou Apex : comment automatiser Salesforce",
     description:
-      "Record-Triggered Flows, Apex triggers, classes asynchrones : critères concrets pour choisir entre Flow et Apex selon la complexité, les volumes, les limites de gouverneur et la maintenabilité.",
-    keywords: ["Flow Salesforce", "Apex Salesforce", "Flow ou Apex", "automatisation Salesforce", "trigger Apex", "limites de gouverneur"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 7,
+      "Record-Triggered Flows, triggers Apex, traitements asynchrones, tests et limites de gouverneur : des critères concrets pour choisir entre Flow et Apex.",
+    keywords: ["Flow Salesforce", "Apex Salesforce", "Flow ou Apex", "automatisation Salesforce", "trigger Apex", "Flow Trigger Explorer", "limites de gouverneur"],
+    date: D,
+    updated: D,
     intro:
-      "Depuis le retrait de Workflow Rules et Process Builder, le choix se fait entre Flow et Apex. Les deux partagent les mêmes limites de plateforme ; ce qui change, c'est qui peut maintenir l'automatisation et à quel coût. Voici les critères que j'applique.",
+      "Depuis la fin du support de Workflow Rules et de Process Builder, le choix se fait entre Flow et Apex. Les deux partagent les mêmes limites de plateforme ; ce qui change, c'est la complexité qu'ils absorbent et qui peut les maintenir. Voici des critères concrets pour choisir, et les bonnes pratiques communes aux deux.",
     sections: [
       {
         h2: "Flow par défaut pour la logique métier simple",
@@ -304,34 +424,55 @@ const RAW = [
           "Un Record-Triggered Flow gère sans code les cas courants : mise à jour de champs à la création ou à la modification, création d'enregistrements liés, envoi d'emails, lancement d'approbations. Il est lisible par un administrateur, versionné dans Salesforce et déployable sans compilation.",
         ],
         list: [
-          "Préférer les flows avant enregistrement (before-save) pour mettre à jour l'enregistrement déclencheur : plus rapides, sans DML supplémentaire.",
-          "Un flow par objet et par événement, avec des sous-flows pour la logique partagée, plutôt que dix flows concurrents sur le même objet.",
-          "Un ordre d'exécution explicite quand plusieurs flows coexistent.",
+          "Préférer les flows avant enregistrement pour mettre à jour l'enregistrement déclencheur : plus rapides, sans DML supplémentaire.",
+          "Plusieurs flows par objet sont possibles : l'explorateur de déclencheurs et le champ d'ordre de déclenchement fixent leur séquence. Le risque n'est pas leur nombre mais leur prolifération sans responsable.",
+          "Des chemins d'erreur sur chaque action qui peut échouer, avec un message exploitable plutôt qu'une erreur générique.",
         ],
       },
       {
         h2: "Apex quand la logique devient algorithmique",
         paragraphs: [
-          "Apex s'impose quand il faut parcourir des collections imbriquées, appliquer des règles complexes, appeler des services externes avec gestion d'erreurs fine, ou traiter de gros volumes en asynchrone (Batch Apex, Queueable). Il apporte aussi ce que Flow n'a pas : des tests unitaires automatisés, exigés à hauteur de 75 % de couverture pour déployer en production.",
+          "Apex s'impose quand il faut parcourir des collections imbriquées, appliquer des règles complexes, appeler des services externes avec une gestion d'erreurs fine, ou traiter de gros volumes en asynchrone avec Batch Apex ou Queueable. Le code Apex doit être couvert à 75 % au moins par des tests pour être déployé en production.",
         ],
         list: [
           "Un seul trigger par objet, qui délègue à une classe de gestion : le pattern trigger handler.",
           "Du code bulkifié dès la première ligne : jamais de requête ou de DML dans une boucle.",
-          "Des tests qui couvrent les cas limites, pas seulement la couverture.",
+          "Des tests qui couvrent les cas limites et les volumes, pas seulement le pourcentage de couverture.",
         ],
       },
       {
         h2: "Les limites de gouverneur s'appliquent aux deux",
         paragraphs: [
-          "Une transaction synchrone dispose, par exemple, de 100 requêtes SOQL et de 150 instructions DML. Flow et Apex consomment ces mêmes compteurs. Un flow mal conçu, avec une boucle qui fait une requête par enregistrement, échouera sur un chargement de masse exactement comme un Apex non bulkifié. Les tests de volume font partie de la recette, quel que soit l'outil.",
+          "Une transaction synchrone dispose par exemple de 100 requêtes SOQL et de 150 instructions DML. Flow et Apex consomment ces mêmes compteurs. Un flow mal conçu, avec une boucle qui fait une requête par enregistrement, échouera sur un chargement de masse exactement comme un Apex non bulkifié. Les tests de volume font partie de la recette, quel que soit l'outil.",
+        ],
+      },
+      {
+        h2: "Tester les flows comme le code",
+        paragraphs: [
+          "Les tests de flow, disponibles depuis fin 2022 pour les flows déclenchés par un enregistrement, vérifient le résultat attendu sur des cas définis. Contrairement aux tests Apex, ils ne sont pas obligatoires pour déployer, ce qui pousse à les négliger. On les exige dans la recette au même titre que les tests Apex.",
+        ],
+      },
+      {
+        h2: "Prévoir les chargements de masse",
+        paragraphs: [
+          "Lors des imports et des migrations, les automatisations se déclenchent sur chaque enregistrement. Une permission personnalisée de contournement, vérifiée dans les flows, les triggers et les règles de validation, permet de les désactiver pour l'utilisateur de chargement sans toucher au paramétrage. Le sujet est détaillé dans le guide [Data Loader ou script](/guides/comment-charger-des-donnees-dans-salesforce).",
+        ],
+      },
+      {
+        h2: "Les erreurs fréquentes",
+        list: [
+          "Des flows sans chemin d'erreur, qui bloquent l'utilisateur avec un message incompréhensible.",
+          "Plusieurs automatisations qui écrivent le même champ, avec un résultat qui dépend de l'ordre d'exécution.",
+          "La même logique dupliquée entre un flow et un trigger, qui finissent par diverger.",
+          "Des emails envoyés aux clients pendant un import, faute de contournement prévu.",
         ],
       },
       {
         h2: "Une grille de décision simple",
         list: [
-          "Logique déclarative, maintenue par les admins, volumes raisonnables : Flow.",
+          "Logique déclarative, maintenue par les administrateurs, volumes raisonnables : Flow.",
           "Calculs complexes, intégrations avec gestion d'erreurs, traitements asynchrones de masse : Apex.",
-          "Logique partagée entre plusieurs automatisations : une Invocable Apex appelée depuis les flows.",
+          "Logique partagée entre plusieurs automatisations : une action Apex invocable appelée depuis les flows.",
           "Dans tous les cas : documentation, convention de nommage et un propriétaire identifié par automatisation.",
         ],
       },
@@ -339,55 +480,82 @@ const RAW = [
     faq: [
       {
         q: "Peut-on tout faire en Flow ?",
-        a: "Presque, mais pas toujours au meilleur coût. Au-delà d'un certain niveau de complexité, un flow devient plus difficile à lire et à tester qu'une classe Apex bien écrite.",
+        a: "Presque, mais pas toujours au meilleur coût. Au-delà d'un certain niveau de complexité, un flow devient plus difficile à lire et à faire évoluer qu'une classe Apex bien écrite.",
       },
       {
         q: "Faut-il migrer les anciens Process Builder vers Flow ?",
-        a: "Oui, Salesforce fournit un outil de migration, mais c'est aussi l'occasion de regrouper et de simplifier les automatisations existantes plutôt que de les convertir une à une.",
+        a: "Oui, leur support a pris fin. Salesforce fournit un outil de migration, mais c'est aussi l'occasion de regrouper et de simplifier les automatisations existantes plutôt que de les convertir une à une.",
       },
     ],
-    related: ["pourquoi-mon-salesforce-cpq-est-devenu-ingerable", "comment-integrer-salesforce-avec-sap"],
+    related: ["comment-charger-des-donnees-dans-salesforce", "comment-integrer-salesforce-avec-sap"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-faire-un-tableau-de-bord-commercial-salesforce",
     title: "Comment faire un tableau de bord commercial fiable avec Salesforce ?",
+    seoTitle: "Tableau de bord commercial Salesforce : la méthode",
     description:
-      "CRM Analytics, natif dans Salesforce, ou Tableau, plus ouvert aux sources externes : comparatif pour le pilotage commercial, le reporting de direction et la gouvernance des indicateurs.",
-    keywords: ["comment faire un tableau de bord Salesforce", "Tableau", "CRM Analytics", "Tableau CRM", "dashboard commercial Salesforce", "reporting Salesforce", "KPI commerciaux"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 6,
+      "Décisions, indicateurs, données, outil, lecture : la méthode en six étapes pour un tableau de bord commercial fiable avec Salesforce.",
+    keywords: ["comment faire un tableau de bord Salesforce", "dashboard commercial Salesforce", "CRM Analytics", "Tableau", "Power BI Salesforce", "reporting Salesforce", "KPI commerciaux"],
+    date: D,
+    updated: D,
     intro:
-      "Les rapports et tableaux de bord standard de Salesforce couvrent le suivi quotidien. Dès que la direction veut croiser le CRM avec l'ERP, suivre des tendances ou partager des analyses hors Salesforce, deux outils s'offrent à vous. Voici comment les départager.",
+      "Un tableau de bord commercial fiable tient moins à l'outil qu'à trois choses : des questions claires, des indicateurs définis et des données propres. Voici une méthode en six étapes, avec un comparatif des outils disponibles autour de Salesforce.",
     sections: [
       {
-        h2: "CRM Analytics : l'analyse dans le flux de travail",
+        h2: "1. Partir des décisions, pas des données",
         paragraphs: [
-          "CRM Analytics est intégré à Salesforce : les données CRM y sont synchronisées sans connecteur, les tableaux de bord s'affichent dans les pages d'enregistrement et respectent la sécurité Salesforce. Les recettes de données permettent de préparer et de croiser des jeux de données, y compris externes, sans quitter la plateforme.",
-          "C'est l'outil adapté quand les utilisateurs vivent dans Salesforce et que l'analyse doit déboucher sur une action immédiate : relancer une opportunité, réaffecter un compte, lancer une campagne.",
+          "Avant de choisir un graphique, on liste les décisions que le tableau de bord doit éclairer : où concentrer l'effort commercial, quelle prévision annoncer au comité de direction, faut-il renforcer une équipe. Chaque indicateur doit servir au moins une de ces décisions ; sinon, il n'a pas sa place.",
         ],
       },
       {
-        h2: "Tableau : l'analyse ouverte à tout le système d'information",
+        h2: "2. Définir chaque indicateur par écrit",
         paragraphs: [
-          "Tableau, également édité par Salesforce, se connecte à presque toutes les sources : bases SQL, entrepôts de données, SAP, fichiers. Il excelle sur l'exploration visuelle, les analyses ad hoc et le partage avec des utilisateurs qui n'ont pas de licence Salesforce.",
-          "C'est le choix naturel pour un reporting de direction qui consolide ventes, marges et production, ou pour une équipe data qui veut un outil unique sur tout le périmètre.",
+          "Un taux de transformation calculé de deux façons différentes ruine la confiance. Chaque indicateur reçoit une fiche : question à laquelle il répond, formule, périmètre, source, fréquence de mise à jour, propriétaire. Les indicateurs utiles et leurs définitions sont détaillés dans le guide [sur les KPI commerciaux](/guides/quels-kpi-suivre-pour-piloter-une-equipe-commerciale).",
         ],
       },
       {
-        h2: "Ce qui compte plus que l'outil",
+        h2: "3. Fiabiliser les données sources",
         list: [
-          "Des définitions d'indicateurs validées et documentées : un taux de conversion calculé de deux façons différentes ruine la confiance.",
-          "Un modèle de données préparé en amont, dans un entrepôt ou dans des recettes, plutôt que des calculs refaits dans chaque tableau de bord.",
-          "Une fraîcheur des données annoncée aux utilisateurs et tenue.",
-          "Un nombre limité de tableaux de bord, chacun avec un propriétaire et un public.",
+          "Des étapes de vente définies, avec des critères de passage connus des commerciaux.",
+          "Des dates de clôture et des montants tenus à jour, contrôlés par des règles de validation.",
+          "Une base sans doublons de comptes, sinon chaque indicateur par client est faux.",
+          "Un historique des étapes conservé, pour mesurer la durée du cycle et les conversions.",
+        ],
+        paragraphsAfter: [
+          "Si la base contient des doublons, le nettoyage passe avant le tableau de bord : la méthode est dans le guide [sur les doublons Salesforce](/guides/comment-supprimer-les-doublons-dans-salesforce).",
         ],
       },
       {
-        h2: "Et souvent, les deux",
+        h2: "4. Choisir l'outil",
+        list: [
+          "Les rapports et tableaux de bord standard couvrent le suivi quotidien. Ils atteignent leurs limites sur les croisements complexes, l'historique et les sources externes.",
+          "CRM Analytics est intégré à Salesforce : les tableaux de bord s'affichent dans les pages d'enregistrement, respectent la sécurité Salesforce et permettent d'agir directement.",
+          "Tableau, également édité par Salesforce, se connecte à presque toutes les sources et excelle sur l'exploration et le reporting de direction.",
+          "Power BI est souvent déjà en place dans l'entreprise. Il se connecte à Salesforce par des connecteurs natifs ou via un entrepôt de données, comme l'explique le guide [pour connecter Salesforce à Power BI](/guides/comment-connecter-salesforce-a-power-bi).",
+        ],
+        paragraphsAfter: [
+          "Salesforce pousse aussi Data Cloud et Tableau Next, sa nouvelle génération d'analytics bâtie sur Data Cloud. Ils se justifient quand les données de plusieurs systèmes doivent être unifiées dans Salesforce ; pour un premier tableau de bord commercial, ils ne sont pas un prérequis.",
+        ],
+      },
+      {
+        h2: "5. Concevoir pour la lecture",
         paragraphs: [
-          "Beaucoup d'organisations combinent les deux : CRM Analytics pour les managers commerciaux dans Salesforce, Tableau pour la direction et la finance sur des données consolidées. La condition est de partager les mêmes définitions et la même source de vérité.",
+          "Pour une direction commerciale, les premiers indicateurs à afficher sont en général le pipeline créé, le taux de transformation, la couverture du pipeline, la durée du cycle de vente et l'écart entre prévision et réalisé.",
+        ],
+        list: [
+          "Cinq à sept indicateurs en tête, pas trente.",
+          "Chaque indicateur avec sa tendance et son objectif, pas seulement une valeur.",
+          "Une hiérarchie : la synthèse en haut, le détail par équipe ou par produit en dessous.",
+          "La date de mise à jour des données visible sur le tableau de bord.",
+        ],
+      },
+      {
+        h2: "6. Faire vivre le tableau de bord",
+        paragraphs: [
+          "Un tableau de bord sans propriétaire se dégrade en quelques mois. On nomme un responsable, on le revoit en réunion commerciale et on supprime ce qui n'est plus regardé.",
+          "Beaucoup d'organisations combinent plusieurs outils, par exemple CRM Analytics pour les managers commerciaux et Tableau ou Power BI pour la direction. Cela fonctionne à une condition : partager les mêmes définitions et la même source de vérité.",
         ],
       },
     ],
@@ -398,37 +566,251 @@ const RAW = [
       },
       {
         q: "Combien de temps pour mettre en place un premier tableau de bord ?",
-        a: "Quelques jours pour un tableau de bord commercial sur des données Salesforce propres. L'essentiel du temps se passe à valider les définitions d'indicateurs avec les métiers.",
+        a: "Quelques jours sur des données Salesforce propres. L'essentiel du temps se passe à valider les définitions d'indicateurs avec les métiers et à corriger les données.",
       },
     ],
-    related: ["comment-migrer-ses-donnees-vers-salesforce", "comment-integrer-salesforce-avec-sap"],
+    related: ["quels-kpi-suivre-pour-piloter-une-equipe-commerciale", "comment-connecter-salesforce-a-power-bi"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    slug: "quels-kpi-suivre-pour-piloter-une-equipe-commerciale",
+    title: "Quels KPI suivre pour piloter une équipe commerciale ?",
+    seoTitle: "KPI commerciaux : quels indicateurs suivre ?",
+    description:
+      "Conversion, vélocité, pipeline, prévision, valeur : les indicateurs commerciaux utiles, leur définition exacte et les pièges de calcul.",
+    keywords: ["KPI commerciaux", "indicateurs commerciaux", "taux de transformation", "couverture du pipeline", "durée du cycle de vente", "KPI Salesforce"],
+    date: D,
+    updated: D,
+    intro:
+      "Un bon pilotage commercial repose sur peu d'indicateurs, définis sans ambiguïté et calculés de la même façon partout. Voici les familles d'indicateurs utiles, leur définition, et les erreurs de calcul qui faussent le plus souvent les tableaux de bord.",
+    sections: [
+      {
+        h2: "Partir des questions de la direction",
+        paragraphs: [
+          "Chaque indicateur répond à une question : génère-t-on assez d'affaires, les transforme-t-on bien, assez vite, et à quel prix ? Les familles ci-dessous suivent ces questions. Un indicateur qui ne répond à aucune question de pilotage n'a pas sa place dans le tableau de bord de direction.",
+        ],
+      },
+      {
+        h2: "Volume et conversion",
+        list: [
+          "Pipeline créé : montant des opportunités créées sur la période, par source et par équipe.",
+          "Taux de conversion lead vers opportunité : leads convertis sur leads traités, sur une même cohorte.",
+          "Taux de transformation : opportunités gagnées sur opportunités clôturées, gagnées et perdues. Les opportunités ouvertes n'entrent pas dans le calcul.",
+          "Conversion par étape : part des opportunités qui passent d'une étape à la suivante, pour repérer où le pipeline se bloque.",
+        ],
+      },
+      {
+        h2: "Vélocité",
+        list: [
+          "Durée du cycle de vente : de la création à la clôture, mesurée sur les opportunités gagnées.",
+          "Temps passé par étape : à partir de l'historique des étapes, pour identifier les goulots.",
+          "Délai de devis : entre la demande et l'envoi du devis, souvent révélateur de la complexité du processus.",
+          "Vélocité commerciale : nombre d'opportunités, multiplié par le taux de transformation et le montant moyen, divisé par la durée du cycle. Elle résume l'effet combiné des quatre leviers.",
+        ],
+      },
+      {
+        h2: "Pipeline et prévision",
+        list: [
+          "Couverture du pipeline : pipeline ouvert sur la période, rapporté à l'objectif restant. Le bon ratio dépend du taux de transformation de l'équipe.",
+          "Âge des opportunités : celles qui dépassent largement la durée moyenne du cycle sont rarement gagnées.",
+          "Précision des prévisions : écart entre la prévision annoncée en début de période et le résultat réel.",
+          "Glissements de dates : opportunités dont la date de clôture a été repoussée, signe d'un pipeline surestimé.",
+        ],
+      },
+      {
+        h2: "Valeur",
+        list: [
+          "Montant moyen des affaires gagnées, par segment et par produit.",
+          "Remise moyenne accordée et son évolution, à rapprocher de la marge.",
+          "Pour les modèles d'abonnement : revenu récurrent, taux de renouvellement et rétention nette.",
+        ],
+      },
+      {
+        h2: "Ce que Salesforce fournit pour les mesurer",
+        list: [
+          "L'historique des opportunités enregistre les changements d'étape, de montant et de date de clôture : c'est la base de la vélocité et des glissements.",
+          "Le suivi de l'historique des champs étend cette traçabilité aux champs choisis.",
+          "Les rapports de tendance historique comparent l'état du pipeline à différentes dates.",
+          "Les prévisions collaboratives structurent la prévision par commercial, manager et période.",
+        ],
+        paragraphsAfter: [
+          "Pour des analyses plus poussées ou croisées avec l'ERP, les données sont exploitées dans un outil d'analyse, par exemple en [connectant Salesforce à Power BI](/guides/comment-connecter-salesforce-a-power-bi).",
+        ],
+      },
+      {
+        h2: "Rédiger la fiche de chaque indicateur",
+        paragraphs: [
+          "Chaque indicateur est documenté sur une fiche courte, validée par la direction commerciale et partagée avec ceux qui construisent les rapports.",
+        ],
+        list: [
+          "La question à laquelle il répond.",
+          "La formule exacte, avec les filtres : types d'opportunités, devises, exclusions.",
+          "Le champ de date utilisé : date de création, de clôture ou d'étape.",
+          "La source et la fréquence de mise à jour.",
+          "Le propriétaire et le seuil d'alerte.",
+        ],
+      },
+      {
+        h2: "Les pièges de calcul les plus fréquents",
+        list: [
+          "Inclure les opportunités ouvertes dans le taux de transformation, ce qui le fait baisser artificiellement.",
+          "Mélanger les devises sans conversion, ou avec des taux différents selon les rapports.",
+          "Comparer des périodes sur des champs de date différents.",
+          "Suivre trop d'indicateurs : au-delà d'une dizaine, plus personne ne les regarde.",
+        ],
+        paragraphsAfter: [
+          "La mise en forme de ces indicateurs dans un tableau de bord est traitée dans le guide [pour faire un tableau de bord commercial fiable](/guides/comment-faire-un-tableau-de-bord-commercial-salesforce).",
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: "Combien d'indicateurs faut-il suivre ?",
+        a: "Cinq à sept pour la direction, quelques-uns de plus pour les managers. Au-delà, l'attention se disperse et les écarts de définition se multiplient.",
+      },
+      {
+        q: "Quel ratio de couverture du pipeline viser ?",
+        a: "Il dépend du taux de transformation. Avec un taux de 25 %, il faut environ quatre fois l'objectif restant en pipeline qualifié ; avec 40 %, deux fois et demie suffisent.",
+      },
+    ],
+    related: ["comment-faire-un-tableau-de-bord-commercial-salesforce", "comment-connecter-salesforce-a-power-bi"],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    slug: "comment-connecter-salesforce-a-power-bi",
+    title: "Comment connecter Salesforce à Power BI ?",
+    seoTitle: "Connecter Salesforce à Power BI : les 3 méthodes",
+    description:
+      "Connecteur Objects, connecteur Reports ou entrepôt : les trois façons de relier Salesforce à Power BI, leurs limites et la sécurité.",
+    keywords: ["Power BI Salesforce", "connecter Salesforce à Power BI", "connecteur Salesforce Power BI", "Salesforce Objects Power BI", "Salesforce Reports Power BI", "reporting Salesforce Power BI"],
+    date: D,
+    updated: D,
+    intro:
+      "Power BI est souvent l'outil d'analyse déjà en place quand une entreprise adopte Salesforce. Les deux se connectent sans difficulté, mais pas toujours de la bonne façon. Voici les trois méthodes possibles, leurs limites, et les points à traiter pour que les chiffres soient justes et que chacun ne voie que ce qu'il doit voir.",
+    sections: [
+      {
+        h2: "Les prérequis",
+        list: [
+          "Un accès API côté Salesforce : inclus dans les éditions Enterprise, Unlimited et Performance, en option sur l'édition Professional.",
+          "Un compte de service dédié à l'extraction, avec la permission API activée et une visibilité définie sur les objets et les champs.",
+          "Une estimation des volumes, car chaque rafraîchissement consomme des appels API sur le quota quotidien de l'organisation.",
+        ],
+      },
+      {
+        h2: "Méthode 1 : le connecteur Salesforce Objects",
+        paragraphs: [
+          "Dans Power BI Desktop, le connecteur Salesforce Objects lit directement les objets standard et personnalisés : comptes, opportunités, lignes de produits, objets métier. On choisit les objets et les champs, puis on modélise dans Power BI.",
+          "C'est la méthode la plus rapide pour démarrer. Ses limites apparaissent avec les volumes : rafraîchissements longs, consommation d'appels API, et pas de mode DirectQuery, les données étant importées à chaque rafraîchissement. Il faut aussi penser à récupérer les libellés des listes de valeurs et à gérer la conversion des devises.",
+        ],
+      },
+      {
+        h2: "Méthode 2 : le connecteur Salesforce Reports",
+        paragraphs: [
+          "Le connecteur Salesforce Reports importe le résultat d'un rapport Salesforce existant. L'avantage : les filtres et la logique du rapport sont réutilisés tels quels. La limite est forte : l'API des rapports ne renvoie que 2 000 lignes. Cette méthode convient aux petites synthèses, pas à l'analyse détaillée.",
+        ],
+      },
+      {
+        h2: "Méthode 3 : passer par un entrepôt de données",
+        paragraphs: [
+          "Dès que les volumes grandissent, que l'historique compte ou que Salesforce doit être croisé avec l'ERP, on extrait les données dans un entrepôt : SQL Server, Azure SQL, Microsoft Fabric, Snowflake ou équivalent. L'extraction est incrémentale, à partir du champ SystemModstamp, par un outil d'intégration ou un script planifié.",
+          "Power BI se branche alors sur l'entrepôt, qui porte un modèle propre et historisé. Les calculs complexes sont faits une fois, au même endroit, et servent à tous les rapports.",
+        ],
+      },
+      {
+        h2: "Modéliser les données dans Power BI",
+        list: [
+          "Un schéma en étoile : des tables de faits pour les opportunités et leurs lignes, des dimensions pour les comptes, utilisateurs, produits et dates.",
+          "Une table de dates qui suit l'exercice fiscal de l'entreprise, si celui-ci ne commence pas en janvier.",
+          "Les montants convertis dans une devise de référence, avec la même source de taux que Salesforce.",
+          "L'historique des opportunités pour mesurer les glissements de dates et la durée passée par étape.",
+        ],
+      },
+      {
+        h2: "Rafraîchissement et quotas d'API",
+        paragraphs: [
+          "Chaque rafraîchissement d'un modèle connecté directement à Salesforce relit les objets sélectionnés et consomme des appels API. Sur de gros volumes, cela pèse sur le quota quotidien partagé avec les intégrations et les chargements.",
+        ],
+        list: [
+          "Limiter les objets et les champs extraits à ce que les rapports utilisent réellement.",
+          "Filtrer à la source, par exemple sur les opportunités des dernières années.",
+          "Planifier les rafraîchissements hors des fenêtres de chargement et d'intégration.",
+          "Suivre la consommation d'appels API dans Salesforce après la mise en production.",
+        ],
+      },
+      {
+        h2: "Les erreurs de chiffres les plus fréquentes",
+        list: [
+          "Afficher les valeurs techniques des listes de valeurs au lieu de leurs libellés.",
+          "Additionner des montants en devises différentes.",
+          "Oublier que les dates et heures renvoyées par l'API sont en UTC, ce qui décale certains enregistrements d'un jour.",
+          "Recalculer dans Power BI un champ formule Salesforce avec une logique légèrement différente.",
+        ],
+      },
+      {
+        h2: "Ne pas oublier la sécurité",
+        paragraphs: [
+          "Power BI ne reprend pas les règles de partage de Salesforce. Le connecteur voit toutes les données visibles par le compte utilisé, et tous les lecteurs du rapport publié voient ces mêmes données. Si un commercial ne doit voir que son territoire, il faut reconstruire cette restriction dans Power BI avec la sécurité au niveau des lignes.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: "Power BI ou CRM Analytics ?",
+        a: "Power BI si l'entreprise l'utilise déjà et que les analyses croisent plusieurs systèmes. CRM Analytics si les utilisateurs travaillent dans Salesforce et doivent agir depuis le tableau de bord. Le guide [sur les tableaux de bord commerciaux](/guides/comment-faire-un-tableau-de-bord-commercial-salesforce) compare les options.",
+      },
+      {
+        q: "Peut-on avoir des données en temps réel dans Power BI ?",
+        a: "Pas avec les connecteurs Salesforce, qui fonctionnent en import. Des rafraîchissements planifiés plusieurs fois par jour suffisent en général au pilotage commercial.",
+      },
+    ],
+    related: ["comment-faire-un-tableau-de-bord-commercial-salesforce", "quels-kpi-suivre-pour-piloter-une-equipe-commerciale"],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-integrer-salesforce-avec-sap",
     title: "Comment intégrer Salesforce avec SAP ou un autre ERP ?",
+    seoTitle: "Intégrer Salesforce avec SAP ou un ERP",
     description:
-      "Synchronisation des comptes, commandes et factures entre SAP S/4HANA et Salesforce : patterns d'intégration (IDoc, OData, BAPI, REST, middleware), choix du système maître et gestion des erreurs.",
-    keywords: ["comment intégrer Salesforce", "intégration SAP Salesforce", "SAP S/4HANA Salesforce", "IDoc", "OData SAP", "middleware SAP Salesforce", "synchronisation ERP CRM"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 8,
+      "Système maître, flux, API SAP et Salesforce, middleware, gestion des erreurs : comment intégrer Salesforce avec SAP S/4HANA ou un autre ERP.",
+    keywords: ["comment intégrer Salesforce", "intégration SAP Salesforce", "SAP S/4HANA Salesforce", "intégration ERP CRM", "OData SAP", "middleware SAP Salesforce", "synchronisation ERP CRM"],
+    date: D,
+    updated: D,
     intro:
-      "L'intégration entre l'ERP et le CRM est le flux le plus sensible d'une entreprise : c'est elle qui relie une opportunité gagnée à une commande, puis à une facture. Voici les patterns qui fonctionnent, et les décisions à prendre avant la première ligne de code.",
+      "L'intégration entre l'ERP et le CRM est l'un des flux les plus sensibles d'une entreprise : c'est elle qui relie une opportunité gagnée à une commande, puis à une facture. Voici les décisions à prendre avant la première ligne de code, les interfaces disponibles de part et d'autre, et les principes qui rendent les flux fiables dans la durée.",
     sections: [
       {
         h2: "Décider du système maître, objet par objet",
         paragraphs: [
-          "Avant tout choix technique, on fixe pour chaque donnée qui fait foi. En général : les clients et les produits sont maîtrisés dans SAP et diffusés vers Salesforce ; les leads, opportunités et devis naissent dans Salesforce ; les commandes et factures reviennent de SAP. Un objet avec deux maîtres est un conflit garanti.",
+          "Avant tout choix technique, on fixe pour chaque donnée qui fait foi. En général, les clients et les produits sont maîtrisés dans l'ERP et diffusés vers Salesforce ; les leads, opportunités et devis naissent dans Salesforce ; les commandes et factures reviennent de l'ERP. Un objet avec deux maîtres est un conflit garanti.",
+          "Dans SAP S/4HANA, clients et fournisseurs sont gérés comme des partenaires commerciaux. C'est l'identifiant du partenaire, stocké dans un champ External ID côté Salesforce, qui fait le lien entre les deux systèmes.",
+        ],
+      },
+      {
+        h2: "Les flux typiques",
+        list: [
+          "Clients : création ou mise à jour dans l'ERP, diffusion vers les comptes Salesforce.",
+          "Produits et prix de base : diffusés de l'ERP vers le catalogue Salesforce.",
+          "Commandes : créées dans Salesforce à la signature, transmises à l'ERP qui les exécute.",
+          "Statuts, livraisons et factures : remontés de l'ERP vers Salesforce pour les commerciaux.",
+          "Encours et conditions de paiement : consultés à la demande depuis Salesforce.",
+        ],
+        paragraphsAfter: [
+          "Le flux des factures et de leurs statuts prend une importance particulière avec la [facturation électronique obligatoire](/guides/facturation-electronique-obligatoire-salesforce-erp). Si les devis et la facturation passent par Revenue Cloud, le découpage des rôles est décrit dans le guide [sur le cycle complet avec Revenue Cloud](/guides/comment-gerer-devis-contrats-et-facturation-avec-revenue-cloud).",
         ],
       },
       {
         h2: "Les interfaces disponibles côté SAP",
         list: [
-          "IDoc : échanges asynchrones par documents, adaptés aux flux de masse (clients, commandes, factures), avec reprise et suivi natifs.",
+          "IDoc : échanges asynchrones par documents, adaptés aux flux de masse comme les clients, commandes et factures, avec suivi et reprise natifs.",
           "BAPI et RFC : appels synchrones de fonctions métier, utiles pour des créations ou contrôles à la demande.",
-          "OData : services exposés via SAP Gateway ou SAP BTP, adaptés aux lectures et aux intégrations web modernes.",
+          "OData : services exposés par SAP Gateway ou SAP BTP, adaptés aux lectures et aux intégrations web modernes.",
           "SAP Integration Suite : la couche d'intégration de SAP BTP, qui orchestre ces interfaces et expose des API REST.",
+        ],
+        paragraphsAfter: [
+          "Sur S/4HANA, et en particulier dans sa version cloud, on privilégie les API publiées par SAP, comme API_BUSINESS_PARTNER pour les partenaires commerciaux ou API_SALES_ORDER_SRV pour les commandes de vente, plutôt que des développements spécifiques. C'est le principe du « clean core » : garder le cœur de l'ERP standard pour faciliter les mises à jour.",
         ],
       },
       {
@@ -436,20 +818,26 @@ const RAW = [
         list: [
           "API REST et Bulk 2.0 pour les lectures et écritures, avec External ID pour les upserts idempotents.",
           "Platform Events et Change Data Capture pour publier les changements Salesforce vers l'extérieur sans scrutation.",
-          "Apex Callouts pour des appels sortants ciblés, avec Named Credentials pour l'authentification.",
+          "Appels sortants en Apex pour des besoins ciblés, avec des Named Credentials pour l'authentification.",
         ],
       },
       {
         h2: "Avec ou sans middleware",
         paragraphs: [
-          "Une intégration point à point tient pour un ou deux flux simples. Au-delà, un middleware (SAP Integration Suite, MuleSoft, ou un ETL existant) apporte le routage, la transformation, la journalisation et la reprise sur erreur au même endroit. Le critère n'est pas la taille de l'entreprise mais le nombre de flux et le besoin de supervision.",
-          "Quel que soit l'outil, les patterns d'intégration pilotée par les API (couches système, processus, expérience) permettent de réutiliser les mêmes connecteurs pour plusieurs besoins métier.",
+          "Une intégration point à point tient pour un ou deux flux simples. Au-delà, un middleware, comme SAP Integration Suite, MuleSoft ou un ETL déjà en place, apporte le routage, la transformation, la journalisation et la reprise sur erreur au même endroit. Le critère n'est pas la taille de l'entreprise mais le nombre de flux et le besoin de supervision.",
+          "Quel que soit l'outil, découper les intégrations en couches réutilisables, une pour l'accès à chaque système et une pour chaque processus métier, évite de reconstruire les mêmes connecteurs pour chaque nouveau besoin.",
+        ],
+      },
+      {
+        h2: "Rendre les flux rejouables",
+        paragraphs: [
+          "Une intégration fiable est idempotente : rejouer un message ne crée pas de doublon. Les upserts sur External ID côté Salesforce et les identifiants de message côté ERP garantissent ce comportement. Chaque message porte aussi un identifiant de corrélation qui permet de suivre une commande de bout en bout, de Salesforce à la facture.",
         ],
       },
       {
         h2: "Gérer les erreurs comme un flux à part entière",
         paragraphs: [
-          "Une intégration sans gestion d'erreurs explicite finit en tickets et en ressaisies. Chaque flux doit définir ce qui se passe quand SAP est indisponible, quand une donnée est rejetée par une règle de validation, quand un identifiant est inconnu : file d'attente et rejeu, alerte à un responsable, enregistrement en erreur visible dans Salesforce.",
+          "Une intégration sans gestion d'erreurs explicite finit en tickets et en ressaisies. Chaque flux doit définir ce qui se passe quand l'ERP est indisponible, quand une donnée est rejetée par une règle de validation, quand un identifiant est inconnu : file d'attente et rejeu, alerte à un responsable, enregistrement en erreur visible dans Salesforce.",
           "Les tests se font avec des données réelles anonymisées et des scénarios d'erreur, pas seulement sur le cas nominal.",
         ],
       },
@@ -457,61 +845,91 @@ const RAW = [
     faq: [
       {
         q: "Temps réel ou batch ?",
-        a: "Les référentiels (clients, produits) tolèrent un batch quotidien ou horaire. Les statuts de commande et les stocks consultés par les commerciaux justifient du quasi temps réel, par événements.",
+        a: "Les référentiels comme les clients et les produits tolèrent un batch quotidien ou horaire. Les statuts de commande et les stocks consultés par les commerciaux justifient du quasi temps réel, par événements.",
       },
       {
         q: "Faut-il un middleware pour un seul flux ?",
         a: "Non. Un flux simple et bien journalisé peut rester point à point. On passe au middleware quand les flux se multiplient ou que la supervision devient un besoin.",
       },
     ],
-    related: ["comment-automatiser-salesforce-flow-ou-apex", "comment-faire-un-tableau-de-bord-commercial-salesforce"],
+    related: ["facturation-electronique-obligatoire-salesforce-erp", "comment-gerer-devis-contrats-et-facturation-avec-revenue-cloud"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-faire-des-devis-dans-salesforce",
-    title: "Comment faire des devis dans Salesforce ? Quotes standard, CPQ et ce qu'il faut prévoir",
+    title: "Comment faire des devis dans Salesforce ? Quotes standard ou Revenue Cloud",
+    seoTitle: "Devis dans Salesforce : Quotes ou Revenue Cloud ?",
     description:
-      "Devis Salesforce : quand les Quotes standard suffisent, quand passer à Salesforce CPQ, comment gérer catalogue, remises, approbations, templates PDF et transmission à l'ERP pour la facturation.",
-    keywords: ["devis Salesforce", "comment faire un devis dans Salesforce", "Quotes Salesforce", "Salesforce CPQ", "template de devis Salesforce", "quote-to-cash"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 8,
+      "Quand les Quotes standard suffisent, quand passer à Revenue Cloud, templates, signature et délais : comment faire des devis dans Salesforce.",
+    keywords: ["devis Salesforce", "comment faire un devis dans Salesforce", "Quotes Salesforce", "Revenue Cloud", "template de devis Salesforce", "quote-to-cash"],
+    date: D,
+    updated: D,
     intro:
-      "Faire un devis dans Salesforce est possible dès la licence Sales Cloud, avec l'objet Quote. La vraie question est ailleurs : votre offre tient-elle dans un catalogue simple, ou demande-t-elle des configurations, des règles de prix et des approbations ? La réponse détermine l'outil, le budget et le délai.",
+      "Faire un devis dans Salesforce est possible dès la licence Sales Cloud, avec l'objet Quote. La vraie question est ailleurs : votre offre tient-elle dans un catalogue simple, ou demande-t-elle des configurations, des règles de prix et des abonnements ? La réponse détermine l'outil, le budget et le délai.",
     sections: [
       {
         h2: "Les Quotes standard de Sales Cloud",
         paragraphs: [
-          "L'objet Quote est lié à une opportunité. Il reprend les lignes de produits (Quote Line Items) depuis le catalogue de prix (Price Book), calcule les totaux, génère un PDF à partir d'un template et permet de synchroniser le devis retenu avec l'opportunité.",
+          "L'objet Quote est lié à une opportunité. Il reprend les lignes de produits depuis le catalogue de prix, calcule les totaux, génère un PDF à partir d'un template et permet de synchroniser le devis retenu avec l'opportunité.",
         ],
         list: [
           "Catalogue de produits et tarifs stables, peu de variantes.",
           "Remises simples, appliquées ligne par ligne ou sur le total.",
           "Un ou deux modèles de PDF, sans sections conditionnelles complexes.",
-          "Approbation par un processus d'approbation standard, sur un montant ou une remise.",
+          "Approbation par un processus standard, sur un montant ou un taux de remise.",
         ],
         paragraphsAfter: [
-          "Dans ce périmètre, un devis opérationnel se met en place en quelques jours : catalogue, template, processus d'approbation, formation. C'est aussi le point de départ que je recommande quand le processus commercial n'est pas encore stabilisé.",
+          "Dans ce périmètre, un devis opérationnel se met en place en une à deux semaines : catalogue, template, processus d'approbation, formation. C'est aussi le bon point de départ quand le processus commercial n'est pas encore stabilisé.",
         ],
       },
       {
-        h2: "Quand passer à Salesforce CPQ",
+        h2: "Quand passer à Revenue Cloud",
         paragraphs: [
-          "Salesforce CPQ (Configure, Price, Quote) s'impose quand le devis devient un objet de configuration : produits à options, bundles, abonnements avec dates de début et de fin, tarifs par volume ou par segment, remises conditionnelles, renouvellements et avenants.",
+          "Revenue Cloud s'impose quand le devis devient un objet de configuration : produits à options, bundles, abonnements avec dates de début et de fin, tarifs par volume ou par segment, remises conditionnelles, renouvellements et avenants. C'est la solution que Salesforce propose désormais pour ces besoins ; Salesforce CPQ, qui les couvrait jusqu'ici, n'est plus proposé aux nouveaux clients.",
         ],
         list: [
           "Bundles et options avec règles de compatibilité entre produits.",
-          "Règles de prix : remises par paliers, prix négociés par client, majorations selon les conditions.",
-          "Abonnements, prorata et renouvellements automatiques.",
-          "Approbations avancées à plusieurs niveaux selon le type d'écart.",
-          "Templates de devis riches, avec sections conditionnelles et conditions générales versionnées.",
+          "Tarification avancée : remises par paliers, prix négociés par client, majorations selon les conditions.",
+          "Abonnements, prorata, renouvellements et avenants.",
+          "Approbations à plusieurs niveaux selon le type d'écart.",
+          "Facturation récurrente ou à l'usage intégrée au même cycle.",
+        ],
+        paragraphsAfter: [
+          "Les entreprises déjà équipées de CPQ peuvent continuer à l'utiliser ; la question de la migration est traitée dans le guide [Revenue Cloud ou CPQ](/guides/salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq).",
+        ],
+      },
+      {
+        h2: "Templates, documents et signature",
+        paragraphs: [
+          "Les Quotes standard génèrent un PDF à partir d'un template simple. Pour des documents riches, avec sections conditionnelles et conditions générales versionnées, il faut un outil de génération de documents, inclus dans Revenue Cloud ou apporté par une solution partenaire. La signature électronique passe par un service connecté, qui renvoie le devis signé et met à jour l'opportunité.",
         ],
       },
       {
         h2: "Ce qu'il faut prévoir, quel que soit l'outil",
         paragraphs: [
-          "Un projet de devis échoue rarement sur l'outil et souvent sur les données et le processus. Avant le paramétrage, on fixe le modèle de produits (codes, familles, unités), les règles de remise autorisées et les seuils d'approbation. On décide aussi de ce qui se passe après la signature : création de commande, transmission à l'ERP, facturation.",
-          "La signature électronique, la génération de documents et la facturation ne sont pas natives dans Sales Cloud : elles passent par des solutions partenaires ou par l'ERP. Les champs nécessaires à ces étapes (SIREN, adresse de facturation, références de commande, conditions de paiement) doivent exister dans le devis dès le départ.",
+          "Un projet de devis échoue rarement sur l'outil et souvent sur les données et le processus. Avant le paramétrage, on fixe le modèle de produits, avec ses codes, familles et unités, les règles de remise autorisées et les seuils d'approbation. On décide aussi de ce qui se passe après la signature : création de commande, transmission à l'ERP, facturation.",
+          "La facturation n'est pas native dans Sales Cloud : elle se fait dans l'ERP ou avec la brique de facturation de Revenue Cloud. Les données nécessaires, comme le SIREN, l'adresse de facturation, les références de commande et les conditions de paiement, doivent exister dans le devis dès le départ, d'autant plus avec la [facturation électronique obligatoire](/guides/facturation-electronique-obligatoire-salesforce-erp).",
+        ],
+      },
+      {
+        h2: "Les étapes d'un projet de devis",
+        list: [
+          "Cartographier le processus actuel : qui fait les devis, avec quels outils, quelles validations et quels délais.",
+          "Construire le catalogue de produits et les catalogues de prix, avec un responsable désigné.",
+          "Concevoir les templates avec les équipes commerciales et juridiques.",
+          "Paramétrer les approbations sur les seuils retenus.",
+          "Brancher l'aval : commande, ERP, facturation.",
+          "Former les commerciaux sur des cas réels, puis suivre l'adoption pendant les premières semaines.",
+        ],
+      },
+      {
+        h2: "Les erreurs à éviter",
+        list: [
+          "Laisser coexister des devis faits hors de Salesforce, puis ressaisis : les données de pipeline deviennent fausses.",
+          "Créer un produit par client ou par variante au lieu de travailler avec des prix et des remises.",
+          "Autoriser les remises sans seuil ni approbation, puis découvrir l'érosion de marge en fin d'année.",
+          "Publier un template sans relecture juridique des conditions générales.",
         ],
       },
       {
@@ -519,110 +937,136 @@ const RAW = [
         list: [
           "Quotes standard, catalogue simple : une à deux semaines, formation comprise.",
           "Quotes standard avec approbations, templates multiples et intégration ERP : trois à six semaines.",
-          "Salesforce CPQ : deux à six mois selon la complexité du catalogue et des règles de prix.",
+          "Revenue Cloud : deux à six mois selon la complexité du catalogue, des règles de prix et de la facturation.",
         ],
       },
     ],
     faq: [
       {
-        q: "Peut-on commencer avec les Quotes standard et migrer vers CPQ plus tard ?",
-        a: "Oui, et c'est souvent la bonne trajectoire. Les produits, tarifs et opportunités sont réutilisés ; seules les lignes de devis changent de modèle. Un catalogue propre dès le départ facilite la transition.",
+        q: "Peut-on commencer avec les Quotes standard et passer à Revenue Cloud plus tard ?",
+        a: "Oui, et c'est souvent la bonne trajectoire. Revenue Cloud repose lui aussi sur les objets standard de devis et de produits : les produits, catalogues de prix et opportunités sont réutilisés. Un catalogue propre dès le départ facilite la transition.",
       },
       {
-        q: "Salesforce peut-il envoyer les factures ?",
-        a: "Pas avec Sales Cloud seul. La facturation se fait dans l'ERP ou avec Salesforce Billing. Le devis Salesforce doit alors porter toutes les données nécessaires à la facture.",
+        q: "Salesforce peut-il émettre les factures ?",
+        a: "Pas avec Sales Cloud seul. La facturation se fait dans l'ERP ou avec Revenue Cloud. Le devis doit alors porter toutes les données nécessaires à la facture.",
       },
     ],
-    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "facturation-electronique-salesforce-sap-comment-se-preparer"],
+    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "facturation-electronique-obligatoire-salesforce-erp"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
-    slug: "facturation-electronique-salesforce-sap-comment-se-preparer",
-    title: "Facturation électronique : comment se préparer avec Salesforce et SAP ?",
+    slug: "facturation-electronique-obligatoire-salesforce-erp",
+    title: "Facturation électronique obligatoire : que faut-il adapter dans Salesforce et l'ERP ?",
+    seoTitle: "Facturation électronique : adapter Salesforce et l'ERP",
     description:
-      "Réforme de la facturation électronique en France : ce qui change pour une entreprise équipée de Salesforce et de SAP, où produire les factures, quelles données préparer dans le CRM, formats Factur-X et UBL, plateformes de dématérialisation.",
-    keywords: ["facturation électronique", "facturation électronique Salesforce", "facturation électronique SAP", "Factur-X", "plateforme de dématérialisation", "réforme facturation électronique 2026"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 8,
+      "En vigueur depuis septembre 2026 : e-reporting, nouvelles mentions, statuts. Ce que la facturation électronique change pour Salesforce et l'ERP.",
+    keywords: ["facturation électronique", "facturation électronique obligatoire", "facturation électronique Salesforce", "plateforme agréée", "PDP", "e-reporting", "Factur-X"],
+    date: D,
+    updated: D,
     intro:
-      "La généralisation de la facturation électronique en France impose à toutes les entreprises assujetties à la TVA de recevoir des factures électroniques, puis de les émettre, selon un calendrier échelonné par taille d'entreprise. Pour une organisation qui vend dans Salesforce et facture dans SAP, la question est concrète : où se produit la facture conforme, et quelles données doivent circuler entre les deux systèmes ?",
+      "Depuis le 1er septembre 2026, toutes les entreprises assujetties à la TVA en France doivent pouvoir recevoir des factures électroniques, et les grandes entreprises et les ETI doivent les émettre. Les PME et micro-entreprises suivront le 1er septembre 2027. Pour une organisation qui vend dans Salesforce et facture dans un ERP, la question est concrète : où se produit la facture conforme, et quelles données doivent circuler entre les deux systèmes ?",
     sections: [
       {
-        h2: "Ce que la réforme demande, en résumé",
+        h2: "Ce que la réforme impose",
         paragraphs: [
-          "Les factures entre entreprises établies en France doivent transiter sous forme structurée par des plateformes de dématérialisation agréées, dans des formats normalisés (Factur-X, UBL ou CII), avec transmission de données à l'administration. L'obligation de réception s'applique à toutes les entreprises à la première échéance ; l'obligation d'émission est échelonnée, les grandes entreprises et les ETI d'abord, puis les PME et micro-entreprises. Le calendrier précis et les plateformes agréées sont publiés par l'administration fiscale ; vérifiez la version en vigueur au moment de votre projet.",
+          "Les factures entre entreprises établies en France transitent désormais sous forme structurée par des plateformes agréées par l'administration, appelées jusqu'en 2025 plateformes de dématérialisation partenaires, ou PDP. Les formats admis sont Factur-X, UBL et CII. Le portail public de facturation ne sert pas d'outil d'échange : il tient l'annuaire des entreprises et centralise les données transmises à l'administration.",
+          "Le calendrier fixé par la loi : réception obligatoire pour toutes les entreprises, et émission pour les grandes entreprises et les ETI, depuis le 1er septembre 2026 ; émission pour les PME et micro-entreprises au 1er septembre 2027. Vérifiez les textes en vigueur au moment de votre projet, des ajustements restent possibles.",
         ],
       },
       {
-        h2: "Où produire la facture : l'ERP, pas le CRM",
+        h2: "L'e-reporting, l'autre volet",
         paragraphs: [
-          "Dans une architecture Salesforce et SAP, la facture conforme est produite par SAP, qui porte la comptabilité, les mentions légales et les formats réglementaires. SAP Document and Reporting Compliance prend en charge la génération des formats structurés et la connexion aux plateformes. Salesforce reste le système des devis, des commandes et de la relation client.",
-          "Conséquence : le flux devis gagné, commande, facture doit être fiable de bout en bout. Une facture rejetée par une plateforme pour une donnée manquante ou incohérente remonte souvent à une saisie incomplète dans le CRM.",
+          "Les opérations qui ne relèvent pas de la facturation électronique entre entreprises françaises doivent être déclarées : ventes aux particuliers, opérations avec des entreprises étrangères, et données de paiement pour les prestations de services. Ces données transitent aussi par la plateforme agréée, selon le même calendrier que l'émission.",
+        ],
+      },
+      {
+        h2: "Les nouvelles mentions obligatoires",
+        paragraphs: ["Quatre mentions s'ajoutent aux mentions habituelles des factures :"],
+        list: [
+          "Le numéro SIREN du client.",
+          "L'adresse de livraison des biens, si elle diffère de l'adresse de facturation.",
+          "La catégorie de l'opération : livraison de biens, prestation de services, ou les deux.",
+          "L'option pour le paiement de la TVA d'après les débits, le cas échéant.",
+        ],
+        paragraphsAfter: [
+          "Chacune remonte à une donnée qui naît souvent dans le CRM : la fiche client, l'adresse portée par le devis, le type de produit vendu.",
+        ],
+      },
+      {
+        h2: "Où produire la facture : dans l'ERP, en général",
+        paragraphs: [
+          "Dans une architecture Salesforce et ERP, la facture conforme est produite par l'ERP, qui porte la comptabilité, les mentions légales et la connexion à la plateforme agréée. Avec SAP, c'est le rôle de SAP Document and Reporting Compliance. Salesforce reste le système des devis, des commandes et de la relation client. Si la facturation se fait dans Salesforce, avec Revenue Cloud par exemple, il faut la connecter à une plateforme agréée.",
+          "Conséquence : le flux devis gagné, commande, facture doit être fiable de bout en bout. Une facture rejetée pour une donnée manquante ou incohérente remonte souvent à une saisie incomplète dans le CRM.",
         ],
       },
       {
         h2: "Les données à préparer dans Salesforce",
         list: [
           "Identification du client : SIREN ou SIRET, numéro de TVA intracommunautaire, raison sociale exacte, adresse de facturation structurée.",
-          "Références : numéro de commande client, numéro de contrat ou de devis, conditions de paiement, mode de règlement.",
+          "Adresse de livraison distincte, quand elle existe, portée par le devis et la commande.",
+          "Catégorie de l'opération, déduite du type de produit, bien ou service, plutôt que saisie à la main.",
+          "Références : numéro de commande client, numéro de contrat ou de devis, conditions et mode de paiement.",
           "Lignes : désignation, quantité, unité, prix unitaire, taux de TVA par ligne, remises explicites.",
-          "Mentions particulières : option pour les débits, exonérations, acomptes.",
         ],
         paragraphsAfter: [
-          "La plupart de ces champs existent déjà dans Salesforce mais sont facultatifs ou saisis librement. Le chantier consiste à les rendre obligatoires au bon moment, à les contrôler (format du SIREN, validité du numéro de TVA) et à les transmettre sans ressaisie à SAP.",
+          "La plupart de ces champs existent déjà dans Salesforce mais sont facultatifs ou saisis librement. Le chantier consiste à les rendre obligatoires au bon moment, à les contrôler, par exemple le format du SIREN et la validité du numéro de TVA, et à les transmettre sans ressaisie à l'ERP.",
+        ],
+      },
+      {
+        h2: "Remonter les statuts de facture",
+        paragraphs: [
+          "Chaque facture électronique suit un cycle de vie tracé par la plateforme : déposée, rejetée, refusée, encaissée, entre autres. Plusieurs de ces statuts sont obligatoires, dont « encaissée » pour les prestations de services. Remonter ces statuts dans Salesforce permet aux commerciaux de voir qu'une facture a été refusée par le client avant même qu'il ne les appelle.",
         ],
       },
       {
         h2: "Les chantiers concrets",
         list: [
-          "Audit des données clients : taux de comptes sans SIREN, adresses non structurées, doublons de comptes facturés.",
+          "Audit des données clients : comptes sans SIREN, adresses non structurées, doublons de comptes facturés.",
           "Règles de validation et champs obligatoires sur les comptes et les devis, avec une période de rattrapage pour les enregistrements existants.",
-          "Intégration Salesforce vers SAP pour les commandes, avec External ID et journal des rejets visible par les commerciaux.",
-          "Retour des statuts de facture et de paiement vers Salesforce, pour que les commerciaux voient ce qui est facturé et réglé.",
+          "Intégration Salesforce vers l'ERP pour les commandes, avec External ID et journal des rejets visible par les commerciaux.",
+          "Retour des statuts de facture et de paiement vers Salesforce.",
           "Tests avec des factures réelles anonymisées sur l'environnement de test de la plateforme choisie.",
         ],
-      },
-      {
-        h2: "Par où commencer",
-        paragraphs: [
-          "Par un diagnostic de quelques jours : état des données clients dans Salesforce, flux existants vers SAP, écarts avec les mentions obligatoires. Il débouche sur un plan d'actions chiffré, priorisé par échéance, qui sépare ce qui relève du CRM, de l'intégration et de l'ERP.",
+        paragraphsAfter: [
+          "Pour les grandes entreprises et les ETI, l'enjeu est désormais de fiabiliser des flux déjà en production. Pour les PME, l'échéance de septembre 2027 laisse le temps de traiter les données clients, qui sont le chantier le plus long. Les principes d'intégration sont détaillés dans le guide [pour intégrer Salesforce avec un ERP](/guides/comment-integrer-salesforce-avec-sap).",
         ],
       },
     ],
     faq: [
       {
+        q: "Une PME doit-elle déjà agir ?",
+        a: "Oui pour la réception, obligatoire depuis septembre 2026 : il faut avoir choisi une plateforme agréée pour recevoir ses factures fournisseurs. L'émission ne sera obligatoire qu'en septembre 2027.",
+      },
+      {
         q: "Salesforce peut-il émettre directement des factures électroniques conformes ?",
-        a: "Pas avec Sales Cloud seul. Il faut soit l'ERP, soit une solution de facturation connectée à une plateforme agréée. Dans une architecture avec SAP, la facture conforme est produite par SAP.",
+        a: "Pas avec Sales Cloud seul. Il faut soit l'ERP, soit une solution de facturation, comme Revenue Cloud, connectée à une plateforme agréée.",
       },
       {
         q: "Les devis et commandes sont-ils concernés par la réforme ?",
-        a: "Non, seules les factures le sont. Mais la qualité des données saisies au devis et à la commande conditionne directement la conformité des factures.",
-      },
-      {
-        q: "Combien de temps faut-il pour se préparer ?",
-        a: "Pour la partie CRM et intégration, comptez quelques semaines à quelques mois selon l'état des données et des flux. Le délai le plus long est souvent le nettoyage des comptes clients.",
+        a: "Non, seules les factures et les données d'e-reporting le sont. Mais la qualité des données saisies au devis et à la commande conditionne directement la conformité des factures.",
       },
     ],
     related: ["comment-integrer-salesforce-avec-sap", "comment-faire-des-devis-dans-salesforce"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "combien-coute-un-consultant-salesforce-freelance",
     title: "Combien coûte un consultant Salesforce freelance, et comment cadrer sa mission ?",
+    seoTitle: "Consultant Salesforce freelance : tarif et cadrage",
     description:
-      "Tarif journalier d'un consultant Salesforce freelance en France, durée type des missions (migration, CPQ, intégration, analytics), ce qui est compris dans la prestation et comment éviter les dérives de périmètre.",
+      "Tarif journalier d'un consultant Salesforce freelance en France, durées types par mission, forfait ou régie, et les questions à poser avant de signer.",
     keywords: ["consultant Salesforce freelance", "TJM consultant Salesforce", "tarif consultant Salesforce", "coût mission Salesforce", "freelance Salesforce France", "expert Salesforce indépendant"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 6,
+    date: D,
+    updated: D,
     intro:
-      "Le coût d'un consultant Salesforce freelance dépend moins du tarif journalier que de la façon dont la mission est cadrée. Voici les ordres de grandeur constatés en France, les durées typiques par type de projet et les clauses qui protègent les deux parties.",
+      "Le coût d'un consultant Salesforce freelance dépend moins du tarif journalier que de la façon dont la mission est cadrée. Voici les ordres de grandeur du marché français, les durées typiques par type de projet et les points qui protègent les deux parties.",
     sections: [
       {
         h2: "Les ordres de grandeur du tarif journalier",
         paragraphs: [
-          "En France, le tarif journalier d'un consultant Salesforce indépendant se situe en général entre 500 et 900 euros hors taxes, selon l'expérience, la spécialité (administration, développement Apex et LWC, CPQ, intégration, data) et le mode d'intervention. Les profils capables de couvrir à la fois le fonctionnel, le technique et la donnée se situent dans la partie haute, parce qu'ils remplacent plusieurs intervenants.",
+          "En France, le tarif journalier d'un consultant Salesforce indépendant se situe en général entre 500 et 900 euros hors taxes, selon l'expérience, la spécialité et le mode d'intervention. Les profils qui couvrent à la fois le fonctionnel, le technique et la donnée se situent plutôt dans le haut de la fourchette, parce qu'ils remplacent plusieurs intervenants.",
           "Ces montants sont indicatifs : ils varient avec la durée d'engagement, la part de télétravail et le contexte. Ce qui compte, c'est le coût total de la mission rapporté au résultat livré.",
         ],
       },
@@ -631,9 +1075,22 @@ const RAW = [
         list: [
           "Audit ou diagnostic : deux à dix jours, avec un rapport et un plan d'actions chiffré.",
           "Migration de données : de trois semaines à plusieurs mois selon le nombre de sources et les volumes.",
-          "Mise en place de devis : une à deux semaines avec les Quotes standard, deux à six mois avec CPQ.",
+          "Mise en place de devis : une à deux semaines avec les Quotes standard, deux à six mois avec Revenue Cloud.",
           "Intégration avec un ERP : de quelques semaines pour un flux à plusieurs mois pour une intégration complète.",
           "Tableaux de bord et analytics : quelques jours à quelques semaines, l'essentiel étant la validation des indicateurs.",
+        ],
+      },
+      {
+        h2: "Ce qui fait varier le coût total",
+        list: [
+          "L'état des données : une base propre et documentée réduit l'audit et la recette.",
+          "Le nombre de systèmes à connecter, et la qualité de leurs API.",
+          "La disponibilité des équipes internes pour valider les choix et tester.",
+          "Les exigences de sécurité et de conformité, qui ajoutent des étapes de revue.",
+          "La part de changement organisationnel : former et accompagner prend du temps.",
+        ],
+        paragraphsAfter: [
+          "Le déroulé détaillé des missions les plus courantes est décrit dans les guides [pour migrer ses données vers Salesforce](/guides/comment-migrer-ses-donnees-vers-salesforce) et [pour faire des devis dans Salesforce](/guides/comment-faire-des-devis-dans-salesforce).",
         ],
       },
       {
@@ -646,15 +1103,25 @@ const RAW = [
         ],
       },
       {
-        h2: "Éviter les dérives de périmètre",
+        h2: "Forfait ou régie",
         paragraphs: [
-          "Le dépassement vient presque toujours de demandes ajoutées en cours de route sans réévaluation. Un bon cadre prévoit un point d'avancement régulier, une liste des demandes hors périmètre chiffrées séparément et un critère clair de fin de mission. Le forfait convient aux périmètres bien définis (audit, migration cadrée) ; la régie convient aux missions évolutives, avec un plafond.",
+          "Le forfait engage le consultant sur un résultat et un prix ; il convient aux périmètres bien définis, comme un audit ou une migration cadrée. La régie facture le temps passé ; elle convient aux missions évolutives, à condition de fixer un plafond et des points de revue réguliers.",
         ],
       },
       {
-        h2: "Comment je travaille",
+        h2: "Éviter les dérives de périmètre",
         paragraphs: [
-          "Chaque mission commence par un cadrage, se déroule en itérations courtes avec des démonstrations régulières, et se termine par une passation documentée. Le chiffrage est fixé avant le démarrage et n'évolue qu'avec un accord écrit sur un changement de périmètre.",
+          "Le dépassement vient presque toujours de demandes ajoutées en cours de route sans réévaluation. Un bon cadre prévoit un point d'avancement régulier, une liste des demandes hors périmètre chiffrées séparément et un critère clair de fin de mission.",
+        ],
+      },
+      {
+        h2: "Les questions à poser avant de signer",
+        list: [
+          "Quels livrables précis seront remis, et sous quelle forme ?",
+          "Qui, côté client, valide chaque étape, et dans quel délai ?",
+          "Comment sont traitées les demandes hors périmètre ?",
+          "Quelle documentation et quel transfert de compétences sont prévus ?",
+          "Quelle période de support après la mise en production ?",
         ],
       },
     ],
@@ -664,22 +1131,23 @@ const RAW = [
         a: "Un freelance expérimenté coûte en général moins cher qu'un cabinet pour un périmètre équivalent, avec un interlocuteur unique du cadrage au transfert. Un cabinet se justifie pour des programmes qui demandent une équipe complète en parallèle.",
       },
       {
-        q: "Faut-il une certification Salesforce ?",
-        a: "Les certifications attestent des connaissances de la plateforme. Les références de missions comparables et la qualité du cadrage sont des indicateurs au moins aussi fiables.",
+        q: "Comment évaluer un consultant avant de le choisir ?",
+        a: "Sur la qualité de son cadrage : un consultant qui pose des questions précises sur vos données, vos processus et vos contraintes avant de chiffrer limite les mauvaises surprises. Les références de missions comparables complètent l'évaluation.",
       },
     ],
     related: ["comment-migrer-ses-donnees-vers-salesforce", "comment-faire-des-devis-dans-salesforce"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq",
     title: "Salesforce Revenue Cloud, c'est quoi ? Et faut-il quitter CPQ ?",
+    seoTitle: "Salesforce Revenue Cloud : faut-il quitter CPQ ?",
     description:
-      "Revenue Cloud (Revenue Cloud Advanced) : ce que couvre la nouvelle plateforme quote-to-cash de Salesforce, ce qui change par rapport à Salesforce CPQ, pour qui c'est pertinent et comment décider de migrer ou de rester.",
+      "Ce que couvre Revenue Cloud, ce qui change par rapport à Salesforce CPQ, pour qui c'est pertinent et comment décider de migrer ou de rester.",
     keywords: ["Salesforce Revenue Cloud", "Revenue Cloud Advanced", "Revenue Cloud vs CPQ", "quote-to-cash Salesforce", "Revenue Lifecycle Management", "migration CPQ Revenue Cloud"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 8,
+    date: D,
+    updated: D,
     intro:
       "Revenue Cloud est la plateforme avec laquelle Salesforce remplace progressivement Salesforce CPQ et Salesforce Billing. Elle couvre tout le cycle du devis à l'encaissement, directement sur la plateforme Salesforce et non plus dans un package installé. Voici ce qu'elle contient, ce qui change concrètement et comment décider si, et quand, migrer.",
     sections: [
@@ -689,26 +1157,32 @@ const RAW = [
           "Revenue Cloud, dans sa version actuelle dite Revenue Cloud Advanced, regroupe plusieurs briques natives qui s'enchaînent du catalogue à la facture.",
         ],
         list: [
-          "Product Catalog Management : un catalogue unique, avec attributs, bundles et règles de compatibilité, partagé par tous les canaux de vente.",
-          "Salesforce Pricing : des procédures de tarification déclaratives qui remplacent les règles de prix de CPQ, exécutées par un moteur dédié.",
-          "Product Configurator : la configuration guidée des produits et des options, utilisable dans l'interface Salesforce ou en API.",
-          "Transaction Management : devis, commandes et avenants, avec gestion des lignes et des cycles de vie.",
-          "Contrats et exécution : la génération des contrats et l'orchestration de ce qui suit la signature (activation, livraison, abonnements).",
-          "Billing : facturation, paiements, revenus récurrents et à l'usage, avec les écritures nécessaires à la comptabilité.",
+          "Product Catalog Management : un catalogue unique, avec classifications, attributs, bundles et règles de compatibilité, partagé par tous les canaux de vente.",
+          "Salesforce Pricing : des procédures de tarification déclaratives qui remplacent les règles de prix de CPQ.",
+          "Product Configurator : la configuration guidée des produits et des options, dans l'interface Salesforce ou par API.",
+          "Transaction Management : devis, commandes et avenants, avec gestion des lignes et de leur cycle de vie.",
+          "Dynamic Revenue Orchestrator : l'orchestration de ce qui suit la signature, comme l'activation, la livraison et le provisionnement.",
+          "Billing : facturation récurrente, à l'usage ou ponctuelle, paiements et écritures pour la comptabilité.",
         ],
       },
       {
         h2: "Ce qui change par rapport à Salesforce CPQ",
         paragraphs: [
-          "Salesforce CPQ est un package géré, hérité de l'acquisition de Steelbrick, avec son propre modèle d'objets, ses règles de prix et son moteur de calcul. Revenue Cloud est construit sur les objets standard de la plateforme et expose ses fonctions en API, ce qui change trois choses.",
+          "Salesforce CPQ est un package géré, issu du rachat de Steelbrick, avec son propre modèle d'objets, ses règles de prix et son moteur de calcul. Revenue Cloud est construit sur les objets standard de la plateforme et expose ses fonctions par API, ce qui change trois choses.",
         ],
         list: [
-          "Le modèle de données : le catalogue, les prix et les devis vivent dans des objets natifs, plus faciles à étendre, à intégrer et à analyser.",
+          "Le modèle de données : le catalogue, les prix, les devis et les actifs vivent dans des objets natifs, plus faciles à étendre, à intégrer et à analyser.",
           "La tarification : les procédures de prix se construisent de façon déclarative, avec une logique lisible, au lieu d'une pile de règles évaluées dans un ordre fragile.",
-          "Les canaux : la même configuration et la même tarification servent au commercial dans Salesforce, à un portail client ou à un partenaire via l'API.",
+          "Les canaux : la même configuration et la même tarification servent au commercial dans Salesforce, à un portail client ou à un partenaire par API.",
         ],
         paragraphsAfter: [
-          "Côté commercial, Salesforce a annoncé que CPQ n'est plus proposé aux nouveaux clients et positionne Revenue Cloud comme son successeur, avec un maintien du support pour les clients existants. Les échéances précises évoluent : vérifiez-les avec votre interlocuteur Salesforce avant de planifier.",
+          "Côté commercial, Salesforce ne propose plus CPQ aux nouveaux clients et positionne Revenue Cloud comme son successeur, avec un maintien du support pour les clients existants. Les échéances précises évoluent : vérifiez-les avec votre interlocuteur Salesforce avant de planifier.",
+        ],
+      },
+      {
+        h2: "Ce que ça implique pour les équipes",
+        paragraphs: [
+          "Les compétences CPQ ne se transposent pas directement. Le catalogue, les procédures de tarification et le modèle d'actifs demandent une prise en main par les administrateurs et les intégrateurs. Les intégrations, rapports et automatisations qui lisaient les objets CPQ sont à reprendre. C'est un projet de transformation, pas une mise à jour.",
         ],
       },
       {
@@ -717,19 +1191,19 @@ const RAW = [
           "Les entreprises qui démarrent un projet de devis structuré : il n'y a plus de raison de partir sur CPQ.",
           "Les modèles d'abonnement, de consommation ou mixtes, où la facturation et les avenants sont au cœur du processus.",
           "Les organisations multicanales qui veulent une seule logique de prix pour les commerciaux, le e-commerce et les partenaires.",
-          "Les équipes qui veulent industrialiser le quote-to-cash avec des intégrations ERP propres, en s'appuyant sur des objets standard.",
+          "Les équipes qui veulent industrialiser le cycle complet avec des intégrations ERP propres, sur des objets standard.",
         ],
       },
       {
         h2: "Rester sur CPQ, pour l'instant",
         paragraphs: [
-          "Un paramétrage CPQ stable, bien documenté et qui répond aux besoins n'a pas à être migré dans l'urgence. La bonne démarche consiste à faire l'inventaire de ce qui existe (produits, règles, templates, intégrations), à estimer l'effort de migration et à caler la décision sur un événement métier : refonte de l'offre, passage à l'abonnement, projet de facturation ou de portail client.",
+          "Un paramétrage CPQ stable, documenté et qui répond aux besoins n'a pas à être migré dans l'urgence. La bonne démarche consiste à faire l'inventaire de ce qui existe, à estimer l'effort de migration et à caler la décision sur un événement métier : refonte de l'offre, passage à l'abonnement, projet de facturation ou de portail client. Si le paramétrage actuel pose problème, le guide [sur les erreurs de paramétrage CPQ](/guides/pourquoi-mon-salesforce-cpq-est-devenu-ingerable) aide à le remettre en ordre en attendant.",
         ],
       },
       {
         h2: "Comment décider",
         paragraphs: [
-          "Un diagnostic de quelques jours suffit en général : cartographie du paramétrage CPQ actuel, écarts avec les capacités de Revenue Cloud, dépendances d'intégration, estimation de la migration et des risques. Il débouche sur un calendrier réaliste plutôt que sur une réponse de principe.",
+          "Un diagnostic de quelques jours suffit en général : cartographie du paramétrage CPQ actuel, écarts avec les capacités de Revenue Cloud, dépendances d'intégration, estimation de la migration et des risques. Il débouche sur un calendrier réaliste plutôt que sur une réponse de principe. Le déroulé d'une migration est décrit dans le guide [pour migrer de CPQ vers Revenue Cloud](/guides/comment-migrer-de-salesforce-cpq-vers-revenue-cloud).",
         ],
       },
     ],
@@ -743,61 +1217,62 @@ const RAW = [
         a: "Non, mais ils doivent être migrés ou conservés en lecture. La stratégie dépend des abonnements en cours et des obligations de conservation ; c'est l'un des points clés du plan de migration.",
       },
     ],
-    related: ["comment-migrer-de-salesforce-cpq-vers-revenue-cloud", "comment-faire-des-devis-dans-salesforce"],
+    related: ["comment-migrer-de-salesforce-cpq-vers-revenue-cloud", "comment-gerer-devis-contrats-et-facturation-avec-revenue-cloud"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-migrer-de-salesforce-cpq-vers-revenue-cloud",
     title: "Comment migrer de Salesforce CPQ vers Revenue Cloud ?",
+    seoTitle: "Migrer de Salesforce CPQ vers Revenue Cloud",
     description:
-      "Plan de migration de Salesforce CPQ vers Revenue Cloud : inventaire du paramétrage, refonte du catalogue, conversion des règles de prix en procédures, reprise des devis, contrats et abonnements, coexistence et bascule.",
-    keywords: ["migration CPQ vers Revenue Cloud", "Salesforce CPQ Revenue Cloud", "migrer CPQ", "Revenue Cloud Advanced migration", "reprise des abonnements Salesforce", "procédures de prix Salesforce"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 9,
+      "Inventaire, catalogue, procédures de prix, reprise des devis et abonnements, intégrations et bascule : le plan pour migrer de CPQ vers Revenue Cloud.",
+    keywords: ["migration CPQ vers Revenue Cloud", "Salesforce CPQ Revenue Cloud", "migrer CPQ", "Revenue Cloud Advanced migration", "modèle de données Revenue Cloud", "procédures de prix Salesforce"],
+    date: D,
+    updated: D,
     intro:
-      "Migrer de CPQ vers Revenue Cloud n'est pas une mise à jour : c'est une réimplémentation du quote-to-cash sur un nouveau modèle, avec une reprise de données. Voici le plan que je recommande, étape par étape, et les pièges qui coûtent le plus cher.",
+      "Migrer de CPQ vers Revenue Cloud n'est pas une mise à jour : c'est une réimplémentation du cycle de vente sur un nouveau modèle de données, avec une reprise de données. Voici le plan recommandé étape par étape, les deux modèles de données côte à côte, l'équivalence objet par objet et les pièges qui coûtent le plus cher.",
     sections: [
       {
         h2: "1. Inventorier ce que CPQ fait vraiment",
         paragraphs: [
-          "On commence par extraire et documenter l'existant : produits et options, bundles, règles de prix et de produits, tableaux de remises, templates de devis, processus d'approbation, automatisations Apex et Flow qui touchent aux objets CPQ, intégrations ERP et outils tiers. On note pour chaque élément s'il est utilisé, par qui, et s'il répond encore à un besoin.",
+          "On commence par extraire et documenter l'existant : produits et options, bundles, règles de prix et de produits, barèmes de remise, templates de devis, processus d'approbation, automatisations Apex et Flow qui touchent aux objets CPQ, intégrations ERP et outils tiers. On note pour chaque élément s'il est utilisé, par qui, et s'il répond encore à un besoin.",
           "Cet inventaire révèle presque toujours des règles mortes et des contournements accumulés. C'est le moment de les abandonner, pas de les reproduire.",
         ],
       },
       {
         h2: "2. Repenser le catalogue avant de le migrer",
         paragraphs: [
-          "Revenue Cloud repose sur un catalogue unique avec attributs et classifications. Le catalogue CPQ, souvent construit produit par produit, gagne à être restructuré : familles cohérentes, attributs au lieu de variantes multipliées, bundles qui reflètent l'offre commerciale. Ce travail se fait avec le marketing et les ventes, pas seulement avec l'équipe technique.",
+          "Revenue Cloud repose sur un catalogue unique avec classifications et attributs. Le catalogue CPQ, souvent construit produit par produit, gagne à être restructuré : familles cohérentes, attributs au lieu de variantes multipliées, bundles qui reflètent l'offre commerciale. Ce travail se fait avec le marketing et les ventes, pas seulement avec l'équipe technique.",
         ],
       },
       {
         h2: "3. Convertir les règles de prix en procédures",
         paragraphs: [
-          "Les Price Rules de CPQ ne se transposent pas une à une. On repart des cas de tarification réels (listes de prix, remises par volume, prix négociés, majorations) et on les modélise en procédures de tarification lisibles. Les cas de test sont les devis réels extraits de CPQ : chaque procédure doit reproduire les montants attendus avant d'aller plus loin.",
+          "Les règles de prix de CPQ ne se transposent pas une à une. On repart des cas de tarification réels, comme les listes de prix, remises par volume, prix négociés et majorations, et on les modélise en procédures de tarification lisibles. Les cas de test sont des devis réels extraits de CPQ : chaque procédure doit reproduire les montants attendus avant d'aller plus loin.",
         ],
       },
       {
         h2: "4. Décider du sort des devis, contrats et abonnements",
         list: [
           "Devis en cours : migrés s'ils sont actifs, sinon conservés en lecture dans CPQ ou archivés.",
-          "Contrats et abonnements : c'est le point le plus sensible. Les abonnements actifs doivent être repris avec leurs dates, quantités et conditions de renouvellement, pour que les avenants et renouvellements fonctionnent dans Revenue Cloud.",
+          "Contrats et abonnements : le point le plus sensible. Les abonnements CPQ actifs deviennent des actifs dans Revenue Cloud ; ils doivent être repris avec leurs dates, quantités et conditions de renouvellement, pour que les avenants et renouvellements fonctionnent.",
           "Historique de facturation : rarement migré ; on garde l'accès en lecture et on documente la règle.",
         ],
         paragraphsAfter: [
-          "Cette reprise suit la même méthode qu'une migration de données classique : staging, mapping, chargements batchés, recette par comptage et par échantillons, plan de rollback.",
+          "Cette reprise suit la même méthode qu'une [migration de données classique](/guides/comment-migrer-ses-donnees-vers-salesforce) : staging, mapping, chargements par lots, recette par comptage et par échantillons, plan de rollback.",
         ],
       },
       {
         h2: "5. Rebrancher les intégrations",
         paragraphs: [
-          "Les flux vers l'ERP (commandes, facturation, référentiels produits) et les outils de signature ou de génération de documents sont à reconstruire sur les nouveaux objets. C'est souvent l'occasion de simplifier : les objets standard de Revenue Cloud s'intègrent plus directement que le modèle CPQ.",
+          "Les flux vers l'ERP, pour les commandes, la facturation et les référentiels produits, et les outils de signature ou de génération de documents sont à reconstruire sur les nouveaux objets. C'est souvent l'occasion de simplifier : les objets standard de Revenue Cloud s'intègrent plus directement que le modèle CPQ.",
         ],
       },
       {
         h2: "6. Organiser la coexistence et la bascule",
         paragraphs: [
-          "Peu d'entreprises basculent tout en un jour. Une coexistence par équipe, par gamme ou par pays permet de limiter le risque, à condition de définir clairement où chaque devis se crée pendant la transition. La bascule finale suit un plan daté : gel des devis dans CPQ, dernier delta d'abonnements, contrôles, ouverture dans Revenue Cloud, période de support renforcé.",
+          "Peu d'entreprises basculent tout en un jour. Une coexistence par équipe, par gamme ou par pays limite le risque, à condition de définir clairement où chaque devis se crée pendant la transition. La bascule finale suit un plan daté : gel des devis dans CPQ, dernier delta d'abonnements, contrôles, ouverture dans Revenue Cloud, période de support renforcé.",
         ],
       },
       {
@@ -818,47 +1293,48 @@ const RAW = [
       },
       {
         q: "Peut-on migrer progressivement ?",
-        a: "Oui, par périmètre (équipe, gamme, pays), à condition de fixer des règles claires de coexistence et de ne pas laisser la transition s'éterniser.",
+        a: "Oui, par périmètre, qu'il s'agisse d'une équipe, d'une gamme ou d'un pays, à condition de fixer des règles claires de coexistence et de ne pas laisser la transition s'éterniser.",
       },
     ],
-    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "comment-migrer-ses-donnees-vers-salesforce"],
+    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "comment-gerer-devis-contrats-et-facturation-avec-revenue-cloud"],
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "comment-gerer-devis-contrats-et-facturation-avec-revenue-cloud",
     title: "Comment gérer devis, contrats et facturation avec Salesforce Revenue Cloud ?",
+    seoTitle: "Revenue Cloud : devis, contrats et facturation",
     description:
-      "Mettre en place le quote-to-cash avec Revenue Cloud : catalogue et tarification, devis et avenants, contrats et abonnements, facturation récurrente ou à l'usage, lien avec l'ERP et la facturation électronique.",
-    keywords: ["Revenue Cloud facturation", "Salesforce Billing", "quote-to-cash Revenue Cloud", "abonnements Salesforce", "facturation à l'usage Salesforce", "Revenue Cloud SAP"],
-    date: "2026-10-19",
-    updated: "2026-10-19",
-    readingMinutes: 8,
+      "Catalogue, devis, avenants, actifs, facturation récurrente ou à l'usage et lien avec l'ERP : le cycle complet avec Salesforce Revenue Cloud.",
+    keywords: ["Revenue Cloud facturation", "Revenue Cloud Billing", "quote-to-cash Revenue Cloud", "abonnements Salesforce", "facturation à l'usage Salesforce", "Revenue Cloud ERP"],
+    date: D,
+    updated: D,
     intro:
       "Revenue Cloud promet un cycle continu du devis à l'encaissement. La promesse tient si les décisions d'architecture sont prises au bon moment : où vit le catalogue, qui fait foi sur les prix, où se produit la facture, comment l'ERP est alimenté. Voici comment structurer une mise en place.",
     sections: [
       {
         h2: "Le catalogue et les prix, une seule source de vérité",
         paragraphs: [
-          "Tout part du catalogue : produits, attributs, bundles, puis procédures de tarification. Dans une architecture avec un ERP, on décide d'abord qui maîtrise le référentiel produit. En général, les produits et les prix de base viennent de l'ERP et sont synchronisés vers Revenue Cloud ; les règles commerciales (remises, bundles, conditions) vivent dans Revenue Cloud.",
+          "Tout part du catalogue : produits, classifications, attributs, bundles, puis procédures de tarification. Dans une architecture avec un ERP, on décide d'abord qui maîtrise le référentiel produit. En général, les produits et les prix de base viennent de l'ERP et sont synchronisés vers Revenue Cloud ; les règles commerciales, comme les remises, bundles et conditions, vivent dans Revenue Cloud.",
         ],
       },
       {
         h2: "Devis et avenants",
         paragraphs: [
-          "Les devis s'appuient sur le configurateur et les procédures de prix. Les avenants (ajout, retrait, changement de quantité ou de durée) sont gérés nativement sur les lignes d'abonnement, ce qui évite les devis parallèles et les ressaisies. Les approbations restent ciblées sur les écarts réels : remise au-delà d'un seuil, conditions de paiement dérogatoires.",
+          "Les devis s'appuient sur le configurateur et les procédures de prix. Les avenants, qu'il s'agisse d'un ajout, d'un retrait, d'un changement de quantité ou de durée, partent des actifs du client, ce qui évite les devis parallèles et les ressaisies. Les approbations restent ciblées sur les écarts réels : remise au-delà d'un seuil, conditions de paiement dérogatoires.",
         ],
       },
       {
-        h2: "Contrats et abonnements",
+        h2: "Contrats et actifs",
         paragraphs: [
-          "À la signature, Revenue Cloud génère le contrat et les abonnements correspondants, avec dates, quantités et conditions de renouvellement. L'orchestration de l'exécution déclenche ce qui suit : activation du service, livraison, mise à disposition des accès. Les renouvellements et résiliations se pilotent depuis ces abonnements, avec une vue claire de la base installée.",
+          "À la signature, la commande est créée puis exécutée : l'orchestrateur déclenche l'activation du service, la livraison et la mise à disposition des accès. Les produits vendus deviennent des actifs, avec leurs dates, quantités et périodes successives. Les renouvellements, avenants et résiliations se pilotent depuis ces actifs, avec une vue claire de la base installée de chaque client.",
         ],
       },
       {
         h2: "Facturation récurrente et à l'usage",
         paragraphs: [
-          "La brique Billing produit les factures à partir des abonnements et des consommations : facturation à date fixe, au prorata, à l'usage avec remontée des volumes consommés, avoirs et ajustements. Elle génère aussi les écritures nécessaires à la reconnaissance du revenu.",
-          "Deux questions à trancher tôt : la facture légale est-elle produite par Revenue Cloud ou par l'ERP, et comment la facturation électronique est-elle assurée ? En France, la facture doit transiter par une plateforme agréée dans un format structuré. Si l'ERP (SAP, par exemple) porte déjà cette conformité, Revenue Cloud alimente l'ERP et c'est lui qui émet. Dans le cas contraire, une solution connectée à une plateforme agréée est à prévoir.",
+          "La brique de facturation produit les factures à partir des actifs et des consommations : facturation à date fixe, au prorata, à l'usage avec remontée des volumes consommés, avoirs et ajustements. Elle génère aussi les écritures nécessaires à la reconnaissance du revenu.",
+          "Deux questions sont à trancher tôt : la facture légale est-elle produite par Revenue Cloud ou par l'ERP, et comment la facturation électronique est-elle assurée ? En France, la facture entre entreprises doit transiter par une plateforme agréée dans un format structuré. Si l'ERP porte déjà cette conformité, Revenue Cloud alimente l'ERP et c'est lui qui émet. Sinon, Revenue Cloud doit être connecté à une plateforme agréée. Le sujet est détaillé dans le guide [sur la facturation électronique](/guides/facturation-electronique-obligatoire-salesforce-erp).",
         ],
       },
       {
@@ -866,16 +1342,29 @@ const RAW = [
         list: [
           "Référentiels : clients et produits synchronisés avec External ID, dans un sens défini.",
           "Commandes : envoyées à l'ERP à la signature, avec un retour de statut visible par les commerciaux.",
-          "Facturation et paiements : selon le choix du système émetteur, soit l'ERP facture à partir des commandes, soit Revenue Cloud facture et transmet les écritures à la comptabilité.",
+          "Facturation et paiements : soit l'ERP facture à partir des commandes, soit Revenue Cloud facture et transmet les écritures à la comptabilité.",
           "Erreurs : file de rejeu, alertes et enregistrements en erreur visibles dans Salesforce.",
+        ],
+        paragraphsAfter: [
+          "Les principes d'intégration valables pour tout ERP sont décrits dans le guide [pour intégrer Salesforce avec un ERP](/guides/comment-integrer-salesforce-avec-sap).",
+        ],
+      },
+      {
+        h2: "Les données à prévoir dès le départ",
+        list: [
+          "Clients : SIREN, numéro de TVA, adresses de facturation et de livraison structurées, contacts de facturation.",
+          "Produits : modèle de vente de chaque produit, ponctuel, abonnement ou à l'usage, avec sa durée et sa fréquence.",
+          "Règles de facturation : fréquence, facturation à échoir ou à terme échu, traitement des prorata et des avoirs.",
+          "Usage : source des consommations, fréquence de remontée et contrôle de complétude avant facturation.",
+          "Comptabilité : correspondance entre produits, comptes comptables et codes de TVA, validée avec la finance.",
         ],
       },
       {
         h2: "Un ordre de mise en place qui fonctionne",
         list: [
           "Catalogue et tarification, validés sur des devis réels.",
-          "Devis, approbations et templates.",
-          "Contrats, abonnements et orchestration.",
+          "Devis, approbations et documents.",
+          "Commandes, actifs et orchestration.",
           "Facturation et intégration comptable.",
           "Portail client ou canaux partenaires, une fois le socle stable.",
         ],
@@ -891,26 +1380,43 @@ const RAW = [
         a: "Oui, c'est même l'ordre recommandé. Le catalogue et les procédures de prix construits pour les devis servent ensuite tels quels à la facturation.",
       },
     ],
-    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "facturation-electronique-salesforce-sap-comment-se-preparer"],
+    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "facturation-electronique-obligatoire-salesforce-erp"],
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Temps de lecture calculé sur le texte réel (230 mots par minute)
+const LINK = /\[([^\]]+)\]\(([^)]+)\)/g;
+export const plainText = (s = "") => s.replace(LINK, "$1");
+const countWords = (g) => {
+  const parts = [g.intro];
+  for (const s of g.sections) parts.push(s.h2, ...(s.paragraphs || []), ...(s.list || []), ...(s.paragraphsAfter || []));
+  for (const f of g.faq || []) parts.push(f.q, f.a);
+  return parts.map(plainText).join(" ").split(/\s+/).filter(Boolean).length;
+};
 
 // Ordre d'affichage : les questions à plus forte intention d'achat d'abord
 const ORDER = [
   "comment-migrer-ses-donnees-vers-salesforce",
   "comment-faire-des-devis-dans-salesforce",
   "salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq",
-  "facturation-electronique-salesforce-sap-comment-se-preparer",
+  "facturation-electronique-obligatoire-salesforce-erp",
   "comment-migrer-de-salesforce-cpq-vers-revenue-cloud",
+  "comment-faire-un-tableau-de-bord-commercial-salesforce",
+  "comment-connecter-salesforce-a-power-bi",
+  "quels-kpi-suivre-pour-piloter-une-equipe-commerciale",
   "comment-gerer-devis-contrats-et-facturation-avec-revenue-cloud",
   "comment-integrer-salesforce-avec-sap",
   "combien-coute-un-consultant-salesforce-freelance",
   "comment-supprimer-les-doublons-dans-salesforce",
-  "comment-faire-un-tableau-de-bord-commercial-salesforce",
   "comment-automatiser-salesforce-flow-ou-apex",
   "pourquoi-mon-salesforce-cpq-est-devenu-ingerable",
   "comment-charger-des-donnees-dans-salesforce",
 ];
-export const guides = [...RAW].sort((a, b) => ORDER.indexOf(a.slug) - ORDER.indexOf(b.slug));
+
+export const guides = RAW.map((g) => {
+  const words = countWords(g);
+  return { ...g, words, readingMinutes: Math.max(2, Math.round(words / 230)) };
+}).sort((a, b) => ORDER.indexOf(a.slug) - ORDER.indexOf(b.slug));
 
 export const getGuide = (slug) => guides.find((g) => g.slug === slug);
