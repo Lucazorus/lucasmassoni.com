@@ -9,8 +9,8 @@ export const AUTHOR = {
   name: "Lucas Massoni",
   url: SITE_URL,
   linkedin: "https://www.linkedin.com/in/lucas-massoni/",
-  jobTitle: "Consultant indépendant Salesforce, data et analytics",
-  bio: "Consultant indépendant spécialisé en Salesforce, en migration de données et en data visualisation. Il intervient du cadrage à la mise en production, sur le CRM, les devis, les intégrations avec l'ERP et les tableaux de bord.",
+  jobTitle: "Expert Salesforce, Revenue Cloud & Tableau Analytics",
+  bio: "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics. Il intervient du cadrage à la mise en production : devis et facturation, migration de données, intégrations avec l'ERP et tableaux de bord.",
 };
 
 const D = "2026-10-19";

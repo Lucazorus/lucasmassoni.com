@@ -94,7 +94,7 @@ export function ChainViz({ t, linked, setLinked }) {
           <text x="138" y="30" textAnchor="middle" className="chain-title chain-title--big">Salesforce</text>
           <g className={`chain-pill${on("cpq")}`} {...hover("cpq")} transform="translate(22 50)">
             <rect width="104" height="40" rx="20" className="chain-pill-bg" />
-            <text x="52" y="25" textAnchor="middle" className="chain-lab">Sales & CPQ</text>
+            <text x="52" y="25" textAnchor="middle" className="chain-lab">Revenue Cloud</text>
           </g>
           <g className={`chain-pill${on("dev")}`} {...hover("dev")} transform="translate(134 50)">
             <rect width="120" height="40" rx="20" className="chain-pill-bg" />

@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-export const alt = "Lucas Massoni — Expert Salesforce, SAP & Analytics Freelance";
+export const alt = "Lucas Massoni, Expert Salesforce, Revenue Cloud & Tableau Analytics";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -85,7 +85,7 @@ export default async function Image() {
               marginBottom: 18,
             }}
           >
-            FREELANCE SALESFORCE · SAP · ANALYTICS
+            CONSULTANT INDÉPENDANT
           </div>
 
           <div
@@ -111,12 +111,25 @@ export default async function Image() {
               marginBottom: 28,
             }}
           >
-            EXPERT SALESFORCE, SAP &amp; ANALYTICS
+            EXPERT SALESFORCE,
+          </div>
+          <div
+            style={{
+              display: "flex",
+              color: TITLES,
+              fontSize: 40,
+              letterSpacing: 2,
+              opacity: 0.85,
+              marginTop: -18,
+              marginBottom: 28,
+            }}
+          >
+            REVENUE CLOUD &amp; TABLEAU ANALYTICS
           </div>
 
           {/* tags */}
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", maxWidth: 760 }}>
-            {["CPQ", "ANALYTICS", "APEX / FLOW / LWC", "S/4HANA", "ABAP", "DATA MIGRATION"].map(
+            {["REVENUE CLOUD", "CPQ", "TABLEAU", "CRM ANALYTICS", "DATA MIGRATION", "APEX / FLOW / LWC"].map(
               (t) => (
                 <div
                   key={t}

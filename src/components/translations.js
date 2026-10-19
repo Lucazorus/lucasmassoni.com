@@ -19,9 +19,9 @@ export const translations = {
     hero: {
       availability: "Disponible pour de nouveaux projets",
       meta: "Consultant indépendant, basé en France, sur site ou à distance.",
-      title: ["Expert Salesforce,", "SAP & Analytics."],
+      title: ["Expert Salesforce,", "Revenue Cloud &", "Tableau Analytics."],
       subtitle:
-        "Sales, CPQ, Apex, Flow et LWC, migrations de données, dashboards Tableau et intégrations SAP. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
+        "Revenue Cloud et CPQ, Sales Cloud, Apex, Flow et LWC, migrations de données, dashboards Tableau et intégrations ERP. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
       ctaPrimary: "Démarrer un projet",
       ctaSecondary: "Voir les services",
       facts: [
@@ -126,23 +126,23 @@ export const translations = {
       lead: "Du cadrage à la mise en production, avec une exécution documentée et mesurable.",
       items: [
         {
+          key: "cpq",
+          title: "Salesforce CPQ & Revenue Cloud",
+          desc: "Catalogue, procédures de prix, bundles, abonnements et cycle quote-to-cash automatisé, du devis à la facturation.",
+          deliverables: ["Catalogue, règles de prix et bundles", "Templates de devis et circuits d'approbation", "Documentation de paramétrage"],
+        },
+        {
+          key: "analytics",
+          title: "Tableau & Analytics",
+          desc: "Dashboards décisionnels, KPIs fiables et data storytelling pensés pour la direction et les opérations.",
+          deliverables: ["Modèle de données et définitions de KPIs validées", "Dashboards Tableau ou CRM Analytics", "Documentation et formation des utilisateurs"],
+        },
+        {
           key: "migration",
           title: "Data Migration Salesforce",
           desc: "Audit des sources, mapping de champs, staging SQL, dédoublonnage, chargements batchés et bascule maîtrisée avec plan de retour arrière.",
           tag: "1,5 M de documents migrés sur la dernière mission",
           deliverables: ["Audit des données et plan de migration", "Scripts de chargement et journal d'exécution", "Recette, rapport d'écarts et plan de rollback"],
-        },
-        {
-          key: "analytics",
-          title: "Analytics & Tableau",
-          desc: "Dashboards décisionnels, KPIs fiables et data storytelling pensés pour la direction et les opérations.",
-          deliverables: ["Modèle de données et définitions de KPIs validées", "Dashboards Tableau ou CRM Analytics", "Documentation et formation des utilisateurs"],
-        },
-        {
-          key: "cpq",
-          title: "Sales & CPQ",
-          desc: "Règles de pricing, bundles produits et cycle quote-to-cash automatisé, de la qualification à la signature.",
-          deliverables: ["Catalogue, règles de prix et bundles", "Templates de devis et circuits d'approbation", "Documentation de paramétrage"],
         },
         {
           key: "dev",
@@ -222,6 +222,7 @@ export const translations = {
           title: "Salesforce",
           items: [
             { name: "Salesforce", desc: "Configuration, administration, personnalisation." },
+            { name: "Revenue Cloud", desc: "Catalogue, tarification, abonnements et facturation." },
             { name: "CPQ", desc: "Devis complexes et cycle de vente industrialisé." },
             { name: "Apex", desc: "Logique métier et intégrations serveur." },
             { name: "Flow", desc: "Automatisation no-code et low-code." },
@@ -266,7 +267,7 @@ export const translations = {
     },
     footer: {
       rights: "© {year} Lucas Massoni. Tous droits réservés.",
-      tagline: "Consultant indépendant Salesforce, SAP & Analytics",
+      tagline: "Expert Salesforce, Revenue Cloud & Tableau Analytics",
       navLabel: "Navigation",
       contactLabel: "Contact",
       links: [
@@ -292,9 +293,9 @@ export const translations = {
     hero: {
       availability: "Available for new projects",
       meta: "Independent consultant, based in France, on site or remote.",
-      title: ["Salesforce, SAP", "& Analytics expert."],
+      title: ["Salesforce expert,", "Revenue Cloud &", "Tableau Analytics."],
       subtitle:
-        "Sales, CPQ, Apex, Flow and LWC, data migrations, Tableau dashboards and SAP integrations. From strategy to delivery, with fast, documented, results-driven execution.",
+        "Revenue Cloud and CPQ, Sales Cloud, Apex, Flow and LWC, data migrations, Tableau dashboards and ERP integrations. From strategy to delivery, with fast, documented, results-driven execution.",
       ctaPrimary: "Start a project",
       ctaSecondary: "See the services",
       facts: [
@@ -399,23 +400,23 @@ export const translations = {
       lead: "From scoping to production, with documented and measurable execution.",
       items: [
         {
+          key: "cpq",
+          title: "Salesforce CPQ & Revenue Cloud",
+          desc: "Catalogue, pricing procedures, bundles, subscriptions and an automated quote-to-cash cycle, from quote to invoice.",
+          deliverables: ["Catalogue, pricing rules and bundles", "Quote templates and approval workflows", "Configuration documentation"],
+        },
+        {
+          key: "analytics",
+          title: "Tableau & Analytics",
+          desc: "Executive dashboards, reliable KPIs and data storytelling for leadership and operations teams.",
+          deliverables: ["Data model and validated KPI definitions", "Tableau or CRM Analytics dashboards", "Documentation and user training"],
+        },
+        {
           key: "migration",
           title: "Salesforce Data Migration",
           desc: "Source audit, field mapping, SQL staging, deduplication, batch loading and a controlled cut-over with a rollback plan.",
           tag: "1.5M documents migrated on the latest engagement",
           deliverables: ["Data audit and migration plan", "Loading scripts and execution log", "Acceptance testing, gap report and rollback plan"],
-        },
-        {
-          key: "analytics",
-          title: "Analytics & Tableau",
-          desc: "Executive dashboards, reliable KPIs and data storytelling for leadership and operations teams.",
-          deliverables: ["Data model and validated KPI definitions", "Tableau or CRM Analytics dashboards", "Documentation and user training"],
-        },
-        {
-          key: "cpq",
-          title: "Sales & CPQ",
-          desc: "Pricing rules, product bundles and an automated quote-to-cash cycle, from qualification to signature.",
-          deliverables: ["Catalogue, pricing rules and bundles", "Quote templates and approval workflows", "Configuration documentation"],
         },
         {
           key: "dev",
@@ -495,6 +496,7 @@ export const translations = {
           title: "Salesforce",
           items: [
             { name: "Salesforce", desc: "Configuration, administration, customisation." },
+            { name: "Revenue Cloud", desc: "Catalogue, pricing, subscriptions and billing." },
             { name: "CPQ", desc: "Complex quoting and streamlined sales cycles." },
             { name: "Apex", desc: "Business logic and server-side integrations." },
             { name: "Flow", desc: "No-code and low-code automation." },
@@ -539,7 +541,7 @@ export const translations = {
     },
     footer: {
       rights: "© {year} Lucas Massoni. All rights reserved.",
-      tagline: "Independent Salesforce, SAP & Analytics consultant",
+      tagline: "Salesforce, Revenue Cloud & Tableau Analytics expert",
       navLabel: "Navigation",
       contactLabel: "Contact",
       links: [

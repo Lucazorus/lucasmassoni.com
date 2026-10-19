@@ -3,14 +3,14 @@ import GuideShell from "../../components/GuideShell";
 import { guides, SITE_URL, AUTHOR } from "../../content/guides";
 
 export const metadata = {
-  title: { absolute: "Guides Salesforce, data et analytics · Lucas Massoni" },
+  title: { absolute: "Guides Salesforce, Revenue Cloud et Tableau · Lucas Massoni" },
   description:
     "Migration de données, devis, Revenue Cloud, facturation électronique, intégration ERP, tableaux de bord et Power BI : des guides pratiques sur Salesforce.",
   alternates: { canonical: `${SITE_URL}/guides` },
   openGraph: {
     type: "website",
     url: `${SITE_URL}/guides`,
-    title: "Guides Salesforce, SAP et data",
+    title: "Guides Salesforce, Revenue Cloud et Tableau",
     description: "Des réponses pratiques aux questions que se posent les équipes qui vendent dans Salesforce et facturent dans SAP.",
   },
 };
@@ -21,7 +21,7 @@ export default function GuidesPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Guides Salesforce, SAP et data",
+    name: "Guides Salesforce, Revenue Cloud et Tableau",
     url: `${SITE_URL}/guides`,
     author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
     mainEntity: {

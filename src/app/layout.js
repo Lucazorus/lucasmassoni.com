@@ -21,12 +21,19 @@ const shareTechMono = Share_Tech_Mono({
 export const metadata = {
   metadataBase: new URL("https://www.lucasmassoni.com"),
   title: {
-    default: "Lucas Massoni · Expert Salesforce, SAP & Analytics Freelance",
+    default: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau Analytics",
     template: "%s · Lucas Massoni",
   },
   description:
-    "Consultant freelance expert Salesforce (Sales Cloud, CPQ, Analytics, Apex/Flow/LWC, Data Migration) et SAP (S/4HANA, Fiori, ABAP, SAP BTP). 6+ ans d'expérience, 12+ projets livrés. Basé en France — livraison rapide, documentée et orientée résultats.",
+    "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics : devis et facturation, migration de données, tableaux de bord, intégrations ERP. Basé en France.",
   keywords: [
+    "expert Salesforce Revenue Cloud",
+    "consultant Revenue Cloud",
+    "Salesforce Revenue Cloud freelance",
+    "Revenue Cloud Advanced",
+    "expert Tableau",
+    "consultant Tableau Analytics",
+    "Tableau freelance",
     "Salesforce freelance",
     "consultant Salesforce",
     "expert Salesforce",
@@ -75,15 +82,15 @@ export const metadata = {
     alternateLocale: "en_US",
     url: "https://www.lucasmassoni.com",
     siteName: "Lucas Massoni",
-    title: "Lucas Massoni · Expert Salesforce, SAP & Analytics Freelance",
+    title: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau Analytics",
     description:
-      "Consultant freelance — Salesforce (Sales Cloud, CPQ, Analytics, Apex/Flow/LWC, Data Migration) et SAP (S/4HANA, Fiori, ABAP, SAP BTP). 6+ ans d'expérience. Exécution rapide et orientée résultats.",
+      "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics : devis et facturation, migration de données, tableaux de bord, intégrations ERP.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lucas Massoni · Expert Salesforce, SAP & Analytics Freelance",
+    title: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau Analytics",
     description:
-      "Consultant freelance — Salesforce (Sales Cloud, CPQ, Analytics, Apex/Flow/LWC) et SAP (S/4HANA, Fiori, ABAP). 6+ ans d'expérience.",
+      "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics.",
   },
   robots: {
     index: true,
@@ -122,16 +129,16 @@ export const viewport = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
-  name: "Lucas Massoni — Expert Salesforce, SAP & Analytics Freelance",
+  name: "Lucas Massoni, Expert Salesforce, Revenue Cloud & Tableau Analytics",
   url: "https://www.lucasmassoni.com",
   logo: "https://www.lucasmassoni.com/logo.png",
   image: "https://www.lucasmassoni.com/og-image.png",
   description:
-    "Consultant freelance expert Salesforce (Sales Cloud, CPQ, Analytics, Apex/Flow/LWC, Data Migration) et SAP (S/4HANA, Fiori, ABAP, SAP BTP). 6+ ans d'expérience, 12+ projets livrés.",
+    "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics : devis et facturation, migration de données, tableaux de bord, intégrations ERP.",
   priceRange: "$$",
   areaServed: { "@type": "Place", name: "France" },
   knowsAbout: [
-    "Salesforce", "Salesforce CPQ", "Sales Cloud", "CRM Analytics",
+    "Salesforce", "Salesforce Revenue Cloud", "Revenue Cloud Advanced", "Salesforce CPQ", "Sales Cloud", "CRM Analytics", "Tableau Analytics",
     "Tableau", "Apex", "Lightning Web Components", "Flow",
     "Data Migration", "SQL", "API Integration", "JSON",
     "SAP", "SAP S/4HANA", "SAP Fiori", "ABAP",
@@ -142,7 +149,7 @@ const jsonLd = {
   founder: {
     "@type": "Person",
     name: "Lucas Massoni",
-    jobTitle: "Expert Salesforce, SAP & Analytics Freelance",
+    jobTitle: "Expert Salesforce, Revenue Cloud & Tableau Analytics",
     url: "https://www.lucasmassoni.com",
     sameAs: ["https://www.linkedin.com/in/lucas-massoni/"],
   },

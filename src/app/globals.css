@@ -93,7 +93,7 @@ p { margin: 0; }
 }
 .display-xl { font-size: clamp(2.4rem, 1.2rem + 4.2vw, 4.6rem); }
 .display-lg { font-size: clamp(1.8rem, 1rem + 2vw, 2.6rem); line-height: 1.08; }
-.hero-title { font-size: clamp(2.3rem, 0.9rem + 3.9vw, 4.2rem); }
+.hero-title { font-size: clamp(2.1rem, 0.8rem + 2.6vw, 3.3rem); }
 
 .lead {
   font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
@@ -354,9 +354,9 @@ p { margin: 0; }
 @media (min-width: 720px) { .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1080px) {
   .bento { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px; }
-  .card-migration { grid-column: span 7; }
+  .card-cpq { grid-column: span 7; }
   .card-analytics { grid-column: span 5; }
-  .card-cpq, .card-dev, .card-sap { grid-column: span 4; }
+  .card-migration, .card-dev, .card-sap { grid-column: span 4; }
   .card-mobile { grid-column: span 12; }
 }
 @media (min-width: 720px) and (max-width: 1079px) { .card-mobile { grid-column: span 2; } }
