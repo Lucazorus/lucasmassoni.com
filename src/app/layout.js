@@ -1,23 +1,21 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import { Share_Tech_Mono } from "next/font/google";
+import { Archivo, Share_Tech_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Archivo variable : l'axe de chasse (wdth 62–125) porte les titres élargis.
+const archivo = Archivo({
   subsets: ["latin"],
+  axes: ["wdth"],
+  variable: "--font-archivo",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-// On ajoute Share Tech Mono :
+// Share Tech Mono : réservée aux données (table de stack, chiffres, canvas).
 const shareTechMono = Share_Tech_Mono({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-share-tech-mono",
+  display: "swap",
 });
 
 export const metadata = {
@@ -115,6 +113,12 @@ export const metadata = {
   },
 };
 
+export const viewport = {
+  themeColor: "#0c1513",
+  width: "device-width",
+  initialScale: 1,
+};
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
@@ -168,7 +172,7 @@ export default function RootLayout({ children }) {
         </Script>
         {/* End Google Analytics 4 */}
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${shareTechMono.variable} antialiased`}>
+      <body className={`${archivo.variable} ${shareTechMono.variable} antialiased`}>
         {children}
       </body>
     </html>
