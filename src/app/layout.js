@@ -132,7 +132,7 @@ const jsonLd = {
   name: "Lucas Massoni, Expert Salesforce, Revenue Cloud & Tableau Analytics",
   url: "https://www.lucasmassoni.com",
   logo: "https://www.lucasmassoni.com/logo.png",
-  image: "https://www.lucasmassoni.com/og-image.png",
+  image: "https://www.lucasmassoni.com/opengraph-image",
   description:
     "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics : devis et facturation, migration de données, tableaux de bord, intégrations ERP.",
   priceRange: "$$",
