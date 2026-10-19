@@ -109,7 +109,7 @@ export const metadata = {
     },
   },
   verification: {
-    google: "à_remplir_si_tu_as_un_code_Search_Console",
+    google: "ZKOJPDqJrT2abCYP06rPpbm5lbBpWbmchg",
   },
 };
 
