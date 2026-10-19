@@ -19,7 +19,6 @@ import PipelineViz from "./PipelineViz";
 import RiveLogo from "./RiveLogo";
 import SiteNav from "./SiteNav";
 import SiteFooter from "./SiteFooter";
-import { guides } from "../content/guides";
 import { ChainViz, VIZ } from "./ServiceViz";
 import { translations } from "./translations";
 
@@ -332,27 +331,6 @@ export default function HomePage() {
                   </ul>
                 </Reveal>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Guides ──────────────────────────────────────────────────────── */}
-        <section id="guides" className="section section-rule" aria-labelledby="guides-label">
-          <div className="container">
-            <SectionHead id="guides-label" label={t.nav.guides} title={t.guides.title} lead={t.guides.lead} />
-            <ol className="guide-grid">
-              {guides.slice(0, 6).map((g, i) => (
-                <Reveal as="li" key={g.slug} className="guide-card" delay={(i % 3) * 0.06}>
-                  <Link href={`/guides/${g.slug}`} className="guide-card-link">
-                    <h3 className="guide-card-title">{g.title}</h3>
-                    <p>{g.description}</p>
-                    <span className="guide-meta"><span>{g.readingMinutes} {t.guides.minutes}</span></span>
-                  </Link>
-                </Reveal>
-              ))}
-            </ol>
-            <div className="guide-more">
-              <Link href="/guides" className="btn btn-secondary">{t.guides.all}<ArrowUpRight size={15} /></Link>
             </div>
           </div>
         </section>
