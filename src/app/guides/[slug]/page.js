@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import GuideShell from "../../../components/GuideShell";
 import { guides, getGuide, SITE_URL, AUTHOR } from "../../../content/guides";
+import { figures } from "../../../content/figures";
+import Figure from "../../../components/GuideFigures";
 
 export const dynamicParams = false;
 
@@ -41,6 +43,8 @@ export default async function GuidePage({ params }) {
   if (!g) notFound();
   const url = `${SITE_URL}/guides/${g.slug}`;
   const related = (g.related || []).map(getGuide).filter(Boolean);
+  const figs = figures[g.slug] || [];
+  const figsAfter = (key) => figs.filter((f) => f.after === key).map((f, i) => <Figure key={`${key}-${i}`} figure={f} uid={`f-${String(key)}-${i}`} />);
 
   const articleLd = {
     "@context": "https://schema.org",
@@ -106,7 +110,8 @@ export default async function GuidePage({ params }) {
           <div className="container article-grid">
             <div className="prose">
               <p className="prose-intro">{g.intro}</p>
-              {g.sections.map((sec) => (
+              {figsAfter("intro")}
+              {g.sections.map((sec, si) => (
                 <section key={sec.h2}>
                   <h2>{sec.h2}</h2>
                   {sec.paragraphs?.map((p) => <p key={p}>{p}</p>)}
@@ -116,6 +121,7 @@ export default async function GuidePage({ params }) {
                     </ul>
                   )}
                   {sec.paragraphsAfter?.map((p) => <p key={p}>{p}</p>)}
+                  {figsAfter(si)}
                 </section>
               ))}
 

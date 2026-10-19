@@ -283,7 +283,7 @@ const RAW = [
         a: "De deux à six mois selon la complexité du catalogue et des règles de prix, en comptant la reprise des données produits et la formation des équipes.",
       },
     ],
-    related: ["comment-automatiser-salesforce-flow-ou-apex", "comment-integrer-salesforce-avec-sap"],
+    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "comment-automatiser-salesforce-flow-ou-apex"],
   },
 
   {
@@ -533,7 +533,7 @@ const RAW = [
         a: "Pas avec Sales Cloud seul. La facturation se fait dans l'ERP ou avec Salesforce Billing. Le devis Salesforce doit alors porter toutes les données nécessaires à la facture.",
       },
     ],
-    related: ["pourquoi-mon-salesforce-cpq-est-devenu-ingerable", "facturation-electronique-salesforce-sap-comment-se-preparer"],
+    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "facturation-electronique-salesforce-sap-comment-se-preparer"],
   },
 
   {
@@ -670,13 +670,239 @@ const RAW = [
     ],
     related: ["comment-migrer-ses-donnees-vers-salesforce", "comment-faire-des-devis-dans-salesforce"],
   },
+
+  {
+    slug: "salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq",
+    title: "Salesforce Revenue Cloud, c'est quoi ? Et faut-il quitter CPQ ?",
+    description:
+      "Revenue Cloud (Revenue Cloud Advanced) : ce que couvre la nouvelle plateforme quote-to-cash de Salesforce, ce qui change par rapport à Salesforce CPQ, pour qui c'est pertinent et comment décider de migrer ou de rester.",
+    keywords: ["Salesforce Revenue Cloud", "Revenue Cloud Advanced", "Revenue Cloud vs CPQ", "quote-to-cash Salesforce", "Revenue Lifecycle Management", "migration CPQ Revenue Cloud"],
+    date: "2026-10-19",
+    updated: "2026-10-19",
+    readingMinutes: 8,
+    intro:
+      "Revenue Cloud est la plateforme avec laquelle Salesforce remplace progressivement Salesforce CPQ et Salesforce Billing. Elle couvre tout le cycle du devis à l'encaissement, directement sur la plateforme Salesforce et non plus dans un package installé. Voici ce qu'elle contient, ce qui change concrètement et comment décider si, et quand, migrer.",
+    sections: [
+      {
+        h2: "Ce que couvre Revenue Cloud",
+        paragraphs: [
+          "Revenue Cloud, dans sa version actuelle dite Revenue Cloud Advanced, regroupe plusieurs briques natives qui s'enchaînent du catalogue à la facture.",
+        ],
+        list: [
+          "Product Catalog Management : un catalogue unique, avec attributs, bundles et règles de compatibilité, partagé par tous les canaux de vente.",
+          "Salesforce Pricing : des procédures de tarification déclaratives qui remplacent les règles de prix de CPQ, exécutées par un moteur dédié.",
+          "Product Configurator : la configuration guidée des produits et des options, utilisable dans l'interface Salesforce ou en API.",
+          "Transaction Management : devis, commandes et avenants, avec gestion des lignes et des cycles de vie.",
+          "Contrats et exécution : la génération des contrats et l'orchestration de ce qui suit la signature (activation, livraison, abonnements).",
+          "Billing : facturation, paiements, revenus récurrents et à l'usage, avec les écritures nécessaires à la comptabilité.",
+        ],
+      },
+      {
+        h2: "Ce qui change par rapport à Salesforce CPQ",
+        paragraphs: [
+          "Salesforce CPQ est un package géré, hérité de l'acquisition de Steelbrick, avec son propre modèle d'objets, ses règles de prix et son moteur de calcul. Revenue Cloud est construit sur les objets standard de la plateforme et expose ses fonctions en API, ce qui change trois choses.",
+        ],
+        list: [
+          "Le modèle de données : le catalogue, les prix et les devis vivent dans des objets natifs, plus faciles à étendre, à intégrer et à analyser.",
+          "La tarification : les procédures de prix se construisent de façon déclarative, avec une logique lisible, au lieu d'une pile de règles évaluées dans un ordre fragile.",
+          "Les canaux : la même configuration et la même tarification servent au commercial dans Salesforce, à un portail client ou à un partenaire via l'API.",
+        ],
+        paragraphsAfter: [
+          "Côté commercial, Salesforce a annoncé que CPQ n'est plus proposé aux nouveaux clients et positionne Revenue Cloud comme son successeur, avec un maintien du support pour les clients existants. Les échéances précises évoluent : vérifiez-les avec votre interlocuteur Salesforce avant de planifier.",
+        ],
+      },
+      {
+        h2: "Pour qui Revenue Cloud est pertinent dès maintenant",
+        list: [
+          "Les entreprises qui démarrent un projet de devis structuré : il n'y a plus de raison de partir sur CPQ.",
+          "Les modèles d'abonnement, de consommation ou mixtes, où la facturation et les avenants sont au cœur du processus.",
+          "Les organisations multicanales qui veulent une seule logique de prix pour les commerciaux, le e-commerce et les partenaires.",
+          "Les équipes qui veulent industrialiser le quote-to-cash avec des intégrations ERP propres, en s'appuyant sur des objets standard.",
+        ],
+      },
+      {
+        h2: "Rester sur CPQ, pour l'instant",
+        paragraphs: [
+          "Un paramétrage CPQ stable, bien documenté et qui répond aux besoins n'a pas à être migré dans l'urgence. La bonne démarche consiste à faire l'inventaire de ce qui existe (produits, règles, templates, intégrations), à estimer l'effort de migration et à caler la décision sur un événement métier : refonte de l'offre, passage à l'abonnement, projet de facturation ou de portail client.",
+        ],
+      },
+      {
+        h2: "Comment décider",
+        paragraphs: [
+          "Un diagnostic de quelques jours suffit en général : cartographie du paramétrage CPQ actuel, écarts avec les capacités de Revenue Cloud, dépendances d'intégration, estimation de la migration et des risques. Il débouche sur un calendrier réaliste plutôt que sur une réponse de principe.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: "Revenue Cloud remplace-t-il aussi Salesforce Billing ?",
+        a: "Oui. La facturation fait partie de Revenue Cloud, qui couvre le cycle complet du devis à l'encaissement. Salesforce Billing suit la même trajectoire que CPQ.",
+      },
+      {
+        q: "Les devis et contrats existants sont-ils perdus en migrant ?",
+        a: "Non, mais ils doivent être migrés ou conservés en lecture. La stratégie dépend des abonnements en cours et des obligations de conservation ; c'est l'un des points clés du plan de migration.",
+      },
+    ],
+    related: ["comment-migrer-de-salesforce-cpq-vers-revenue-cloud", "comment-faire-des-devis-dans-salesforce"],
+  },
+
+  {
+    slug: "comment-migrer-de-salesforce-cpq-vers-revenue-cloud",
+    title: "Comment migrer de Salesforce CPQ vers Revenue Cloud ?",
+    description:
+      "Plan de migration de Salesforce CPQ vers Revenue Cloud : inventaire du paramétrage, refonte du catalogue, conversion des règles de prix en procédures, reprise des devis, contrats et abonnements, coexistence et bascule.",
+    keywords: ["migration CPQ vers Revenue Cloud", "Salesforce CPQ Revenue Cloud", "migrer CPQ", "Revenue Cloud Advanced migration", "reprise des abonnements Salesforce", "procédures de prix Salesforce"],
+    date: "2026-10-19",
+    updated: "2026-10-19",
+    readingMinutes: 9,
+    intro:
+      "Migrer de CPQ vers Revenue Cloud n'est pas une mise à jour : c'est une réimplémentation du quote-to-cash sur un nouveau modèle, avec une reprise de données. Voici le plan que je recommande, étape par étape, et les pièges qui coûtent le plus cher.",
+    sections: [
+      {
+        h2: "1. Inventorier ce que CPQ fait vraiment",
+        paragraphs: [
+          "On commence par extraire et documenter l'existant : produits et options, bundles, règles de prix et de produits, tableaux de remises, templates de devis, processus d'approbation, automatisations Apex et Flow qui touchent aux objets CPQ, intégrations ERP et outils tiers. On note pour chaque élément s'il est utilisé, par qui, et s'il répond encore à un besoin.",
+          "Cet inventaire révèle presque toujours des règles mortes et des contournements accumulés. C'est le moment de les abandonner, pas de les reproduire.",
+        ],
+      },
+      {
+        h2: "2. Repenser le catalogue avant de le migrer",
+        paragraphs: [
+          "Revenue Cloud repose sur un catalogue unique avec attributs et classifications. Le catalogue CPQ, souvent construit produit par produit, gagne à être restructuré : familles cohérentes, attributs au lieu de variantes multipliées, bundles qui reflètent l'offre commerciale. Ce travail se fait avec le marketing et les ventes, pas seulement avec l'équipe technique.",
+        ],
+      },
+      {
+        h2: "3. Convertir les règles de prix en procédures",
+        paragraphs: [
+          "Les Price Rules de CPQ ne se transposent pas une à une. On repart des cas de tarification réels (listes de prix, remises par volume, prix négociés, majorations) et on les modélise en procédures de tarification lisibles. Les cas de test sont les devis réels extraits de CPQ : chaque procédure doit reproduire les montants attendus avant d'aller plus loin.",
+        ],
+      },
+      {
+        h2: "4. Décider du sort des devis, contrats et abonnements",
+        list: [
+          "Devis en cours : migrés s'ils sont actifs, sinon conservés en lecture dans CPQ ou archivés.",
+          "Contrats et abonnements : c'est le point le plus sensible. Les abonnements actifs doivent être repris avec leurs dates, quantités et conditions de renouvellement, pour que les avenants et renouvellements fonctionnent dans Revenue Cloud.",
+          "Historique de facturation : rarement migré ; on garde l'accès en lecture et on documente la règle.",
+        ],
+        paragraphsAfter: [
+          "Cette reprise suit la même méthode qu'une migration de données classique : staging, mapping, chargements batchés, recette par comptage et par échantillons, plan de rollback.",
+        ],
+      },
+      {
+        h2: "5. Rebrancher les intégrations",
+        paragraphs: [
+          "Les flux vers l'ERP (commandes, facturation, référentiels produits) et les outils de signature ou de génération de documents sont à reconstruire sur les nouveaux objets. C'est souvent l'occasion de simplifier : les objets standard de Revenue Cloud s'intègrent plus directement que le modèle CPQ.",
+        ],
+      },
+      {
+        h2: "6. Organiser la coexistence et la bascule",
+        paragraphs: [
+          "Peu d'entreprises basculent tout en un jour. Une coexistence par équipe, par gamme ou par pays permet de limiter le risque, à condition de définir clairement où chaque devis se crée pendant la transition. La bascule finale suit un plan daté : gel des devis dans CPQ, dernier delta d'abonnements, contrôles, ouverture dans Revenue Cloud, période de support renforcé.",
+        ],
+      },
+      {
+        h2: "Les pièges les plus fréquents",
+        list: [
+          "Reproduire le paramétrage CPQ à l'identique, y compris ses défauts.",
+          "Sous-estimer la reprise des abonnements et des contrats.",
+          "Tester avec des devis fictifs au lieu de devis réels.",
+          "Oublier les rapports et tableaux de bord qui lisaient les objets CPQ.",
+          "Lancer la migration sans propriétaire métier du catalogue et des prix.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: "Combien de temps dure une migration CPQ vers Revenue Cloud ?",
+        a: "De trois à neuf mois selon la complexité du catalogue, le nombre de règles de prix et le volume d'abonnements à reprendre. L'inventaire initial permet de donner une estimation fiable.",
+      },
+      {
+        q: "Peut-on migrer progressivement ?",
+        a: "Oui, par périmètre (équipe, gamme, pays), à condition de fixer des règles claires de coexistence et de ne pas laisser la transition s'éterniser.",
+      },
+    ],
+    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "comment-migrer-ses-donnees-vers-salesforce"],
+  },
+
+  {
+    slug: "comment-gerer-devis-contrats-et-facturation-avec-revenue-cloud",
+    title: "Comment gérer devis, contrats et facturation avec Salesforce Revenue Cloud ?",
+    description:
+      "Mettre en place le quote-to-cash avec Revenue Cloud : catalogue et tarification, devis et avenants, contrats et abonnements, facturation récurrente ou à l'usage, lien avec l'ERP et la facturation électronique.",
+    keywords: ["Revenue Cloud facturation", "Salesforce Billing", "quote-to-cash Revenue Cloud", "abonnements Salesforce", "facturation à l'usage Salesforce", "Revenue Cloud SAP"],
+    date: "2026-10-19",
+    updated: "2026-10-19",
+    readingMinutes: 8,
+    intro:
+      "Revenue Cloud promet un cycle continu du devis à l'encaissement. La promesse tient si les décisions d'architecture sont prises au bon moment : où vit le catalogue, qui fait foi sur les prix, où se produit la facture, comment l'ERP est alimenté. Voici comment structurer une mise en place.",
+    sections: [
+      {
+        h2: "Le catalogue et les prix, une seule source de vérité",
+        paragraphs: [
+          "Tout part du catalogue : produits, attributs, bundles, puis procédures de tarification. Dans une architecture avec un ERP, on décide d'abord qui maîtrise le référentiel produit. En général, les produits et les prix de base viennent de l'ERP et sont synchronisés vers Revenue Cloud ; les règles commerciales (remises, bundles, conditions) vivent dans Revenue Cloud.",
+        ],
+      },
+      {
+        h2: "Devis et avenants",
+        paragraphs: [
+          "Les devis s'appuient sur le configurateur et les procédures de prix. Les avenants (ajout, retrait, changement de quantité ou de durée) sont gérés nativement sur les lignes d'abonnement, ce qui évite les devis parallèles et les ressaisies. Les approbations restent ciblées sur les écarts réels : remise au-delà d'un seuil, conditions de paiement dérogatoires.",
+        ],
+      },
+      {
+        h2: "Contrats et abonnements",
+        paragraphs: [
+          "À la signature, Revenue Cloud génère le contrat et les abonnements correspondants, avec dates, quantités et conditions de renouvellement. L'orchestration de l'exécution déclenche ce qui suit : activation du service, livraison, mise à disposition des accès. Les renouvellements et résiliations se pilotent depuis ces abonnements, avec une vue claire de la base installée.",
+        ],
+      },
+      {
+        h2: "Facturation récurrente et à l'usage",
+        paragraphs: [
+          "La brique Billing produit les factures à partir des abonnements et des consommations : facturation à date fixe, au prorata, à l'usage avec remontée des volumes consommés, avoirs et ajustements. Elle génère aussi les écritures nécessaires à la reconnaissance du revenu.",
+          "Deux questions à trancher tôt : la facture légale est-elle produite par Revenue Cloud ou par l'ERP, et comment la facturation électronique est-elle assurée ? En France, la facture doit transiter par une plateforme agréée dans un format structuré. Si l'ERP (SAP, par exemple) porte déjà cette conformité, Revenue Cloud alimente l'ERP et c'est lui qui émet. Dans le cas contraire, une solution connectée à une plateforme agréée est à prévoir.",
+        ],
+      },
+      {
+        h2: "Le lien avec l'ERP",
+        list: [
+          "Référentiels : clients et produits synchronisés avec External ID, dans un sens défini.",
+          "Commandes : envoyées à l'ERP à la signature, avec un retour de statut visible par les commerciaux.",
+          "Facturation et paiements : selon le choix du système émetteur, soit l'ERP facture à partir des commandes, soit Revenue Cloud facture et transmet les écritures à la comptabilité.",
+          "Erreurs : file de rejeu, alertes et enregistrements en erreur visibles dans Salesforce.",
+        ],
+      },
+      {
+        h2: "Un ordre de mise en place qui fonctionne",
+        list: [
+          "Catalogue et tarification, validés sur des devis réels.",
+          "Devis, approbations et templates.",
+          "Contrats, abonnements et orchestration.",
+          "Facturation et intégration comptable.",
+          "Portail client ou canaux partenaires, une fois le socle stable.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: "Revenue Cloud peut-il remplacer la facturation de l'ERP ?",
+        a: "Techniquement oui pour la facturation client, mais la comptabilité, la fiscalité et la conformité réglementaire restent en général dans l'ERP. La décision se prend avec la direction financière.",
+      },
+      {
+        q: "Peut-on démarrer par les devis et ajouter la facturation plus tard ?",
+        a: "Oui, c'est même l'ordre recommandé. Le catalogue et les procédures de prix construits pour les devis servent ensuite tels quels à la facturation.",
+      },
+    ],
+    related: ["salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq", "facturation-electronique-salesforce-sap-comment-se-preparer"],
+  },
 ];
 
 // Ordre d'affichage : les questions à plus forte intention d'achat d'abord
 const ORDER = [
   "comment-migrer-ses-donnees-vers-salesforce",
   "comment-faire-des-devis-dans-salesforce",
+  "salesforce-revenue-cloud-c-est-quoi-faut-il-quitter-cpq",
   "facturation-electronique-salesforce-sap-comment-se-preparer",
+  "comment-migrer-de-salesforce-cpq-vers-revenue-cloud",
+  "comment-gerer-devis-contrats-et-facturation-avec-revenue-cloud",
   "comment-integrer-salesforce-avec-sap",
   "combien-coute-un-consultant-salesforce-freelance",
   "comment-supprimer-les-doublons-dans-salesforce",
