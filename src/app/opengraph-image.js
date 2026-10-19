@@ -5,7 +5,7 @@ import { join } from "node:path";
 // Image de partage (LinkedIn, X, messageries), dans la direction artistique
 // du site : fond vert-noir, Archivo semi-étendue, sauge et ambre.
 
-export const alt = "Lucas Massoni, Expert Salesforce, Revenue Cloud & Tableau Analytics";
+export const alt = "Lucas Massoni, Expert Salesforce, Revenue Cloud & Tableau";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -76,7 +76,7 @@ export default async function Image() {
             <div style={{ display: "flex", fontFamily: "Archivo", fontWeight: 500, fontSize: 22, color: C.sageBright, marginBottom: 20 }}>
               Consultant indépendant
             </div>
-            {["Expert Salesforce,", "Revenue Cloud &", "Tableau Analytics."].map((t) => (
+            {["Expert Salesforce,", "Revenue Cloud", "& Tableau."].map((t) => (
               <div key={t} style={{ display: "flex", fontFamily: "Archivo Display", fontSize: 58, lineHeight: 1.04, letterSpacing: -1.6, color: C.ink }}>
                 {t}
               </div>

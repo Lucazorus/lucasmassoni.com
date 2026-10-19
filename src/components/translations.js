@@ -19,7 +19,7 @@ export const translations = {
     hero: {
       availability: "Disponible pour de nouveaux projets",
       meta: "Consultant indépendant, basé en France, sur site ou à distance.",
-      title: ["Expert Salesforce,", "Revenue Cloud &", "Tableau Analytics."],
+      title: ["Expert Salesforce,", "Revenue Cloud", "& Tableau."],
       subtitle:
         "Revenue Cloud et CPQ, Sales Cloud, Apex, Flow et LWC, migrations de données, dashboards Tableau et intégrations ERP. De la stratégie au delivery, avec une exécution rapide, documentée et orientée résultats.",
       ctaPrimary: "Démarrer un projet",
@@ -267,7 +267,7 @@ export const translations = {
     },
     footer: {
       rights: "© {year} Lucas Massoni. Tous droits réservés.",
-      tagline: "Expert Salesforce, Revenue Cloud & Tableau Analytics",
+      tagline: "Expert Salesforce, Revenue Cloud & Tableau",
       navLabel: "Navigation",
       contactLabel: "Contact",
       links: [
@@ -293,7 +293,7 @@ export const translations = {
     hero: {
       availability: "Available for new projects",
       meta: "Independent consultant, based in France, on site or remote.",
-      title: ["Salesforce expert,", "Revenue Cloud &", "Tableau Analytics."],
+      title: ["Salesforce expert,", "Revenue Cloud", "& Tableau."],
       subtitle:
         "Revenue Cloud and CPQ, Sales Cloud, Apex, Flow and LWC, data migrations, Tableau dashboards and ERP integrations. From strategy to delivery, with fast, documented, results-driven execution.",
       ctaPrimary: "Start a project",
@@ -541,7 +541,7 @@ export const translations = {
     },
     footer: {
       rights: "© {year} Lucas Massoni. All rights reserved.",
-      tagline: "Salesforce, Revenue Cloud & Tableau Analytics expert",
+      tagline: "Salesforce, Revenue Cloud & Tableau expert",
       navLabel: "Navigation",
       contactLabel: "Contact",
       links: [

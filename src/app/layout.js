@@ -21,18 +21,18 @@ const shareTechMono = Share_Tech_Mono({
 export const metadata = {
   metadataBase: new URL("https://www.lucasmassoni.com"),
   title: {
-    default: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau Analytics",
+    default: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau",
     template: "%s · Lucas Massoni",
   },
   description:
-    "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics : devis et facturation, migration de données, tableaux de bord, intégrations ERP. Basé en France.",
+    "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau : devis et facturation, migration de données, tableaux de bord, intégrations ERP. Basé en France.",
   keywords: [
     "expert Salesforce Revenue Cloud",
     "consultant Revenue Cloud",
     "Salesforce Revenue Cloud freelance",
     "Revenue Cloud Advanced",
     "expert Tableau",
-    "consultant Tableau Analytics",
+    "consultant Tableau",
     "Tableau freelance",
     "Salesforce freelance",
     "consultant Salesforce",
@@ -82,15 +82,15 @@ export const metadata = {
     alternateLocale: "en_US",
     url: "https://www.lucasmassoni.com",
     siteName: "Lucas Massoni",
-    title: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau Analytics",
+    title: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau",
     description:
-      "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics : devis et facturation, migration de données, tableaux de bord, intégrations ERP.",
+      "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau : devis et facturation, migration de données, tableaux de bord, intégrations ERP.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau Analytics",
+    title: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau",
     description:
-      "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics.",
+      "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau.",
   },
   robots: {
     index: true,
@@ -129,16 +129,16 @@ export const viewport = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
-  name: "Lucas Massoni, Expert Salesforce, Revenue Cloud & Tableau Analytics",
+  name: "Lucas Massoni, Expert Salesforce, Revenue Cloud & Tableau",
   url: "https://www.lucasmassoni.com",
   logo: "https://www.lucasmassoni.com/logo.png",
   image: "https://www.lucasmassoni.com/opengraph-image",
   description:
-    "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau Analytics : devis et facturation, migration de données, tableaux de bord, intégrations ERP.",
+    "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau : devis et facturation, migration de données, tableaux de bord, intégrations ERP.",
   priceRange: "$$",
   areaServed: { "@type": "Place", name: "France" },
   knowsAbout: [
-    "Salesforce", "Salesforce Revenue Cloud", "Revenue Cloud Advanced", "Salesforce CPQ", "Sales Cloud", "CRM Analytics", "Tableau Analytics",
+    "Salesforce", "Salesforce Revenue Cloud", "Revenue Cloud Advanced", "Salesforce CPQ", "Sales Cloud", "CRM Analytics", "Tableau",
     "Tableau", "Apex", "Lightning Web Components", "Flow",
     "Data Migration", "SQL", "API Integration", "JSON",
     "SAP", "SAP S/4HANA", "SAP Fiori", "ABAP",
@@ -149,7 +149,7 @@ const jsonLd = {
   founder: {
     "@type": "Person",
     name: "Lucas Massoni",
-    jobTitle: "Expert Salesforce, Revenue Cloud & Tableau Analytics",
+    jobTitle: "Expert Salesforce, Revenue Cloud & Tableau",
     url: "https://www.lucasmassoni.com",
     sameAs: ["https://www.linkedin.com/in/lucas-massoni/"],
   },
