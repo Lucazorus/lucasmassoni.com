@@ -159,7 +159,7 @@ export const translations = {
         {
           key: "mobile",
           title: "Applications mobiles & produits web",
-          desc: "Conception et développement d'apps iOS et Android et de produits web, de l'idée à la mise en ligne. Trois produits livrés, pas des maquettes :",
+          desc: "Conception et développement d'apps iOS et Android et de produits web, de l'idée à la mise en ligne. Quatre produits livrés, pas des maquettes :",
         },
       ],
     },
@@ -183,6 +183,14 @@ export const translations = {
           url: "https://www.openmandats.com/",
           host: "openmandats.com",
           image: "/open-mandats.png",
+        },
+        {
+          key: "fredon",
+          name: "Fredon",
+          desc: "Chantez ou sifflez une mélodie : Fredon trouve l'accord et montre les doigtés, sur vingt instruments.",
+          url: "https://fredon.app/",
+          host: "fredon.app",
+          image: "/fredon.png",
         },
         {
           key: "anima",
@@ -425,7 +433,7 @@ export const translations = {
         {
           key: "mobile",
           title: "Mobile apps & web products",
-          desc: "Design and development of iOS and Android apps and web products, from idea to launch. Three shipped products, not mockups:",
+          desc: "Design and development of iOS and Android apps and web products, from idea to launch. Four shipped products, not mockups:",
         },
       ],
     },
@@ -449,6 +457,14 @@ export const translations = {
           url: "https://www.openmandats.com/",
           host: "openmandats.com",
           image: "/open-mandats.png",
+        },
+        {
+          key: "fredon",
+          name: "Fredon",
+          desc: "Sing or whistle a melody: Fredon finds the chord and shows the fingering, on twenty instruments.",
+          url: "https://fredon.app/en/",
+          host: "fredon.app",
+          image: "/fredon.png",
         },
         {
           key: "anima",
