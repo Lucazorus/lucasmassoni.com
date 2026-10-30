@@ -159,7 +159,7 @@ export const translations = {
         {
           key: "mobile",
           title: "Applications mobiles & produits web",
-          desc: "Conception et développement d'apps iOS et Android et de produits web, de l'idée à la mise en ligne. Quatre produits livrés, pas des maquettes :",
+          desc: "Conception et développement d'apps iOS et Android et de produits web, de l'idée à la mise en ligne. Trois produits livrés, pas des maquettes :",
         },
       ],
     },
@@ -183,14 +183,6 @@ export const translations = {
           url: "https://www.openmandats.com/",
           host: "openmandats.com",
           image: "/open-mandats.png",
-        },
-        {
-          key: "spokedia",
-          name: "Spokedia",
-          desc: "L'index ouvert des standards vélo : cotes de cadre, pièces compatibles, où les acheter.",
-          url: "https://spokedia.com/fr",
-          host: "spokedia.com",
-          image: "/spokedia-preview.png",
         },
         {
           key: "anima",
@@ -433,7 +425,7 @@ export const translations = {
         {
           key: "mobile",
           title: "Mobile apps & web products",
-          desc: "Design and development of iOS and Android apps and web products, from idea to launch. Four shipped products, not mockups:",
+          desc: "Design and development of iOS and Android apps and web products, from idea to launch. Three shipped products, not mockups:",
         },
       ],
     },
@@ -457,14 +449,6 @@ export const translations = {
           url: "https://www.openmandats.com/",
           host: "openmandats.com",
           image: "/open-mandats.png",
-        },
-        {
-          key: "spokedia",
-          name: "Spokedia",
-          desc: "The open index of bike standards: frame specs, compatible parts, where to buy them.",
-          url: "https://spokedia.com/en",
-          host: "spokedia.com",
-          image: "/spokedia-preview.png",
         },
         {
           key: "anima",
