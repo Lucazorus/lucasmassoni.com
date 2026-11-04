@@ -122,7 +122,7 @@ export const translations = {
       files: "Fichiers",
     },
     services: {
-      title: "Six domaines, un seul interlocuteur.",
+      title: "Sept domaines, un seul interlocuteur.",
       lead: "Du cadrage à la mise en production, avec une exécution documentée et mesurable.",
       items: [
         {
@@ -160,6 +160,11 @@ export const translations = {
           key: "mobile",
           title: "Applications mobiles & produits web",
           desc: "Conception et développement d'apps iOS et Android et de produits web, de l'idée à la mise en ligne. Quatre produits livrés, pas des maquettes :",
+        },
+        {
+          key: "content",
+          title: "Création de contenu",
+          desc: "Des vidéos courtes qui décryptent l'actualité par les chiffres, de l'écriture au montage, publiées sur Instagram sous le nom Ça compte.",
         },
       ],
     },
@@ -264,6 +269,7 @@ export const translations = {
       calendly: "Planifier un appel",
       linkedin: "LinkedIn",
       instagram: "Instagram",
+      instagramReel: "Sur Instagram",
       note: "Réponse sous 24 heures ouvrées. Intervention en France, sur site ou à distance, en français et en anglais.",
     },
     footer: {
@@ -398,7 +404,7 @@ export const translations = {
       files: "Files",
     },
     services: {
-      title: "Six areas, one point of contact.",
+      title: "Seven areas, one point of contact.",
       lead: "From scoping to production, with documented and measurable execution.",
       items: [
         {
@@ -436,6 +442,11 @@ export const translations = {
           key: "mobile",
           title: "Mobile apps & web products",
           desc: "Design and development of iOS and Android apps and web products, from idea to launch. Four shipped products, not mockups:",
+        },
+        {
+          key: "content",
+          title: "Content creation",
+          desc: "Short videos that break down the news through numbers, from script to edit, published on Instagram as Ça compte.",
         },
       ],
     },
@@ -540,6 +551,7 @@ export const translations = {
       calendly: "Schedule a call",
       linkedin: "LinkedIn",
       instagram: "Instagram",
+      instagramReel: "On Instagram",
       note: "Reply within 24 business hours. Engagements in France, on site or remote, in French and English.",
     },
     footer: {

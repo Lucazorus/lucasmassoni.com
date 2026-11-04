@@ -126,6 +126,23 @@ function SectionHead({ label, title, lead, id }) {
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
+// Miniature d'une publication Instagram (fichier hébergé dans /public), lue en boucle sans le son.
+const INSTA_REEL = { href: "https://www.instagram.com/p/DfHoReDOG4r/", src: "/instagram/reel.mp4", poster: "/instagram/reel-poster.jpg", handle: "@ca_compte_" };
+
+function InstaReel({ label }) {
+  const reduced = useReducedMotion();
+  return (
+    <a href={INSTA_REEL.href} className="insta-reel" target="_blank" rel="noopener noreferrer">
+      <video className="insta-reel-video" src={INSTA_REEL.src} poster={INSTA_REEL.poster} autoPlay={!reduced} muted loop playsInline preload="metadata" aria-hidden="true" />
+      <span className="insta-reel-copy">
+        <span className="insta-reel-label"><Instagram size={14} />{label}</span>
+        <span className="insta-reel-handle">{INSTA_REEL.handle}</span>
+      </span>
+      <ArrowUpRight size={18} className="insta-reel-arrow" />
+    </a>
+  );
+}
+
 export default function HomePage() {
   const [lang, setLang] = useState("fr");
   const [loaded, setLoaded] = useState(false);
@@ -187,7 +204,6 @@ export default function HomePage() {
       <main id="top">
         {/* ── Hero ────────────────────────────────────────────────────────── */}
         <section className="hero">
-          <div className="hero-bg" aria-hidden="true" />
           <div className="container hero-grid">
             <div className="hero-copy">
               <motion.p className="status" {...fade(0.05, 8)}>
@@ -250,7 +266,7 @@ export default function HomePage() {
                     delay={(i % 3) * 0.06}
                   >
                     <div onMouseEnter={() => setLinked(s.key)} onMouseLeave={() => setLinked(null)} className="card-hit">
-                      {!isMobile && <div className="card-viz"><Viz L={t.viz} /></div>}
+                      {!isMobile && Viz && <div className="card-viz"><Viz L={t.viz} /></div>}
                       <div className="card-body">
                         <h3 className="card-title">{s.title}</h3>
                         <p>{s.desc}</p>
@@ -266,6 +282,7 @@ export default function HomePage() {
                         )}
                         {s.tag && <span className="tag">{s.tag}</span>}
                       </div>
+                      {s.key === "content" && <InstaReel label={t.contact.instagramReel} />}
                       {isMobile && (
                         <ul className="products">
                           {t.products.items.map((p) => (
