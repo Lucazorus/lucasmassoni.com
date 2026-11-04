@@ -145,13 +145,13 @@ const jsonLd = {
     "SAP BTP", "SAP Business Technology Platform",
     "ERP", "ERP Integration", "Systèmes d'Information",
   ],
-  sameAs: ["https://www.linkedin.com/in/lucas-massoni/"],
+  sameAs: ["https://www.linkedin.com/in/lucas-massoni/", "https://www.instagram.com/ca_compte_/"],
   founder: {
     "@type": "Person",
     name: "Lucas Massoni",
     jobTitle: "Expert Salesforce, Revenue Cloud & Tableau",
     url: "https://www.lucasmassoni.com",
-    sameAs: ["https://www.linkedin.com/in/lucas-massoni/"],
+    sameAs: ["https://www.linkedin.com/in/lucas-massoni/", "https://www.instagram.com/ca_compte_/"],
   },
 };
 

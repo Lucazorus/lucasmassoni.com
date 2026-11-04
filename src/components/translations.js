@@ -263,6 +263,7 @@ export const translations = {
       subtitle: "Décrivez votre besoin, je reviens vers vous sous 24 heures.",
       calendly: "Planifier un appel",
       linkedin: "LinkedIn",
+      instagram: "Instagram",
       note: "Réponse sous 24 heures ouvrées. Intervention en France, sur site ou à distance, en français et en anglais.",
     },
     footer: {
@@ -273,6 +274,7 @@ export const translations = {
       links: [
         { label: "Planifier un appel", url: "https://calendly.com/lucas-massoni-contact" },
         { label: "LinkedIn", url: "https://www.linkedin.com/in/lucas-massoni/" },
+        { label: "Instagram", url: "https://www.instagram.com/ca_compte_/" },
       ],
     },
   },
@@ -537,6 +539,7 @@ export const translations = {
       subtitle: "Tell me about your project, I'll get back to you within 24 hours.",
       calendly: "Schedule a call",
       linkedin: "LinkedIn",
+      instagram: "Instagram",
       note: "Reply within 24 business hours. Engagements in France, on site or remote, in French and English.",
     },
     footer: {
@@ -547,6 +550,7 @@ export const translations = {
       links: [
         { label: "Schedule a call", url: "https://calendly.com/lucas-massoni-contact" },
         { label: "LinkedIn", url: "https://www.linkedin.com/in/lucas-massoni/" },
+        { label: "Instagram", url: "https://www.instagram.com/ca_compte_/" },
       ],
     },
   },

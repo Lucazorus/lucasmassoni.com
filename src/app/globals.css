@@ -205,6 +205,11 @@ p { margin: 0; }
 .lang-toggle:hover { background: var(--surface-2); }
 .lang-toggle .is-current { color: var(--ink); }
 .lang-sep { width: 1px; height: 12px; background: var(--line-strong); }
+.nav-icon {
+  display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px;
+  border-radius: var(--radius-xs); color: var(--muted);
+}
+.nav-icon:hover { color: var(--ink); background: var(--surface-2); }
 .nav-contact { display: none; }
 @media (min-width: 840px) { .nav-contact { display: inline-flex; } }
 .menu-btn {

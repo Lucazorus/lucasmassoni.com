@@ -13,7 +13,7 @@ import {
 } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Analytics } from "@vercel/analytics/react";
-import { Calendar, Linkedin, ArrowUpRight, Check } from "lucide-react";
+import { Calendar, Linkedin, Instagram, ArrowUpRight, Check } from "lucide-react";
 
 import PipelineViz from "./PipelineViz";
 import RiveLogo from "./RiveLogo";
@@ -351,6 +351,9 @@ export default function HomePage() {
                 </a>
                 <a href="https://www.linkedin.com/in/lucas-massoni/" className="btn btn-secondary btn-lg" target="_blank" rel="noopener noreferrer">
                   <Linkedin size={16} />{t.contact.linkedin}
+                </a>
+                <a href="https://www.instagram.com/ca_compte_/" className="btn btn-secondary btn-lg" target="_blank" rel="noopener noreferrer">
+                  <Instagram size={16} />{t.contact.instagram}
                 </a>
               </div>
               <p className="contact-note">{t.contact.note}</p>

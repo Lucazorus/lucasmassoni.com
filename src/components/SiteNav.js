@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Calendar } from "lucide-react";
+import { Menu, X, Calendar, Instagram } from "lucide-react";
 import RiveLogo from "./RiveLogo";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -53,6 +53,9 @@ export default function SiteNav({ t, lang = "fr", onToggleLang, items, contactHr
                 <span className={lang === "en" ? "is-current" : ""}>EN</span>
               </button>
             )}
+            <a href="https://www.instagram.com/ca_compte_/" className="nav-icon" target="_blank" rel="noopener noreferrer" aria-label={t.contact.instagram} title={t.contact.instagram}>
+              <Instagram size={18} />
+            </a>
             <a href={contactHref} className="btn btn-primary btn-sm nav-contact">{t.nav.contact}</a>
             <button
               type="button"
@@ -84,6 +87,7 @@ export default function SiteNav({ t, lang = "fr", onToggleLang, items, contactHr
                 <a key={item.href} href={item.href} className="mobile-link" onClick={closeMenu}>{item.label}</a>
               ))}
               <a href={contactHref} className="mobile-link" onClick={closeMenu}>{t.nav.contact}</a>
+              <a href="https://www.instagram.com/ca_compte_/" target="_blank" rel="noopener noreferrer" className="mobile-link">{t.contact.instagram}</a>
               <a href="https://calendly.com/lucas-massoni-contact" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
                 <Calendar size={16} />
                 {t.contact.calendly}
