@@ -354,8 +354,7 @@ p { margin: 0; }
   .card-cpq { grid-column: span 7; }
   .card-analytics { grid-column: span 5; }
   .card-migration, .card-dev, .card-sap { grid-column: span 4; }
-  .card-mobile { grid-column: span 8; }
-  .card-content { grid-column: span 4; }
+  .card-mobile, .card-content { grid-column: span 6; }
 }
 @media (min-width: 720px) and (max-width: 1079px) { .card-mobile, .card-content { grid-column: span 2; } }
 
@@ -440,33 +439,30 @@ p { margin: 0; }
 
 /* carte produits */
 .card-mobile .card-hit { gap: 22px; }
-.products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-@media (max-width: 480px) { .products { grid-template-columns: minmax(0, 1fr); } }
-.product { position: relative; }
-.product-link {
-  display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: 12px;
-  padding: 10px; border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.2); border: 1px solid var(--line);
-  transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease);
+.card-more {
+  display: inline-flex; align-items: center; gap: 8px; align-self: flex-start;
+  font-size: 0.92rem; font-weight: 500; color: var(--sage-bright);
 }
-.product-link:hover { background: rgba(0, 0, 0, 0.3); border-color: rgba(156, 202, 184, 0.45); }
-.product-shot {
-  position: relative; display: flex; align-items: center; justify-content: center;
-  width: 72px; aspect-ratio: 16 / 10; border-radius: var(--radius-xs); overflow: hidden;
-  background: #121c1a; border: 1px solid var(--line); color: #fff;
+.card-more:hover { color: var(--ink); }
+
+/* ---------- Produits ---------- */
+.showcase { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+@media (min-width: 720px) { .showcase { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; } }
+.showcase-item {
+  display: flex; flex-direction: column; overflow: hidden;
+  border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line);
+  transition: border-color 0.25s var(--ease), background-color 0.25s var(--ease);
 }
-.product-shot img { object-fit: cover; object-position: top left; }
-.product-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.product-name { font-weight: 500; color: var(--ink); font-size: 0.93rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.product-host { font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); letter-spacing: 0.02em; }
-.product-arrow { color: var(--muted); transition: color 0.2s var(--ease), transform 0.2s var(--ease); }
-.product-link:hover .product-arrow { color: var(--sage-bright); transform: translate(1px, -1px); }
-.product-store {
-  position: absolute; right: 42px; top: 50%; transform: translateY(-50%);
-  display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 9px; border-radius: var(--radius-xs);
-  background: #fff; color: #0b1412; font-size: 0.74rem; font-weight: 600;
-}
-.product-store:hover { background: var(--sage-bright); }
+.showcase-item:hover { border-color: rgba(156, 202, 184, 0.45); background: var(--surface-2); }
+.showcase-shot { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; background: #121c1a; border-bottom: 1px solid var(--line); }
+.showcase-shot img { object-fit: cover; object-position: top center; transition: transform 0.6s var(--ease); }
+.showcase-item:hover .showcase-shot img { transform: scale(1.025); }
+.showcase-body { display: flex; flex-direction: column; gap: 10px; flex: 1; padding: 24px; }
+@media (min-width: 1080px) { .showcase-body { padding: 28px; } }
+.showcase-name { margin: 0; font-family: var(--font-display); font-stretch: 108%; font-weight: 600; font-size: 1.45rem; letter-spacing: -0.015em; color: var(--ink); line-height: 1.15; }
+.showcase-body > p { color: var(--body); font-size: 0.98rem; }
+.showcase-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 10px; }
+.showcase-actions .btn-secondary { font-family: var(--font-mono); font-size: 0.82rem; letter-spacing: 0.02em; }
 
 /* ---------- Approche ---------- */
 .steps { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); }

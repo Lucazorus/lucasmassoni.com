@@ -13,7 +13,7 @@ import {
 } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Analytics } from "@vercel/analytics/react";
-import { Calendar, Linkedin, Instagram, ArrowUpRight, Check } from "lucide-react";
+import { Calendar, Linkedin, Instagram, ArrowUpRight, ArrowDown, Check } from "lucide-react";
 
 import PipelineViz from "./PipelineViz";
 import RiveLogo from "./RiveLogo";
@@ -173,6 +173,7 @@ export default function HomePage() {
 
   const navItems = [
     { href: "#services", label: t.nav.services },
+    { href: "#produits", label: t.nav.products },
     { href: "#approche", label: t.nav.approach },
     { href: "#stack", label: t.nav.stack },
     { href: "/guides", label: t.nav.guides },
@@ -284,33 +285,43 @@ export default function HomePage() {
                       </div>
                       {s.key === "content" && <InstaReel label={t.contact.instagramReel} />}
                       {isMobile && (
-                        <ul className="products">
-                          {t.products.items.map((p) => (
-                            <li className="product" key={p.key}>
-                              <a href={p.url} target="_blank" rel="noopener noreferrer" className="product-link" aria-label={`${p.name}, ${p.host}`}>
-                                <span className="product-shot">
-                                  {p.image ? <Image src={p.image} alt="" fill sizes="(min-width: 1080px) 22vw, (min-width: 640px) 44vw, 92vw" /> : <AppStoreGlyph size={24} />}
-                                </span>
-                                <span className="product-meta">
-                                  <span className="product-name">{p.name}</span>
-                                  <span className="product-host">{p.host}</span>
-                                </span>
-                                <ArrowUpRight size={16} className="product-arrow" aria-hidden="true" />
-                              </a>
-                              {p.store && (
-                                <a href={p.store} target="_blank" rel="noopener noreferrer" className="product-store" aria-label={p.storeLabel}>
-                                  <AppStoreGlyph size={12} />{p.storeLabel}
-                                </a>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
+                        <a href="#produits" className="card-more">{t.products.see}<ArrowDown size={14} aria-hidden="true" /></a>
                       )}
                     </div>
                   </Reveal>
                 );
               })}
             </div>
+          </div>
+        </section>
+
+        {/* ── Produits ────────────────────────────────────────────────────── */}
+        <section id="produits" className="section section-rule" aria-labelledby="produits-label">
+          <div className="container">
+            <SectionHead id="produits-label" label={t.nav.products} title={t.products.title} lead={t.products.lead} />
+            <ul className="showcase">
+              {t.products.items.map((p, i) => (
+                <Reveal as="li" key={p.key} className="showcase-item" delay={(i % 2) * 0.08}>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="showcase-shot" aria-label={`${p.name}, ${p.host}`}>
+                    <Image src={p.image} alt="" fill sizes="(min-width: 720px) 46vw, 92vw" />
+                  </a>
+                  <div className="showcase-body">
+                    <h3 className="showcase-name">{p.name}</h3>
+                    <p>{p.desc}</p>
+                    <div className="showcase-actions">
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm">
+                        {p.host}<ArrowUpRight size={14} aria-hidden="true" />
+                      </a>
+                      {p.store && (
+                        <a href={p.store} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">
+                          <AppStoreGlyph size={13} />{p.storeLabel}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </ul>
           </div>
         </section>
 
