@@ -164,7 +164,7 @@ export const translations = {
         {
           key: "content",
           title: "Création de contenu",
-          desc: "Des vidéos courtes qui décryptent l'actualité par les chiffres, de l'écriture au montage, publiées sur Instagram sous le nom Ça compte.",
+          desc: "Des vidéos courtes qui décryptent l'actualité par les chiffres, publiées sur Instagram sous le nom Ça compte.",
         },
       ],
     },
@@ -446,7 +446,7 @@ export const translations = {
         {
           key: "content",
           title: "Content creation",
-          desc: "Short videos that break down the news through numbers, from script to edit, published on Instagram as Ça compte.",
+          desc: "Short videos that break down the news through numbers, published on Instagram as Ça compte.",
         },
       ],
     },
