@@ -13,7 +13,7 @@ import {
 } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Analytics } from "@vercel/analytics/react";
-import { Calendar, Linkedin, Instagram, ArrowUpRight, ArrowDown, Check } from "lucide-react";
+import { Linkedin, Instagram, ArrowUpRight, ArrowDown, Check } from "lucide-react";
 
 import PipelineViz from "./PipelineViz";
 import RiveLogo from "./RiveLogo";
@@ -374,10 +374,7 @@ export default function HomePage() {
             <Reveal className="contact-panel" delay={0.1}>
               <p className="status"><i aria-hidden="true" />{t.hero.availability}</p>
               <div className="contact-actions">
-                <a href="https://calendly.com/lucas-massoni-contact" className="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">
-                  <Calendar size={16} />{t.contact.calendly}
-                </a>
-                <a href="https://www.linkedin.com/in/lucas-massoni/" className="btn btn-secondary btn-lg" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.linkedin.com/in/lucas-massoni/" className="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">
                   <Linkedin size={16} />{t.contact.linkedin}
                 </a>
                 <a href="https://www.instagram.com/ca_compte_/" className="btn btn-secondary btn-lg" target="_blank" rel="noopener noreferrer">

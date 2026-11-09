@@ -165,7 +165,7 @@ export default async function GuidePage({ params }) {
               <div className="cta-panel">
                 <p className="section-label">Besoin d&apos;un avis sur votre projet ?</p>
                 <p className="cta-text">Un premier échange de 30 minutes pour cadrer le besoin, sans engagement. Réponse sous 24 heures ouvrées.</p>
-                <a href="https://calendly.com/lucas-massoni-contact" className="btn btn-primary" target="_blank" rel="noopener noreferrer">Planifier un appel</a>
+                <Link href="/#contact" className="btn btn-primary">Me contacter</Link>
                 <Link href="/#services" className="aside-link">Voir les services</Link>
               </div>
               {related.length > 0 && (

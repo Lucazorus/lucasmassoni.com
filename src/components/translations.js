@@ -269,7 +269,6 @@ export const translations = {
     contact: {
       title: "Travaillons ensemble.",
       subtitle: "Décrivez votre besoin, je reviens vers vous sous 24 heures.",
-      calendly: "Planifier un appel",
       linkedin: "LinkedIn",
       instagram: "Instagram",
       instagramReel: "Sur Instagram",
@@ -281,7 +280,6 @@ export const translations = {
       navLabel: "Navigation",
       contactLabel: "Contact",
       links: [
-        { label: "Planifier un appel", url: "https://calendly.com/lucas-massoni-contact" },
         { label: "LinkedIn", url: "https://www.linkedin.com/in/lucas-massoni/" },
         { label: "Instagram", url: "https://www.instagram.com/ca_compte_/" },
       ],
@@ -554,7 +552,6 @@ export const translations = {
     contact: {
       title: "Let's work together.",
       subtitle: "Tell me about your project, I'll get back to you within 24 hours.",
-      calendly: "Schedule a call",
       linkedin: "LinkedIn",
       instagram: "Instagram",
       instagramReel: "On Instagram",
@@ -566,7 +563,6 @@ export const translations = {
       navLabel: "Navigation",
       contactLabel: "Contact",
       links: [
-        { label: "Schedule a call", url: "https://calendly.com/lucas-massoni-contact" },
         { label: "LinkedIn", url: "https://www.linkedin.com/in/lucas-massoni/" },
         { label: "Instagram", url: "https://www.instagram.com/ca_compte_/" },
       ],

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Calendar, Instagram } from "lucide-react";
+import { Menu, X, Instagram } from "lucide-react";
 import RiveLogo from "./RiveLogo";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -88,10 +88,6 @@ export default function SiteNav({ t, lang = "fr", onToggleLang, items, contactHr
               ))}
               <a href={contactHref} className="mobile-link" onClick={closeMenu}>{t.nav.contact}</a>
               <a href="https://www.instagram.com/ca_compte_/" target="_blank" rel="noopener noreferrer" className="mobile-link">{t.contact.instagram}</a>
-              <a href="https://calendly.com/lucas-massoni-contact" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                <Calendar size={16} />
-                {t.contact.calendly}
-              </a>
             </div>
           </motion.nav>
         )}
