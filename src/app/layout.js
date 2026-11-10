@@ -25,7 +25,7 @@ export const metadata = {
     template: "%s · Lucas Massoni",
   },
   description:
-    "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau : devis et facturation, migration de données, tableaux de bord, intégrations ERP. Basé en France.",
+    "Lucas Massoni : expert Salesforce, Revenue Cloud et Tableau, créateur d'applications et de Ça compte (@ca_compte_), des vidéos sur l'actualité en chiffres sur Instagram.",
   keywords: [
     "expert Salesforce Revenue Cloud",
     "consultant Revenue Cloud",
@@ -71,6 +71,10 @@ export const metadata = {
     "consultant ERP",
     "intégration ERP",
     "freelance systèmes d'information",
+    "Lucas Massoni",
+    "Ça compte",
+    "ca_compte_",
+    "Ça compte Instagram",
   ],
   authors: [{ name: "Lucas Massoni", url: "https://www.lucasmassoni.com" }],
   creator: "Lucas Massoni",
@@ -84,13 +88,13 @@ export const metadata = {
     siteName: "Lucas Massoni",
     title: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau",
     description:
-      "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau : devis et facturation, migration de données, tableaux de bord, intégrations ERP.",
+      "Expert Salesforce, Revenue Cloud et Tableau. Créateur d'applications et de Ça compte (@ca_compte_) sur Instagram.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Lucas Massoni · Expert Salesforce, Revenue Cloud & Tableau",
     description:
-      "Consultant indépendant, expert Salesforce, Revenue Cloud et Tableau.",
+      "Expert Salesforce, Revenue Cloud et Tableau. Créateur de Ça compte (@ca_compte_) sur Instagram.",
   },
   robots: {
     index: true,
@@ -150,6 +154,7 @@ const jsonLd = {
     "@type": "Person",
     name: "Lucas Massoni",
     jobTitle: "Expert Salesforce, Revenue Cloud & Tableau",
+    description: "Expert Salesforce, Revenue Cloud et Tableau, créateur d'applications et de Ça compte, des vidéos sur l'actualité en chiffres sur Instagram.",
     url: "https://www.lucasmassoni.com",
     sameAs: ["https://www.linkedin.com/in/lucas-massoni/", "https://www.instagram.com/ca_compte_/"],
   },

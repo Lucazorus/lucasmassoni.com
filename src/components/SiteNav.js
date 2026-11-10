@@ -10,7 +10,8 @@ const EASE = [0.22, 1, 0.36, 1];
 
 // Barre de navigation partagée (accueil et guides).
 // `items` : [{ href, label }]. `onToggleLang` absent = pas de sélecteur de langue.
-export default function SiteNav({ t, lang = "fr", onToggleLang, items, contactHref = "#contact" }) {
+// `onHome` : sur l'accueil, le logo ramène à l'écran d'entrée au lieu de recharger la page.
+export default function SiteNav({ t, lang = "fr", onToggleLang, items, contactHref = "#contact", onHome }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -32,7 +33,7 @@ export default function SiteNav({ t, lang = "fr", onToggleLang, items, contactHr
     <>
       <header className={`nav${scrolled ? " is-scrolled" : ""}`}>
         <div className="container nav-inner">
-          <Link href="/" className="brand" onClick={closeMenu}>
+          <Link href="/" className="brand" onClick={(e) => { closeMenu(); if (onHome) { e.preventDefault(); onHome(); } }}>
             <RiveLogo className="brand-logo" />
             <span className="brand-name">{t.name}</span>
             <span className="brand-sep" aria-hidden="true" />

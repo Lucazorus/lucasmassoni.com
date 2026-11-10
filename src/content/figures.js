@@ -450,7 +450,7 @@ export const figures = {
       title: "Le plan de migration",
       steps: [
         { label: "Inventaire", note: "ce que CPQ fait vraiment" },
-        { label: "Catalogue", note: "restructuré, pas copié" },
+        { label: "Catalogue", note: "à restructurer" },
         { label: "Tarification", note: "procédures testées" },
         { label: "Reprise", note: "devis, contrats, abonnements" },
         { label: "Intégrations", note: "ERP, documents" },
@@ -536,7 +536,7 @@ export const figures = {
         { from: { label: "Modèle de devis", api: "SBQQ__QuoteTemplate__c" }, to: { label: "Génération de documents", api: "Document Builder, OmniStudio" }, note: "Les templates sont refaits, c'est l'occasion de les simplifier." },
         { from: { label: "Contrat et abonnements", api: "Contract, SBQQ__Subscription__c" }, to: { label: "Contrat et actifs", api: "Contract, Asset, AssetStatePeriod" }, note: "Le point critique : dates, quantités et conditions de renouvellement doivent être reprises." },
         { from: { label: "Avenants et renouvellements", api: "Devis d'amendement et de renouvellement" }, to: { label: "Commandes basées sur l'actif", api: "Asset-based ordering" }, note: "Modifier, renouveler ou résilier se fait depuis l'actif." },
-        { from: { label: "Facture Salesforce Billing", api: "blng__Invoice__c, blng__InvoiceLine__c" }, to: { label: "Facture standard", api: "Invoice, InvoiceLine, BillingSchedule" }, note: "L'historique de facturation est en général conservé en lecture, pas migré." },
+        { from: { label: "Facture Salesforce Billing", api: "blng__Invoice__c, blng__InvoiceLine__c" }, to: { label: "Facture standard", api: "Invoice, InvoiceLine, BillingSchedule" }, note: "L'historique de facturation reste en général consultable en lecture seule dans l'ancien système." },
       ],
       caption: "Noms d'API indicatifs, selon les éditions et versions. L'équivalence n'est jamais un simple renommage : chaque ligne se valide sur des devis et contrats réels.",
     },

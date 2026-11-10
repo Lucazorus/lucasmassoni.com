@@ -32,7 +32,7 @@ const RAW = [
       {
         h2: "1. Auditer les sources avant de choisir un outil",
         paragraphs: [
-          "La première étape se passe dans les données, pas dans Salesforce. Pour chaque source, qu'il s'agisse d'un ancien CRM, d'un ERP, de fichiers Excel ou d'exports d'outils métier, on inventorie les objets, les volumes et les règles de gestion implicites.",
+          "La première étape se passe dans les données sources. Pour chaque source, qu'il s'agisse d'un ancien CRM, d'un ERP, de fichiers Excel ou d'exports d'outils métier, on inventorie les objets, les volumes et les règles de gestion implicites.",
         ],
         list: [
           "Volumes par objet et par source, et leur évolution sur les derniers mois.",
@@ -54,7 +54,7 @@ const RAW = [
       {
         h2: "3. Construire le mapping champ par champ",
         paragraphs: [
-          "Le mapping est le contrat de la migration. Pour chaque champ cible Salesforce, il documente la source, la transformation appliquée et la règle en cas de valeur absente. Il est validé par les métiers, pas seulement par l'équipe technique.",
+          "Le mapping est le contrat de la migration. Pour chaque champ cible Salesforce, il documente la source, la transformation appliquée et la règle en cas de valeur absente. Les métiers le valident avec l'équipe technique.",
         ],
         list: [
           "Objets standard d'abord : Account, Contact, Lead, Opportunity, Case, puis les objets personnalisés.",
@@ -77,7 +77,7 @@ const RAW = [
       {
         h2: "5. Dédoublonner avant de charger",
         paragraphs: [
-          "Les doublons se traitent dans le staging, avec des règles explicites : clé exacte comme l'email ou le SIRET, puis rapprochements approximatifs sur le nom et l'adresse. Chaque fusion est journalisée. Les règles de doublons de Salesforce servent ensuite de filet de sécurité, pas de méthode de nettoyage.",
+          "Les doublons se traitent dans le staging, avec des règles explicites : clé exacte comme l'email ou le SIRET, puis rapprochements approximatifs sur le nom et l'adresse. Chaque fusion est journalisée. Les règles de doublons de Salesforce servent ensuite de filet de sécurité.",
           "La méthode détaillée, avec les limites de la fusion native, est décrite dans le guide [pour supprimer les doublons dans Salesforce](/guides/comment-supprimer-les-doublons-dans-salesforce).",
         ],
       },
@@ -255,7 +255,7 @@ const RAW = [
       {
         h2: "Définir des règles de rapprochement explicites",
         paragraphs: [
-          "Un doublon est une décision, pas une évidence. Les règles doivent être écrites et validées avec les métiers, par niveau de certitude.",
+          "Il faut décider ce qui compte comme un doublon. Les règles doivent être écrites et validées avec les métiers, par niveau de certitude.",
         ],
         list: [
           "Rapprochement exact : même email, même SIRET, même identifiant externe. Fusion automatique possible.",
@@ -352,7 +352,7 @@ const RAW = [
       {
         h2: "2. Modéliser des bundles qui ne reflètent pas l'offre",
         paragraphs: [
-          "Un bundle doit correspondre à ce que les commerciaux vendent réellement. Trop de niveaux d'options, des fonctionnalités qui n'existent que pour contourner une contrainte technique, des options obligatoires modifiables : le résultat est un configurateur que les utilisateurs évitent. On repart de l'offre commerciale, pas du catalogue technique.",
+          "Un bundle doit correspondre à ce que les commerciaux vendent réellement. Trop de niveaux d'options, des fonctionnalités qui n'existent que pour contourner une contrainte technique, des options obligatoires modifiables : le résultat est un configurateur que les utilisateurs évitent. On repart de l'offre commerciale, telle que les commerciaux la vendent.",
         ],
       },
       {
@@ -437,7 +437,7 @@ const RAW = [
         list: [
           "Un seul trigger par objet, qui délègue à une classe de gestion : le pattern trigger handler.",
           "Du code bulkifié dès la première ligne : jamais de requête ou de DML dans une boucle.",
-          "Des tests qui couvrent les cas limites et les volumes, pas seulement le pourcentage de couverture.",
+          "Des tests qui couvrent les cas limites et les gros volumes.",
         ],
       },
       {
@@ -504,7 +504,7 @@ const RAW = [
       "Un tableau de bord commercial fiable tient moins à l'outil qu'à trois choses : des questions claires, des indicateurs définis et des données propres. Voici une méthode en six étapes, avec un comparatif des outils disponibles autour de Salesforce.",
     sections: [
       {
-        h2: "1. Partir des décisions, pas des données",
+        h2: "1. Partir des décisions à prendre",
         paragraphs: [
           "Avant de choisir un graphique, on liste les décisions que le tableau de bord doit éclairer : où concentrer l'effort commercial, quelle prévision annoncer au comité de direction, faut-il renforcer une équipe. Chaque indicateur doit servir au moins une de ces décisions ; sinon, il n'a pas sa place.",
         ],
@@ -545,8 +545,8 @@ const RAW = [
           "Pour une direction commerciale, les premiers indicateurs à afficher sont en général le pipeline créé, le taux de transformation, la couverture du pipeline, la durée du cycle de vente et l'écart entre prévision et réalisé.",
         ],
         list: [
-          "Cinq à sept indicateurs en tête, pas trente.",
-          "Chaque indicateur avec sa tendance et son objectif, pas seulement une valeur.",
+          "Cinq à sept indicateurs en haut de page.",
+          "Chaque indicateur affiché avec sa tendance et son objectif.",
           "Une hiérarchie : la synthèse en haut, le détail par équipe ou par produit en dessous.",
           "La date de mise à jour des données visible sur le tableau de bord.",
         ],
@@ -555,7 +555,7 @@ const RAW = [
         h2: "6. Faire vivre le tableau de bord",
         paragraphs: [
           "Un tableau de bord sans propriétaire se dégrade en quelques mois. On nomme un responsable, on le revoit en réunion commerciale et on supprime ce qui n'est plus regardé.",
-          "Beaucoup d'organisations combinent plusieurs outils, par exemple CRM Analytics pour les managers commerciaux et Tableau ou Power BI pour la direction. Cela fonctionne à une condition : partager les mêmes définitions et la même source de vérité.",
+          "Beaucoup d'organisations combinent plusieurs outils, par exemple CRM Analytics pour les managers commerciaux et Tableau ou Power BI pour la direction. Cela fonctionne à une condition : partager les mêmes définitions et les mêmes données.",
         ],
       },
     ],
@@ -708,7 +708,7 @@ const RAW = [
       {
         h2: "Méthode 2 : le connecteur Salesforce Reports",
         paragraphs: [
-          "Le connecteur Salesforce Reports importe le résultat d'un rapport Salesforce existant. L'avantage : les filtres et la logique du rapport sont réutilisés tels quels. La limite est forte : l'API des rapports ne renvoie que 2 000 lignes. Cette méthode convient aux petites synthèses, pas à l'analyse détaillée.",
+          "Le connecteur Salesforce Reports importe le résultat d'un rapport Salesforce existant. L'avantage : les filtres et la logique du rapport sont réutilisés tels quels. La limite est forte : l'API des rapports ne renvoie que 2 000 lignes. Cette méthode convient donc aux petites synthèses.",
         ],
       },
       {
@@ -838,7 +838,7 @@ const RAW = [
         h2: "Gérer les erreurs comme un flux à part entière",
         paragraphs: [
           "Une intégration sans gestion d'erreurs explicite finit en tickets et en ressaisies. Chaque flux doit définir ce qui se passe quand l'ERP est indisponible, quand une donnée est rejetée par une règle de validation, quand un identifiant est inconnu : file d'attente et rejeu, alerte à un responsable, enregistrement en erreur visible dans Salesforce.",
-          "Les tests se font avec des données réelles anonymisées et des scénarios d'erreur, pas seulement sur le cas nominal.",
+          "Les tests se font avec des données réelles anonymisées, sur le cas nominal comme sur des scénarios d'erreur.",
         ],
       },
     ],
@@ -1182,7 +1182,7 @@ const RAW = [
       {
         h2: "Ce que ça implique pour les équipes",
         paragraphs: [
-          "Les compétences CPQ ne se transposent pas directement. Le catalogue, les procédures de tarification et le modèle d'actifs demandent une prise en main par les administrateurs et les intégrateurs. Les intégrations, rapports et automatisations qui lisaient les objets CPQ sont à reprendre. C'est un projet de transformation, pas une mise à jour.",
+          "Les compétences CPQ ne se transposent pas directement. Le catalogue, les procédures de tarification et le modèle d'actifs demandent une prise en main par les administrateurs et les intégrateurs. Les intégrations, rapports et automatisations qui lisaient les objets CPQ sont à reprendre. Il faut le traiter comme un nouveau projet.",
         ],
       },
       {
@@ -1231,19 +1231,19 @@ const RAW = [
     date: D,
     updated: D,
     intro:
-      "Migrer de CPQ vers Revenue Cloud n'est pas une mise à jour : c'est une réimplémentation du cycle de vente sur un nouveau modèle de données, avec une reprise de données. Voici le plan recommandé étape par étape, les deux modèles de données côte à côte, l'équivalence objet par objet et les pièges qui coûtent le plus cher.",
+      "Migrer de CPQ vers Revenue Cloud revient à réimplémenter le cycle de vente sur un nouveau modèle de données, avec une reprise de données. Voici le plan recommandé étape par étape, les deux modèles de données côte à côte, l'équivalence objet par objet et les pièges qui coûtent le plus cher.",
     sections: [
       {
         h2: "1. Inventorier ce que CPQ fait vraiment",
         paragraphs: [
           "On commence par extraire et documenter l'existant : produits et options, bundles, règles de prix et de produits, barèmes de remise, templates de devis, processus d'approbation, automatisations Apex et Flow qui touchent aux objets CPQ, intégrations ERP et outils tiers. On note pour chaque élément s'il est utilisé, par qui, et s'il répond encore à un besoin.",
-          "Cet inventaire révèle presque toujours des règles mortes et des contournements accumulés. C'est le moment de les abandonner, pas de les reproduire.",
+          "Cet inventaire révèle presque toujours des règles mortes et des contournements accumulés. C'est le moment de les abandonner.",
         ],
       },
       {
         h2: "2. Repenser le catalogue avant de le migrer",
         paragraphs: [
-          "Revenue Cloud repose sur un catalogue unique avec classifications et attributs. Le catalogue CPQ, souvent construit produit par produit, gagne à être restructuré : familles cohérentes, attributs au lieu de variantes multipliées, bundles qui reflètent l'offre commerciale. Ce travail se fait avec le marketing et les ventes, pas seulement avec l'équipe technique.",
+          "Revenue Cloud repose sur un catalogue unique avec classifications et attributs. Le catalogue CPQ, souvent construit produit par produit, gagne à être restructuré : familles cohérentes, attributs au lieu de variantes multipliées, bundles qui reflètent l'offre commerciale. Le marketing et les ventes y participent, avec l'équipe technique.",
         ],
       },
       {
@@ -1313,7 +1313,7 @@ const RAW = [
       "Revenue Cloud promet un cycle continu du devis à l'encaissement. La promesse tient si les décisions d'architecture sont prises au bon moment : où vit le catalogue, qui fait foi sur les prix, où se produit la facture, comment l'ERP est alimenté. Voici comment structurer une mise en place.",
     sections: [
       {
-        h2: "Le catalogue et les prix, une seule source de vérité",
+        h2: "Le catalogue et les prix au même endroit",
         paragraphs: [
           "Tout part du catalogue : produits, classifications, attributs, bundles, puis procédures de tarification. Dans une architecture avec un ERP, on décide d'abord qui maîtrise le référentiel produit. En général, les produits et les prix de base viennent de l'ERP et sont synchronisés vers Revenue Cloud ; les règles commerciales, comme les remises, bundles et conditions, vivent dans Revenue Cloud.",
         ],
