@@ -21,6 +21,9 @@
   --teal: #6fafac;
   --blue: #6f9caf;
   --amber: #f2a516;
+  /* écran d'entrée, moitié Création : papier et bordeaux de Ça compte */
+  --paper: #e8e3d6;
+  --burgundy: #7d2433;
 
   --shadow-lg: 0 40px 80px -36px rgba(0, 0, 0, 0.75);
   --shadow-md: 0 24px 48px -28px rgba(0, 0, 0, 0.65);
@@ -258,26 +261,18 @@ p { margin: 0; }
   position: relative; flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden;
   display: flex; align-items: flex-end; padding: 0; border: 0; margin: 0; cursor: pointer;
   text-align: left; color: var(--ink); background: var(--bg); font: inherit;
+  /* le texte se dimensionne sur la largeur de sa moitié : il grandit quand elle s'élargit */
+  container-type: inline-size;
 }
 .gate-side:focus-visible { outline: 2px solid var(--sage-bright); outline-offset: -6px; }
 .gate-si { border-right: 1px solid var(--line-strong); }
 
-/* Côté systèmes d'information : grille de technologies en filigrane */
+/* Côté systèmes d'information : halo sauge */
 .gate-si::before {
   content: ""; position: absolute; inset: 0;
   background:
     radial-gradient(70% 60% at 30% 35%, rgba(122, 165, 149, 0.22), transparent 70%),
     radial-gradient(50% 50% at 85% 90%, rgba(111, 156, 175, 0.16), transparent 70%);
-}
-.gate-tags {
-  position: absolute; inset: calc(var(--nav-h) + 24px) 24px auto 24px;
-  display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start;
-  opacity: 0.5; transition: opacity 0.6s var(--ease);
-}
-.gate-tags span {
-  font-family: var(--font-mono, ui-monospace), monospace; font-size: 0.8rem; color: var(--sage-bright);
-  padding: 6px 10px; border: 1px solid rgba(156, 202, 184, 0.22); border-radius: var(--radius-xs);
-  background: rgba(156, 202, 184, 0.05); white-space: nowrap;
 }
 
 /* Côté création : le patchwork en plein cadre */
@@ -286,19 +281,17 @@ p { margin: 0; }
 .gate-si .gate-shade { background: linear-gradient(to top, rgba(11, 20, 18, 0.9) 0%, rgba(11, 20, 18, 0) 60%); }
 
 .gate-side.is-active .gate-collage { filter: saturate(1) brightness(0.92); transform: scale(1); }
-.gate-side.is-active .gate-tags { opacity: 0.85; }
 .gate-side.is-dim .gate-collage { filter: saturate(0.4) brightness(0.45); }
-.gate-side.is-dim .gate-tags { opacity: 0.25; }
 
 .gate-content {
   position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: 16px;
-  width: min(34rem, calc(40vw - 2 * var(--gutter))); padding: 0 var(--gutter) 56px;
+  width: min(44rem, calc(100cqw - 2 * var(--gutter))); padding: 0 var(--gutter) 56px;
   box-sizing: content-box; transition: opacity 0.5s var(--ease);
 }
 .gate-side.is-dim .gate-content { opacity: 0.5; }
 .gate-kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 500; color: var(--sage-bright); }
-.gate-title { display: flex; flex-direction: column; font-size: clamp(2rem, 0.8rem + 3vw, 3.8rem); line-height: 1.02; color: var(--ink); }
-.gate-desc { max-width: 30rem; font-size: 1rem; line-height: 1.55; color: var(--body); }
+.gate-title { display: flex; flex-direction: column; font-size: clamp(2rem, 7.6cqw, 5.2rem); line-height: 1.02; color: var(--ink); }
+.gate-desc { max-width: 36rem; font-size: clamp(0.95rem, 2.2cqw, 1.15rem); line-height: 1.55; color: var(--body); }
 .gate-cta {
   display: inline-flex; align-items: center; gap: 10px; margin-top: 6px; min-height: 50px; padding: 0 22px;
   border-radius: var(--radius-xs); border: 1px solid var(--line-strong); color: var(--ink); font-weight: 500;
@@ -308,15 +301,52 @@ p { margin: 0; }
 .gate-cta svg { transition: transform 0.3s var(--ease); }
 .gate-side.is-active .gate-cta svg { transform: translateX(3px); }
 
+/* Côté création sur papier : la même paire de couleurs que la gauche, inversée.
+   Les captures gardent leurs couleurs, leurs fonds clairs se fondent dans le papier. */
+.gate-top { background: none; }
+.gate-si { border-right: 0; }
+/* Des deux côtés, les vignettes prennent le haut et le texte se pose dessous : aucun voile sur les images. */
+.gate-side { flex-direction: column; align-items: stretch; }
+.gate-creation { background: var(--paper); color: var(--bg); }
+.gate-creation:focus-visible { outline-color: var(--bg); }
+.gate-side .gate-collage { position: relative; inset: auto; flex: 1 1 auto; min-height: 0; padding: var(--nav-h) 18px 0; gap: 12px; transform: none; }
+.gate-side .gate-content { flex: none; padding-top: 32px; }
+.gate-side .gate-shade { display: none; }
+/* Schémas : mêmes tuiles que les captures, sur le vert nuit */
+.schema-tile { background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.tile-s0 { grid-column: 4 / 7; grid-row: 1; }
+.tile-s1 { grid-column: 4 / 7; grid-row: 2; }
+.tile-s2 { grid-column: 4 / 7; grid-row: 3; }
+.gate-side .gate-schemas,
+.gate-side.is-active .gate-schemas { filter: none; }
+.gate-side.is-dim .gate-schemas { filter: saturate(0.5) brightness(0.6); }
+.gate-creation .gate-collage,
+.gate-creation.is-active .gate-collage { filter: none; }
+.gate-creation.is-dim .gate-collage { filter: saturate(0.35) contrast(0.9); }
+.gate-creation .collage-tile { background: #d9d2c1; box-shadow: 0 0 0 1px rgba(11, 20, 18, 0.22); }
+.gate-creation .gate-kicker { color: var(--burgundy); }
+.gate-creation .gate-title { color: var(--bg); }
+.gate-creation .gate-desc { color: #4a4f4b; }
+.gate-creation .gate-cta { color: var(--bg); border-color: rgba(11, 20, 18, 0.3); }
+.gate-creation.is-active .gate-cta { background: var(--bg); color: var(--paper); border-color: var(--bg); }
+@media (min-width: 720px) {
+  .gate-top .lang-toggle { color: rgba(11, 20, 18, 0.55); border-color: rgba(11, 20, 18, 0.2); }
+  .gate-top .lang-toggle:hover { background: rgba(11, 20, 18, 0.06); }
+  .gate-top .lang-toggle .is-current { color: var(--bg); }
+  .gate-top .lang-sep { background: rgba(11, 20, 18, 0.25); }
+}
+
 /* Mobile : les deux univers l'un au-dessus de l'autre */
 @media (max-width: 719px) {
   .gate { flex-direction: column; }
-  .gate-si { border-right: 0; border-bottom: 1px solid var(--line-strong); }
+  .gate-si { border-right: 0; border-bottom: 0; }
+  .gate-side .gate-collage { padding: 12px 12px 0; gap: 8px; }
+  .gate-si .gate-collage { padding-top: var(--nav-h); }
+  .gate-side .gate-content { padding-top: 16px; }
   .gate-hint { display: none; }
   .gate-content { width: auto; gap: 10px; padding: 0 var(--gutter) 24px; }
   .gate-title { font-size: clamp(1.6rem, 1rem + 3vw, 2.2rem); }
   .gate-desc { font-size: 0.9rem; }
-  .gate-tags { display: none; }
   .gate-cta { min-height: 42px; padding: 0 16px; margin-top: 2px; }
 }
 @media (max-width: 719px) and (max-height: 760px) { .gate-desc { display: none; } }

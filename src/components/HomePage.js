@@ -169,6 +169,28 @@ function Collage({ t, className = "", interactive = false }) {
   );
 }
 
+// Patchwork du côté systèmes d'information : les schémas déjà présents sur le site,
+// le pipeline de données en grand, trois visuels des cartes de services à côté.
+const SCHEMA_KEYS = ["migration", "analytics", "cpq"];
+
+function SchemaCollage({ t, lang }) {
+  return (
+    <div className="collage gate-collage gate-schemas" aria-hidden="true">
+      <div className="collage-tile schema-tile tile-video">
+        <PipelineViz active lang={lang} L={t.pipe} />
+      </div>
+      {SCHEMA_KEYS.map((k, i) => {
+        const Viz = VIZ[k];
+        return (
+          <div key={k} className={`collage-tile schema-tile tile-s${i}`}>
+            <Viz L={t.viz} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // Sélecteur des deux activités : systèmes d'information ou création.
 const MODES = [
   { key: "si", Icon: Database },
@@ -253,13 +275,7 @@ function Gate({ t, lang, onToggleLang, onChoose }) {
           onClick={() => choose(key)}
           aria-label={`${t.modes[key].title} : ${t.modes[key].sub}`}
         >
-          {key === "creation" ? (
-            <Collage t={t} className="gate-collage" />
-          ) : (
-            <span className="gate-tags" aria-hidden="true">
-              {t.marquee.map((m) => <span key={m}>{m}</span>)}
-            </span>
-          )}
+          {key === "creation" ? <Collage t={t} className="gate-collage" /> : <SchemaCollage t={t} lang={lang} />}
           <span className="gate-shade" aria-hidden="true" />
           <span className="gate-content">
             <span className="gate-kicker"><Icon size={16} aria-hidden="true" />{t.modes[key].title}</span>
