@@ -133,22 +133,38 @@ const IG_URL = "https://www.instagram.com/ca_compte_/";
 // Vidéo Ça compte hébergée dans /public, lue en boucle sans le son.
 const INSTA_REEL = { src: "/instagram/reel.mp4", poster: "/instagram/reel-poster.jpg" };
 
-// Patchwork des projets : la vidéo Ça compte, les deux applis et les sites.
-const COLLAGE_KEYS = ["fredon", "anima", "spokedia", "economy", "mandats"];
+// Patchwork des projets : la vidéo Ça compte, les deux applis et Spokedia.
+const COLLAGE_KEYS = ["fredon", "anima", "spokedia"];
 
-function Collage({ t, className = "" }) {
+// `interactive` : chaque vignette est un lien (le site, ou le compte Instagram pour la vidéo)
+// et grandit au survol. Sans, le patchwork n'est qu'un décor (écran d'entrée).
+function Collage({ t, className = "", interactive = false }) {
   const reduced = useReducedMotion();
   const byKey = Object.fromEntries(t.products.items.map((p) => [p.key, p]));
+  const Tile = interactive ? "a" : "div";
+  const link = (href, label) => (interactive ? { href, target: "_blank", rel: "noopener noreferrer", "aria-label": label, draggable: false } : {});
+  const label = (text, Icon) =>
+    interactive && (
+      <span className="collage-label" aria-hidden="true">
+        {Icon && <Icon size={13} />}{text}<ArrowUpRight size={13} />
+      </span>
+    );
+
   return (
-    <div className={`collage ${className}`} aria-hidden="true">
-      <div className="collage-tile tile-video">
+    <div className={`collage${interactive ? " is-interactive" : ""} ${className}`} aria-hidden={interactive ? undefined : "true"}>
+      <Tile className="collage-tile tile-video" {...link(IG_URL, t.creation.ctaSecondary)}>
         <video src={INSTA_REEL.src} poster={INSTA_REEL.poster} autoPlay={!reduced} muted loop playsInline preload="auto" />
-      </div>
-      {COLLAGE_KEYS.filter((k) => byKey[k]).map((k) => (
-        <div key={k} className={`collage-tile tile-${k}`}>
-          <Image src={byKey[k].image} alt="" fill sizes="(min-width: 720px) 30vw, 50vw" draggable={false} />
-        </div>
-      ))}
+        {label("Ça compte", Instagram)}
+      </Tile>
+      {COLLAGE_KEYS.filter((k) => byKey[k]).map((k) => {
+        const p = byKey[k];
+        return (
+          <Tile key={k} className={`collage-tile tile-${k}`} {...link(p.url, `${p.name}, ${p.host}`)}>
+            <Image src={p.image} alt="" fill sizes="(min-width: 720px) 30vw, 50vw" draggable={false} />
+            {label(p.name)}
+          </Tile>
+        );
+      })}
     </div>
   );
 }
@@ -606,9 +622,9 @@ export default function HomePage() {
 
               {isCreation ? (
                 <motion.div className="hero-stage-wrap" {...fade(0.3, 24)}>
-                  <a href="#produits" className="collage-stage" aria-label={t.creation.ctaPrimary}>
-                    <Collage t={t} />
-                  </a>
+                  <div className="collage-stage">
+                    <Collage t={t} interactive />
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div className="hero-stage-wrap" ref={stageRef} {...fade(0.3, 24)}>

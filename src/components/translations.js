@@ -200,22 +200,6 @@ export const translations = {
           storeLabel: "App Store",
         },
         {
-          key: "economy",
-          name: "Global Economy Timelapse",
-          desc: "Le PIB mondial en treemap animée, année par année, d'après les données de la Banque mondiale.",
-          url: "https://www.economytimelapse.com/",
-          host: "economytimelapse.com",
-          image: "/Capture.png",
-        },
-        {
-          key: "mandats",
-          name: "Open Mandats",
-          desc: "Les participations financières déclarées par les 547 députés, à parcourir par groupe politique.",
-          url: "https://www.openmandats.com/",
-          host: "openmandats.com",
-          image: "/open-mandats.png",
-        },
-        {
           key: "spokedia",
           name: "Spokedia",
           desc: "L'index ouvert des standards vélo : cotes de cadre, pièces compatibles et où les acheter.",
@@ -298,7 +282,7 @@ export const translations = {
       ctaPrimary: "Voir les projets",
       ctaSecondary: "Ça compte sur Instagram",
       facts: [
-        { value: 5, suffix: "", label: "produits en ligne" },
+        { value: 3, suffix: "", label: "produits en ligne" },
         { value: 2, suffix: "", label: "applis sur l'App Store" },
       ],
       igLink: "Voir sur Instagram",
@@ -307,7 +291,7 @@ export const translations = {
       sectionLead: "Je fais tout moi-même : le design, le code et la mise en ligne.",
       items: [
         { key: "apps", title: "Applications mobiles", desc: "Des applis iOS et Android, de la maquette à la publication. Fredon et Anima Apnea sont sur l'App Store." },
-        { key: "web", title: "Sites et produits web", desc: "Des sites et des outils web, comme Spokedia, Open Mandats et Global Economy Timelapse." },
+        { key: "web", title: "Sites et produits web", desc: "Des sites et des outils web, comme Spokedia." },
         { key: "video", title: "Vidéos", desc: "Ça compte : des vidéos courtes sur l'actualité, expliquée avec des chiffres." },
       ],
       contactTitle: "Écrivez-moi.",
@@ -531,22 +515,6 @@ export const translations = {
           storeLabel: "App Store",
         },
         {
-          key: "economy",
-          name: "Global Economy Timelapse",
-          desc: "World GDP as an animated treemap, year by year, built on World Bank data.",
-          url: "https://www.economytimelapse.com/",
-          host: "economytimelapse.com",
-          image: "/Capture.png",
-        },
-        {
-          key: "mandats",
-          name: "Open Mandats",
-          desc: "Financial holdings declared by the 547 French MPs, browsable by political group.",
-          url: "https://www.openmandats.com/",
-          host: "openmandats.com",
-          image: "/open-mandats.png",
-        },
-        {
           key: "spokedia",
           name: "Spokedia",
           desc: "The open index of bike standards: frame specs, compatible parts and where to buy them.",
@@ -629,7 +597,7 @@ export const translations = {
       ctaPrimary: "See the projects",
       ctaSecondary: "Ça compte on Instagram",
       facts: [
-        { value: 5, suffix: "", label: "products live" },
+        { value: 3, suffix: "", label: "products live" },
         { value: 2, suffix: "", label: "apps on the App Store" },
       ],
       igLink: "See on Instagram",
@@ -638,7 +606,7 @@ export const translations = {
       sectionLead: "I do all of it myself: design, code and launch.",
       items: [
         { key: "apps", title: "Mobile apps", desc: "iOS and Android apps, from mockup to release. Fredon and Anima Apnea are on the App Store." },
-        { key: "web", title: "Websites and web products", desc: "Websites and web tools, like Spokedia, Open Mandats and Global Economy Timelapse." },
+        { key: "web", title: "Websites and web products", desc: "Websites and web tools, like Spokedia." },
         { key: "video", title: "Videos", desc: "Ça compte: short videos about the news, explained with numbers." },
       ],
       contactTitle: "Write to me.",
