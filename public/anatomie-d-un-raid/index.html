@@ -160,6 +160,11 @@ h2{margin:0;font-family:var(--display);font-stretch:116%;font-weight:650;color:v
 .duo h3{margin:0;font:400 13px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 
 /* palmarès */
+#podium{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 18px}
+#podium button{all:unset;cursor:pointer;font:400 15px var(--display);color:var(--ink-2);border-bottom:1px solid transparent;padding-bottom:1px}
+#podium button:hover{color:var(--ink)}
+#podium button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--sage-bright)}
+#podium button:focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px}
 #quotes{list-style:none;margin:0;padding:0;border-bottom:1px solid var(--line)}
 #quotes li{display:grid;grid-template-columns:56px 1fr 170px;gap:20px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
 #quotes .rank{font:400 14px var(--mono);color:var(--muted)}
@@ -290,8 +295,9 @@ footer.end{padding-top:96px;padding-bottom:56px}
   <section id="foule">
     <header class="piece">
       <h2>Le palmarès</h2>
-      <p>Les commentaires les plus applaudis par les autres lecteurs. En tête, une menace. Facebook ne publie pas ces chiffres, le classement ne porte que sur Instagram.</p>
+      <p id="podiumNote"></p>
     </header>
+    <div id="podium" role="group" aria-label="Classement"><button data-k="likes" aria-pressed="true">Les plus aimés</button><button data-k="sev" aria-pressed="false">Les plus violents</button><button data-k="fun" aria-pressed="false">Les plus drôles</button></div>
     <ol id="quotes"></ol>
   </section>
 
@@ -732,13 +738,32 @@ drawCharts();
 let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (typeof sizeCloud === 'function') sizeCloud(); drawCharts(); }, 150); });
 
 /* ---------- palmarès ---------- */
-ROWS.slice().sort((a, b) => b.likes - a.likes).slice(0, 5).forEach((r, i) => {
-  document.getElementById('quotes').append(el('li', {}, [
-    el('span', { className: 'rank', textContent: String(i + 1).padStart(2, '0') }),
-    el('p', { textContent: '« ' + r.text + ' »' }),
-    el('div', { className: 'likes' }, [el('b', { textContent: r.likes }), el('span', {}, [el('span', { className: 'key', style: `background:var(${CAT[r.cat].v})` }), 'j’aime · ' + CAT[r.cat].name.toLowerCase()])]),
-  ]));
-});
+const FUNNY = ['Prends ta télécommande', 'pain sucé', 'tete de brocoli', 'CRUSTACÉ', 'Pauvre smicard', 'récurer mes chiottes', 'Trou du culte', 'tete de quiche'];
+const PODIUM = {
+  likes: { note: 'Les commentaires les plus applaudis par les autres lecteurs. En tête, une menace. Facebook ne publie pas ces chiffres, le classement ne porte que sur Instagram.',
+    rows: () => ROWS.slice().sort((a, b) => b.likes - a.likes).slice(0, 5) },
+  sev: { note: 'Les plus graves selon le score de gravité, ceux qui parlent de m’abattre, de m’éradiquer ou de mettre ma tête à prix. À égalité, le plus aimé passe devant.',
+    rows: () => ROWS.slice().sort((a, b) => b.sev - a.sev || b.likes - a.likes).slice(0, 5) },
+  fun: { note: 'Ma sélection, en toute subjectivité. Quitte à se faire insulter, autant garder les meilleures.',
+    rows: () => FUNNY.map(f => ROWS.find(r => r.text.includes(f))).filter(Boolean) },
+};
+function podium(k) {
+  document.querySelectorAll('#podium button').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k));
+  document.getElementById('podiumNote').textContent = PODIUM[k].note;
+  const ol = document.getElementById('quotes'); ol.replaceChildren();
+  PODIUM[k].rows().forEach((r, i) => {
+    const cat = CAT[r.cat].name.toLowerCase();
+    const big = k === 'sev' ? String(r.sev).replace('.', ',') : r.post === 'F' ? '' : r.likes;
+    const small = k === 'sev' ? 'gravité sur 10 · ' + cat : r.post === 'F' ? 'sur Facebook · ' + cat : 'j’aime · ' + cat;
+    ol.append(el('li', {}, [
+      el('span', { className: 'rank', textContent: String(i + 1).padStart(2, '0') }),
+      el('p', { textContent: '« ' + r.text + ' »' }),
+      el('div', { className: 'likes' }, [el('b', { textContent: big }), el('span', {}, [el('span', { className: 'key', style: `background:var(${CAT[r.cat].v})` }), small])]),
+    ]));
+  });
+}
+document.getElementById('podium').addEventListener('click', e => { const b = e.target.closest('button'); if (b) podium(b.dataset.k); });
+podium('likes');
 
 /* ---------- tableau ---------- */
 const fcat = document.getElementById('fcat'), fth = document.getElementById('ftheme'), q = document.getElementById('q');
