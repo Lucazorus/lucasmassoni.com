@@ -107,7 +107,7 @@ h2{margin:0;font-family:var(--display);font-stretch:116%;font-weight:650;color:v
 .reset-view:hover{border-color:var(--sage-bright);color:var(--sage-bright)}
 .reset-view:focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px}
 .only-narrow{display:none}
-@media (max-width:760px){.piece p.only-narrow{display:block}}
+@media (max-width:760px){.piece p.only-narrow{display:block} span.only-narrow{display:inline}}
 /* vue à plat, sur téléphone */
 #flat{display:none;padding-top:16px;padding-bottom:6px}
 .flat-bar{display:flex;flex-wrap:wrap;gap:10px 24px;padding-bottom:10px}
@@ -259,7 +259,7 @@ footer.end{padding-top:96px;padding-bottom:56px}
   <section id="espace">
     <header class="piece">
       <h2>L'espace de la haine</h2>
-      <p>Chaque point est un commentaire. Vous choisissez ce que racontent les axes, les points se rangent tout seuls. Plus un point est gros, plus il a été « aimé ».</p>
+      <p>Chaque point est un commentaire. Vous choisissez ce que racontent les axes, les points se rangent tout seuls. Plus un point est gros, plus il a été « aimé ». <span class="only-wide">Survolez un point pour lire le commentaire.</span><span class="only-narrow">Touchez un point pour lire le commentaire.</span></p>
     </header>
     <div class="bleed">
       <div class="wrap console">
