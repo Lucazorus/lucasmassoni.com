@@ -242,7 +242,7 @@ footer.end{padding-top:96px;padding-bottom:56px}
 <body>
 <header class="top"><div class="wrap top-in">
   <a class="brand" href="/"><img src="/logo.png" alt="">Lucas Massoni</a>
-  <nav><a href="#espace">L'espace</a><a href="#rythme">Le rythme</a><a href="#themes">Les mots</a><a href="#foule">Le palmarès</a><a href="#tout">Le registre</a></nav>
+  <nav><a href="#foule">Le palmarès</a><a href="#espace">L'espace</a><a href="#rythme">Le rythme</a><a href="#themes">Les mots</a><a href="#tout">Le registre</a></nav>
 </div></header>
 
 <div class="hero">
@@ -256,6 +256,15 @@ footer.end{padding-top:96px;padding-bottom:56px}
 
 <div class="wrap">
   <p class="decompte" id="kpis"></p>
+
+  <section id="foule">
+    <header class="piece">
+      <h2>Le palmarès</h2>
+      <p id="podiumNote"></p>
+    </header>
+    <div id="podium" role="group" aria-label="Classement"><button data-k="likes" aria-pressed="true">Les plus aimés</button><button data-k="sev" aria-pressed="false">Les plus violents</button><button data-k="fun" aria-pressed="false">Les plus drôles</button></div>
+    <ol id="quotes"></ol>
+  </section>
 
   <section id="espace">
     <header class="piece">
@@ -304,15 +313,6 @@ footer.end{padding-top:96px;padding-bottom:56px}
       <div><h3>Par thème principal <span class="h3-hint">cliquez pour filtrer les mots</span></h3><div class="chart" id="themeBars"></div></div>
       <div><h3>Les mots qui reviennent <span class="h3-hint" id="cloudFilter"></span></h3><div class="cloud" id="cloud" aria-label="Nuage des mots les plus employés"></div><p class="note only-wide">Taille selon le nombre de commentaires qui emploient le mot. <span style="color:var(--c-m)">En orange</span>, les mots surtout employés dans des menaces, <span style="color:var(--c-x)">en vert</span>, dans des appels à m’exposer. Cliquez sur un mot pour lire les commentaires.</p></div>
     </div>
-  </section>
-
-  <section id="foule">
-    <header class="piece">
-      <h2>Le palmarès</h2>
-      <p id="podiumNote"></p>
-    </header>
-    <div id="podium" role="group" aria-label="Classement"><button data-k="likes" aria-pressed="true">Les plus aimés</button><button data-k="sev" aria-pressed="false">Les plus violents</button><button data-k="fun" aria-pressed="false">Les plus drôles</button></div>
-    <ol id="quotes"></ol>
   </section>
 
   <section id="tout">
