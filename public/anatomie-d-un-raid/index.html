@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anatomie d'un raid</title>
-<meta name="description" content="534 commentaires hostiles reçus en 36 heures, collectés, classés et visualisés. Une étude de cas de Lucas Massoni.">
+<meta name="description" content="583 commentaires hostiles reçus en 36 heures, collectés, classés et visualisés. Une étude de cas de Lucas Massoni.">
 <link rel="canonical" href="https://www.lucasmassoni.com/anatomie-d-un-raid">
 <link rel="icon" href="/favicon.ico">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Anatomie d'un raid">
-<meta property="og:description" content="On m'a insulté 534 fois. J'en ai fait un jeu de données.">
+<meta property="og:description" content="On m'a insulté 583 fois. J'en ai fait un jeu de données.">
 <meta property="og:url" content="https://www.lucasmassoni.com/anatomie-d-un-raid">
 <meta property="og:image" content="https://www.lucasmassoni.com/anatomie-d-un-raid-preview.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -207,7 +207,7 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
   <div id="wall" aria-hidden="true"></div>
   <div class="wrap hero-in">
     <p class="opened">Dossier ouvert le 14.11.2026 à 00 h 51</p>
-    <h1>On m'a insulté 534&nbsp;fois.<span>J'en ai fait un jeu de données.</span></h1>
+    <h1>On m'a insulté 583&nbsp;fois.<span>J'en ai fait un jeu de données.</span></h1>
     <p class="lede">Deux comptes ont publié ma photo et mon tarif journalier, sur Instagram puis sur Facebook, parce que j'avais lancé la pétition « Supprimer CNews de l'audiovisuel français », signée par 1&nbsp;060&nbsp;000 personnes. En 36 heures, des centaines de personnes sont venues me dire ce qu'elles pensaient de moi. Plutôt que de les lire une par une, j'ai fait ce que je sais faire de mieux, de l'analyse de données.</p>
   </div>
 </div>
@@ -269,7 +269,7 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
   <section id="tout">
     <header class="piece">
       <h2>Le registre</h2>
-      <p>Les 534 commentaires, sans les pseudos. Cherchez un mot, filtrez, triez par colonne.</p>
+      <p>Les 583 commentaires, sans les pseudos. Cherchez un mot, filtrez, triez par colonne.</p>
     </header>
     <div class="tbl-tools">
       <input id="q" type="search" placeholder="Chercher un mot" aria-label="Chercher dans les commentaires">
@@ -343,7 +343,7 @@ function commentTip(t, r) {
 const nCat = k => ROWS.filter(r => r.cat === k).length;
 {
   const b = (n, c) => `<b${c ? ` class="${c}"` : ''}>${fmt(n)}</b>`;
-  document.getElementById('kpis').innerHTML = `${b(D.meta.accounts)} comptes. ${b(ROWS.length)} commentaires hostiles retenus sur 2&nbsp;276 récupérés. Parmi eux, ${b(nCat('M'), 'm')} menaces et ${b(nCat('X'), 'x')} appels à me retrouver, à me dénoncer ou à me boycotter. Le reste, ${b(nCat('J'), 'j')} injures, plus ou moins inventives.`;
+  document.getElementById('kpis').innerHTML = `${b(D.meta.accounts)} comptes. ${b(ROWS.length)} commentaires hostiles retenus sur 2&nbsp;392 récupérés. Parmi eux, ${b(nCat('M'), 'm')} menaces et ${b(nCat('X'), 'x')} appels à me retrouver, à me dénoncer ou à me boycotter. Le reste, ${b(nCat('J'), 'j')} injures, plus ou moins inventives.`;
   const w = document.getElementById('wall');
   ROWS.slice().sort((a, c) => a.h - c.h).forEach(r => w.append(el(r.cat === 'M' ? 'b' : 'span', { textContent: r.text }), el('i', { textContent: '/' })));
 }
