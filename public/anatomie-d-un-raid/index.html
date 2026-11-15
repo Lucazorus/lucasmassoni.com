@@ -106,6 +106,8 @@ h2{margin:0;font-family:var(--display);font-stretch:116%;font-weight:650;color:v
 .reset-view{all:unset;position:absolute;top:16px;right:24px;z-index:2;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border:1px solid var(--line-strong);border-radius:6px;background:rgba(11,20,18,.85);font:400 13px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
 .reset-view:hover{border-color:var(--sage-bright);color:var(--sage-bright)}
 .reset-view:focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px}
+.only-narrow{display:none}
+@media (max-width:760px){.piece p.only-narrow{display:block}}
 /* vue à plat, sur téléphone */
 #flat{display:none;padding-top:16px;padding-bottom:6px}
 .flat-bar{display:flex;flex-wrap:wrap;gap:10px 24px;padding-bottom:10px}
@@ -118,6 +120,7 @@ h2{margin:0;font-family:var(--display);font-stretch:116%;font-weight:650;color:v
 #flatChart .tick{font:400 11px var(--mono);fill:var(--muted)}
 #flatChart .axt{font:400 11px var(--mono);fill:var(--sage-bright);text-transform:uppercase;letter-spacing:.12em}
 @media (max-width:760px){
+  .only-wide{display:none}
   .console,#space,#rotBtn{display:none}
   #flat{display:block}
   .duo>div:first-child{display:none}
@@ -275,11 +278,12 @@ footer.end{padding-top:96px;padding-bottom:56px}
   <section id="themes">
     <header class="piece">
       <h2>Ce qu'on me reproche</h2>
-      <p>Chaque commentaire reçoit un thème principal. Quand plusieurs s'appliquent, le plus personnel l'emporte. « Sale gauchiasse de merde » compte comme politique, pas comme ordure.</p>
+      <p class="only-wide">Chaque commentaire reçoit un thème principal. Quand plusieurs s'appliquent, le plus personnel l'emporte. « Sale gauchiasse de merde » compte comme politique, pas comme ordure.</p>
+      <p class="only-narrow">Plus un mot est gros, plus il revient dans les commentaires. <span style="color:var(--c-m)">En orange</span>, ceux qu'on retrouve surtout dans les menaces, <span style="color:var(--c-x)">en vert</span>, dans les appels à m'exposer. Touchez un mot pour lire les commentaires qui l'emploient.</p>
     </header>
     <div class="duo">
       <div><h3>Par thème principal <span class="h3-hint">cliquez pour filtrer les mots</span></h3><div class="chart" id="themeBars"></div></div>
-      <div><h3>Les mots qui reviennent <span class="h3-hint" id="cloudFilter"></span></h3><div class="cloud" id="cloud" aria-label="Nuage des mots les plus employés"></div><p class="note">Taille selon le nombre de commentaires qui emploient le mot. <span style="color:var(--c-m)">En orange</span>, les mots surtout employés dans des menaces, <span style="color:var(--c-x)">en vert</span>, dans des appels à m’exposer. Cliquez sur un mot pour lire les commentaires.</p></div>
+      <div><h3>Les mots qui reviennent <span class="h3-hint" id="cloudFilter"></span></h3><div class="cloud" id="cloud" aria-label="Nuage des mots les plus employés"></div><p class="note only-wide">Taille selon le nombre de commentaires qui emploient le mot. <span style="color:var(--c-m)">En orange</span>, les mots surtout employés dans des menaces, <span style="color:var(--c-x)">en vert</span>, dans des appels à m’exposer. Cliquez sur un mot pour lire les commentaires.</p></div>
     </div>
   </section>
 
