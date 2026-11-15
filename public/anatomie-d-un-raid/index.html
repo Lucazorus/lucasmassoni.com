@@ -97,7 +97,7 @@ h2{margin:0;font-family:var(--display);font-stretch:116%;font-weight:650;color:v
 .seg button[aria-pressed="true"]{color:var(--ink);box-shadow:inset 0 -1px 0 var(--sage-bright)}
 .seg::before{content:"Source";font:400 13px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--line-strong)}
 .spacer{flex:1}
-:is(.seg button,.chip,.btn,#presetSeg button,.axpick select):focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px}
+:is(.seg button,.chip,.btn,#presetSeg button,#flatPresets button,.axpick select):focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px}
 .lbl{font:400 12px/1.2 var(--mono);color:var(--muted);white-space:nowrap;pointer-events:none;text-align:center}
 .lbl.theme{font:500 12.5px/1.2 var(--display);color:var(--ink);max-width:92px;white-space:normal}
 .lbl.axis{color:var(--sage-bright);text-transform:uppercase;letter-spacing:.12em;font-size:11px}
@@ -106,6 +106,23 @@ h2{margin:0;font-family:var(--display);font-stretch:116%;font-weight:650;color:v
 .reset-view{all:unset;position:absolute;top:16px;right:24px;z-index:2;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border:1px solid var(--line-strong);border-radius:6px;background:rgba(11,20,18,.85);font:400 13px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
 .reset-view:hover{border-color:var(--sage-bright);color:var(--sage-bright)}
 .reset-view:focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px}
+/* vue à plat, sur téléphone */
+#flat{display:none;padding-top:16px;padding-bottom:6px}
+.flat-bar{display:flex;flex-wrap:wrap;gap:10px 24px;padding-bottom:10px}
+#flatPresets{display:flex;flex-wrap:wrap;gap:6px 16px;padding-bottom:6px;font:400 13px var(--mono);color:var(--muted)}
+#flatPresets button{all:unset;cursor:pointer;font:400 15px var(--display);color:var(--ink-2);border-bottom:1px solid transparent;padding-bottom:1px}
+#flatPresets button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--sage-bright)}
+#flatChart svg{display:block;width:100%;height:auto;overflow:visible}
+#flatChart .band{font:500 13px var(--display);fill:var(--ink)}
+#flatChart .band tspan{font:400 11px var(--mono);fill:var(--muted)}
+#flatChart .tick{font:400 11px var(--mono);fill:var(--muted)}
+#flatChart .axt{font:400 11px var(--mono);fill:var(--sage-bright);text-transform:uppercase;letter-spacing:.12em}
+@media (max-width:760px){
+  .console,#space,#rotBtn{display:none}
+  #flat{display:block}
+  .duo>div:first-child{display:none}
+  .duo>div+div{padding:22px 0 0;border-left:0}
+}
 .hint{position:absolute;right:24px;bottom:16px;font:400 12px/1.5 var(--mono);color:var(--muted);pointer-events:none;text-align:right}
 
 /* infobulle */
@@ -180,8 +197,7 @@ td.n{font:400 13px var(--mono);color:var(--ink-2);white-space:nowrap}
 td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:260px}
 
 /* fin */
-.end{padding-top:112px;padding-bottom:56px}
-.gift{margin:0 0 40px;font-family:var(--display);font-stretch:118%;font-weight:650;color:var(--ink);letter-spacing:-.045em;line-height:.88;font-size:clamp(3.2rem,1rem + 7.4vw,8.6rem)}
+.end{padding-top:96px;padding-bottom:56px}
 .price{margin:28px 0 36px;max-width:36rem;font-size:clamp(1.15rem,1rem + .6vw,1.5rem);line-height:1.4;color:var(--ink-2)}
 .price b{color:var(--ink);font-weight:600}
 .cta{display:inline-flex;align-items:center;min-height:52px;padding:0 26px;background:#fff;color:var(--bg);text-decoration:none;border-radius:6px;font-weight:500;transition:background-color .2s}
@@ -237,7 +253,7 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
   <section id="espace">
     <header class="piece">
       <h2>L'espace de la haine</h2>
-      <p>Chaque point est un commentaire. Vous choisissez ce que racontent les trois axes, les points se rangent tout seuls. Plus un point est gros, plus il a été « aimé ».</p>
+      <p>Chaque point est un commentaire. Vous choisissez ce que racontent les axes, les points se rangent tout seuls. Plus un point est gros, plus il a été « aimé ».</p>
     </header>
     <div class="bleed">
       <div class="wrap console">
@@ -245,6 +261,11 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
         <div class="presets">ou essayer <span id="presetSeg"></span></div>
       </div>
       <div id="space" aria-label="Nuage de points en trois dimensions des commentaires. Le registre complet se trouve plus bas dans la page."></div>
+      <div class="wrap" id="flat">
+        <div class="flat-bar" id="flatBar"></div>
+        <div id="flatPresets"></div>
+        <div id="flatChart" aria-label="Nuage de points des commentaires. Le registre complet se trouve plus bas dans la page."></div>
+      </div>
       <div class="wrap under">
         <span id="catChips"></span>
         <span class="spacer"></span>
@@ -307,13 +328,12 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
       <span class="count" id="count"></span>
     </div>
     <div class="tbl-wrap"><table id="tbl"><thead><tr>
-      <th data-k="sev" aria-sort="descending">Gravité</th><th data-k="cat">Catégorie</th><th data-k="theme">Thème</th><th data-k="post">Source</th><th data-k="h">Date</th><th data-k="likes">J'aime</th><th data-k="text">Commentaire</th>
+      <th data-k="text">Commentaire</th><th data-k="sev" aria-sort="descending">Gravité</th><th data-k="cat">Catégorie</th><th data-k="theme">Thème</th><th data-k="post">Source</th><th data-k="h">Date</th><th data-k="likes">J'aime</th>
     </tr></thead><tbody></tbody></table></div>
   </section>
 </div>
 
 <footer class="wrap end">
-  <p class="gift">Celui-là, c'est cadeau.</p>
   <p class="contact-lead">Me confier un projet</p>
   <div class="contact-actions">
     <a class="cta" href="https://www.linkedin.com/in/lucas-massoni/" target="_blank" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</a>
@@ -594,6 +614,68 @@ box.append(el('div', { className: 'hint', innerHTML: 'glisser pour tourner<br>Ct
 const NS = 'http://www.w3.org/2000/svg';
 const S = (tag, a = {}) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; };
 const roundTop = (x, y, w, h, r) => { r = Math.min(r, w / 2, h); return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`; };
+/* ---------- vue à plat : sur téléphone, la 3D devient un nuage de points en 2D ---------- */
+const mqFlat = matchMedia('(max-width: 760px)');
+const flat = { r: 'theme', x: 'sev' };
+const FLAT_PRESETS = [['Gravité', { r: 'theme', x: 'sev' }], ['Dans le temps', { r: 'theme', x: 'h' }], ['Ce qui plaît', { r: 'theme', x: 'likes' }], ['Les cancres', { r: 'theme', x: 'nerr' }], ['Par publication', { r: 'post', x: 'sev' }]];
+let flatPts = [], flatSel = -1;
+function drawFlat() {
+  if (!mqFlat.matches) return;
+  const host = document.getElementById('flatChart'); host.replaceChildren();
+  const R = DIMS[flat.r], X = DIMS[flat.x];
+  const W = Math.max(280, host.clientWidth), m = { l: 4, r: 12, t: 22, b: 44 }, iw = W - m.l - m.r;
+  const x = v => m.l + (v - X.dom[0]) / (X.dom[1] - X.dom[0]) * iw;
+  const bands = R.cats.map(c => { const n = ROWS.filter(r => R.get(r) === c[0]).length; return { k: c[0], name: c[1], n, h: 26 + Math.min(64, Math.sqrt(n) * 4.2) }; }).filter(b => b.n);
+  let y = m.t; bands.forEach(b => { b.y = y + 20; y += 20 + b.h + 10; });
+  const H = y + m.b, svg = S('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Commentaires par ${R.name.toLowerCase()}, selon ${X.name.toLowerCase()}` });
+  const step = Math.ceil(X.ticks.length * 64 / iw);
+  X.ticks.forEach(([v, t], ti) => {
+    svg.append(S('line', { x1: x(v), x2: x(v), y1: m.t - 4, y2: H - m.b + 4, stroke: css('--grid'), 'stroke-width': 1 }));
+    if (ti % step === 0) [H - m.b + 20, 12].forEach(ty => { const tx = S('text', { x: x(v), y: ty, class: 'tick', 'text-anchor': v === X.dom[0] ? 'start' : v === X.dom[1] ? 'end' : 'middle' }); tx.textContent = t; svg.append(tx); });
+  });
+  const at = S('text', { x: W - m.r, y: H - 6, class: 'axt', 'text-anchor': 'end' }); at.textContent = X.name + ' →'; svg.append(at);
+  const BI = Object.fromEntries(bands.map(b => [b.k, b]));
+  bands.forEach(b => { const t = S('text', { x: m.l, y: b.y - 6, class: 'band' }); t.textContent = b.name + ' '; const sp = S('tspan', {}); sp.textContent = b.n; t.append(sp); svg.append(t); });
+  flatPts = [];
+  ROWS.forEach((r, i) => {
+    if (!shown(i)) return;
+    const b = BI[R.get(r)]; if (!b) return;
+    const cx = Math.min(W - m.r, Math.max(m.l, x(X.get(r)) + (rnd(i, 1) - .5) * 5)), cy = b.y + 4 + rnd(i, 2) * (b.h - 8);
+    const rr = Math.min(7, 2.2 + 1.1 * Math.log2(1 + r.likes));
+    svg.append(S('circle', { cx, cy, r: i === flatSel ? rr + 2.5 : rr, fill: css(CAT[r.cat].v), 'fill-opacity': .85, stroke: i === flatSel ? css('--ink') : css('--plot'), 'stroke-width': i === flatSel ? 2 : 1 }));
+    flatPts.push([cx, cy, i]);
+  });
+  svg.addEventListener('click', ev => {
+    const bx = svg.getBoundingClientRect(), k = bx.width / W, mx = (ev.clientX - bx.left) / k, my = (ev.clientY - bx.top) / k;
+    let best = -1, bd = 22 * 22;
+    flatPts.forEach(([cx, cy, i]) => { const d = (cx - mx) ** 2 + (cy - my) ** 2; if (d < bd) { bd = d; best = i; } });
+    flatSel = best; drawFlat();
+    if (best >= 0) showTip(16, ev.clientY, t => commentTip(t, ROWS[best])); else hideTip();
+  });
+  host.append(svg);
+}
+{
+  const bar = document.getElementById('flatBar');
+  [['r', 'lignes', k => DIMS[k].type === 'cat'], ['x', 'position', k => DIMS[k].type === 'num']].forEach(([a, n, ok]) => {
+    const sel = el('select', { id: 'flat-' + a }); sel.setAttribute('aria-label', n);
+    Object.entries(DIMS).filter(([k]) => ok(k)).forEach(([k, d]) => sel.append(el('option', { value: k, textContent: d.name })));
+    sel.value = flat[a]; sel.onchange = () => { flat[a] = sel.value; syncFlat(); };
+    bar.append(el('label', { className: 'axpick' }, [el('span', { textContent: n + ' =' }), sel]));
+  });
+  const fp = document.getElementById('flatPresets');
+  FLAT_PRESETS.forEach(([n, v]) => { const b = el('button', { textContent: n }); b.onclick = () => { Object.assign(flat, v); syncFlat(); }; fp.append(b); });
+}
+function syncFlat() {
+  document.getElementById('flat-r').value = flat.r; document.getElementById('flat-x').value = flat.x;
+  document.querySelectorAll('#flatPresets button').forEach((b, i) => b.setAttribute('aria-pressed', FLAT_PRESETS[i][1].r === flat.r && FLAT_PRESETS[i][1].x === flat.x));
+  flatSel = -1; hideTip(); drawFlat();
+}
+mqFlat.addEventListener('change', syncFlat);
+addEventListener('scroll', () => { if (flatSel >= 0 && mqFlat.matches) { flatSel = -1; hideTip(); drawFlat(); } }, { passive: true });
+new ResizeObserver(() => drawFlat()).observe(document.getElementById('flat'));
+chips.addEventListener('click', () => drawFlat());
+document.getElementById('postSeg').addEventListener('click', () => setTimeout(drawFlat));
+syncFlat();
 const roundRight = (x, y, w, h, r) => { r = Math.min(r, h / 2, w); return `M${x},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h - r}Q${x + w},${y + h} ${x + w - r},${y + h}H${x}Z`; };
 
 function timeline() {
@@ -727,13 +809,13 @@ function table() {
     .sort((a, b) => { const A = sortK === 'cat' ? CAT[a.cat].name : sortK === 'theme' ? TNAME[a.theme] : a[sortK], B = sortK === 'cat' ? CAT[b.cat].name : sortK === 'theme' ? TNAME[b.theme] : b[sortK]; return (A > B ? 1 : A < B ? -1 : 0) * sortDir || b.likes - a.likes; });
   const tb = document.querySelector('#tbl tbody'); tb.replaceChildren();
   rs.forEach(r => tb.append(el('tr', {}, [
+    el('td', { className: 't' }, marked(r, false)),
     el('td', { className: 'n', textContent: r.sev.toFixed(1).replace('.', ',') }),
     el('td', { className: 'n' }, [el('span', { style: 'display:inline-flex;gap:6px;align-items:center' }, [el('span', { className: 'key', style: `background:var(${CAT[r.cat].v})` }), CAT[r.cat].name])]),
     el('td', { className: 'n', textContent: TNAME[r.theme] }),
     el('td', { className: 'n', textContent: POST[r.post] }),
     el('td', { className: 'n', textContent: r.date.replace(' ', ' · ') }),
     el('td', { className: 'n', textContent: r.likes }),
-    el('td', { className: 't' }, marked(r, false)),
   ])));
   document.getElementById('count').textContent = `${fmt(rs.length)} sur ${fmt(ROWS.length)}`;
 }
