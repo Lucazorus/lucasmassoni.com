@@ -394,7 +394,6 @@ ROWS.forEach(r => {
   r.words = r.text.split(/\s+/).filter(Boolean).length;
   r.caps = letters.length >= 3 ? Math.round(100 * letters.replace(/[^A-ZÀ-Þ]/g, '').length / letters.length) : 0;
   r.ntags = r.tags.length;
-  r.nerr = (r.err || []).length;
   r.addr = /\b(tu|t'?es|toi|ta|ton|tes|te|t'?as)\b/.test(t) ? 'tu'
     : /\b(faut|faudrait|allez|partagez|signalez|venez|les gars|on (va|doit|peut|veut)|qui (a|connait|sait))\b/.test(t) ? 'eux' : 'il';
 });
@@ -410,7 +409,6 @@ const DIMS = {
   likes: { name: 'J’aime', type: 'num', get: r => log10(1 + r.likes), dom: [0, log10(151)], ticks: [0, 1, 10, 100].map(v => [log10(1 + v), String(v)]) },
   words: { name: 'Longueur (mots)', type: 'num', get: r => log10(r.words), dom: [0, log10(120)], ticks: [1, 3, 10, 30, 100].map(v => [log10(v), String(v)]) },
   caps: { name: 'Majuscules', type: 'num', get: r => r.caps, dom: [0, 100], ticks: [0, 25, 50, 75, 100].map(v => [v, v + ' %']) },
-  nerr: { name: 'Fautes', type: 'num', get: r => r.nerr, dom: [0, 8], ticks: [0, 2, 4, 6, 8].map(v => [v, String(v)]) },
   ntags: { name: 'Nombre de thèmes', type: 'num', get: r => r.ntags, dom: [0, 4], ticks: [0, 1, 2, 3, 4].map(v => [v, String(v)]) },
 };
 const PRESETS = [
@@ -418,7 +416,6 @@ const PRESETS = [
   ['Ce qui plaît', { x: 'theme', y: 'likes', z: 'sev' }],
   ['Qui crie', { x: 'addr', y: 'caps', z: 'words' }],
   ['Par publication', { x: 'post', y: 'sev', z: 'h' }],
-  ['Les cancres', { x: 'theme', y: 'nerr', z: 'sev' }],
 ];
 const axes = { x: 'theme', y: 'sev', z: 'h' };
 const L = { x: 21.6, y: 8.5, z: 16.2 };
@@ -590,7 +587,7 @@ const roundTop = (x, y, w, h, r) => { r = Math.min(r, w / 2, h); return `M${x},$
 /* ---------- vue à plat : sur téléphone, la 3D devient un nuage de points en 2D ---------- */
 const mqFlat = matchMedia('(max-width: 760px)');
 const flat = { r: 'theme', x: 'sev' };
-const FLAT_PRESETS = [['Gravité', { r: 'theme', x: 'sev' }], ['Dans le temps', { r: 'theme', x: 'h' }], ['Ce qui plaît', { r: 'theme', x: 'likes' }], ['Les cancres', { r: 'theme', x: 'nerr' }], ['Par publication', { r: 'post', x: 'sev' }]];
+const FLAT_PRESETS = [['Gravité', { r: 'theme', x: 'sev' }], ['Dans le temps', { r: 'theme', x: 'h' }], ['Ce qui plaît', { r: 'theme', x: 'likes' }], ['Par publication', { r: 'post', x: 'sev' }]];
 let flatPts = [], flatSel = -1;
 function drawFlat() {
   if (!mqFlat.matches) return;
