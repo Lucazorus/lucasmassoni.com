@@ -280,7 +280,7 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
   <section id="rythme">
     <header class="piece">
       <h2>Quarante heures</h2>
-      <p>Commentaires par heure, heure de Paris. Le post Menbase tombe à 00 h 51 et fait le plein dès 7 h. Mojo.fr le reprend à 20 h 07 et relance la vague, alors que les menaces s'affichaient déjà sous le premier.</p>
+      <p>Chaque barre, c'est une heure de commentaires, à l'heure de Paris. Le post Menbase tombe à 00&nbsp;h&nbsp;51 et fait le plein dès 7&nbsp;h. Mojo.fr le reprend à 20&nbsp;h&nbsp;07 et relance la vague, alors que les menaces s'affichaient déjà sous le premier.</p>
     </header>
     <div class="legend" id="tlLegend"></div>
     <div class="chart" id="timeline"></div>
@@ -704,7 +704,7 @@ function timeline() {
     });
     hit.addEventListener('pointermove', show); hit.addEventListener('focus', show); hit.addEventListener('pointerleave', hideTip); hit.addEventListener('blur', hideTip);
     svg.append(hit);
-    if (i % 6 === 0) { const t = S('text', { x: m.l + i * bw, y: H - 10 }); t.textContent = `${c.d}/11 ${c.hh} h`; svg.append(t); }
+    if (i % (6 * Math.ceil(78 / (bw * 6))) === 0) { const t = S('text', { x: m.l + i * bw, y: H - 10 }); t.textContent = `${c.d}/11 ${c.hh} h`; svg.append(t); }
   });
   [[51 / 60, 'Post Menbase, 00 h 51'], [20 + 7 / 60, 'Post Mojo.fr, 20 h 07']].forEach(([hr, txt]) => {
     const x = m.l + hr * bw;
