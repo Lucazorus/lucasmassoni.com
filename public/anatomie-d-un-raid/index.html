@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anatomie d'un raid</title>
-<meta name="description" content="583 commentaires hostiles reçus en 36 heures, collectés, classés et visualisés. Une étude de cas de Lucas Massoni.">
+<meta name="description" content="640 commentaires hostiles reçus en 40 heures, collectés, classés et visualisés. Une étude de cas de Lucas Massoni.">
 <link rel="canonical" href="https://www.lucasmassoni.com/anatomie-d-un-raid">
 <link rel="icon" href="/favicon.ico">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Anatomie d'un raid">
-<meta property="og:description" content="On m'a insulté 583 fois. J'en ai fait un jeu de données.">
+<meta property="og:description" content="On m'a insulté 640 fois. J'en ai fait un jeu de données.">
 <meta property="og:url" content="https://www.lucasmassoni.com/anatomie-d-un-raid">
-<meta property="og:image" content="https://www.lucasmassoni.com/anatomie-d-un-raid-og.png">
+<meta property="og:image" content="https://www.lucasmassoni.com/anatomie-d-un-raid-og-640.png">
 <meta property="og:image:width" content="2400">
 <meta property="og:image:height" content="1254">
 <meta name="twitter:card" content="summary_large_image">
@@ -209,8 +209,8 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
   <div id="wall" aria-hidden="true"></div>
   <div class="wrap hero-in">
     <p class="opened">Dossier ouvert le 14.11.2026 à 00 h 51</p>
-    <h1>On m'a insulté 583&nbsp;fois.<span>J'en ai fait un jeu de données.</span></h1>
-    <p class="lede">Deux comptes ont publié ma photo et mon tarif journalier, sur Instagram puis sur Facebook, parce que j'avais lancé la pétition « Supprimer CNews de l'audiovisuel français », signée par 1&nbsp;060&nbsp;000 personnes. En 36 heures, des centaines de personnes sont venues me dire ce qu'elles pensaient de moi. Plutôt que de les lire une par une, j'ai fait ce que je sais faire de mieux, de l'analyse de données.</p>
+    <h1>On m'a insulté 640&nbsp;fois.<span>J'en ai fait un jeu de données.</span></h1>
+    <p class="lede">Deux comptes ont publié ma photo et mon tarif journalier, sur Instagram puis sur Facebook, parce que j'avais lancé la pétition « Supprimer CNews de l'audiovisuel français », signée par 1&nbsp;060&nbsp;000 personnes. En 40 heures, des centaines de personnes sont venues me dire ce qu'elles pensaient de moi. Plutôt que de les lire une par une, j'ai fait ce que je sais faire de mieux, de l'analyse de données.</p>
   </div>
 </div>
 
@@ -241,7 +241,7 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
 
   <section id="rythme">
     <header class="piece">
-      <h2>Trente-six heures</h2>
+      <h2>Quarante heures</h2>
       <p>Commentaires par heure, heure de Paris. Le post Menbase tombe à 00 h 51 et fait le plein dès 7 h. Mojo.fr le reprend à 20 h 07 et relance la vague, alors que les menaces s'affichaient déjà sous le premier.</p>
     </header>
     <div class="legend" id="tlLegend"></div>
@@ -271,7 +271,7 @@ td.t{font-weight:500;color:var(--ink);font-size:1rem;line-height:1.4;min-width:2
   <section id="tout">
     <header class="piece">
       <h2>Le registre</h2>
-      <p>Les 583 commentaires, sans les pseudos. Cherchez un mot, filtrez, triez par colonne.</p>
+      <p>Les 640 commentaires, sans les pseudos. Cherchez un mot, filtrez, triez par colonne.</p>
     </header>
     <div class="tbl-tools">
       <input id="q" type="search" placeholder="Chercher un mot" aria-label="Chercher dans les commentaires">
@@ -345,7 +345,7 @@ function commentTip(t, r) {
 const nCat = k => ROWS.filter(r => r.cat === k).length;
 {
   const b = (n, c) => `<b${c ? ` class="${c}"` : ''}>${fmt(n)}</b>`;
-  document.getElementById('kpis').innerHTML = `${b(D.meta.accounts)} comptes. ${b(ROWS.length)} commentaires hostiles retenus sur 2&nbsp;392 récupérés. Parmi eux, ${b(nCat('M'), 'm')} menaces et ${b(nCat('X'), 'x')} appels à me retrouver, à me dénoncer ou à me boycotter. Le reste, ${b(nCat('J'), 'j')} injures, plus ou moins inventives.`;
+  document.getElementById('kpis').innerHTML = `${b(D.meta.accounts)} comptes. ${b(ROWS.length)} commentaires hostiles retenus sur 2&nbsp;569 récupérés. Parmi eux, ${b(nCat('M'), 'm')} menaces et ${b(nCat('X'), 'x')} appels à me retrouver, à me dénoncer ou à me boycotter. Le reste, ${b(nCat('J'), 'j')} injures, plus ou moins inventives.`;
   const w = document.getElementById('wall');
   ROWS.slice().sort((a, c) => a.h - c.h).forEach(r => w.append(el(r.cat === 'M' ? 'b' : 'span', { textContent: r.text }), el('i', { textContent: '/' })));
 }
@@ -378,13 +378,14 @@ ROWS.forEach(r => {
     : /\b(faut|faudrait|allez|partagez|signalez|venez|les gars|on (va|doit|peut|veut)|qui (a|connait|sait))\b/.test(t) ? 'eux' : 'il';
 });
 const log10 = Math.log10;
+const H_MAX = Math.ceil(Math.max(...ROWS.map(r => r.h)) / 6) * 6;
 const DIMS = {
   theme: { name: 'Thème', type: 'cat', get: r => r.theme, cats: THEMES },
   cat: { name: 'Catégorie', type: 'cat', get: r => r.cat, cats: CATS.map(c => [c.k, c.name]) },
   post: { name: 'Publication', type: 'cat', get: r => r.post, cats: Object.entries(POST) },
   addr: { name: 'À qui on parle', type: 'cat', get: r => r.addr, cats: [['tu', 'À moi (tu)'], ['il', 'De moi (il)'], ['eux', 'Aux autres']] },
   sev: { name: 'Gravité', type: 'num', get: r => r.sev, dom: [0, 10], ticks: [0, 2, 4, 6, 8, 10].map(v => [v, String(v)]) },
-  h: { name: 'Heure', type: 'num', get: r => Math.max(0, r.h), dom: [0, 36], ticks: [0, 6, 12, 18, 24, 30, 36].map(h => { const c = clock(h - 51 / 60); return [h, `${c.d}/11 ${String(c.hh).padStart(2, '0')} h`]; }) },
+  h: { name: 'Heure', type: 'num', get: r => Math.max(0, r.h), dom: [0, H_MAX], ticks: Array.from({ length: H_MAX / 6 + 1 }, (_, i) => i * 6).map(h => { const c = clock(h - 51 / 60); return [h, `${c.d}/11 ${String(c.hh).padStart(2, '0')} h`]; }) },
   likes: { name: 'J’aime', type: 'num', get: r => log10(1 + r.likes), dom: [0, log10(151)], ticks: [0, 1, 10, 100].map(v => [log10(1 + v), String(v)]) },
   words: { name: 'Longueur (mots)', type: 'num', get: r => log10(r.words), dom: [0, log10(120)], ticks: [1, 3, 10, 30, 100].map(v => [log10(v), String(v)]) },
   caps: { name: 'Majuscules', type: 'num', get: r => r.caps, dom: [0, 100], ticks: [0, 25, 50, 75, 100].map(v => [v, v + ' %']) },
@@ -568,11 +569,12 @@ const roundRight = (x, y, w, h, r) => { r = Math.min(r, h / 2, w); return `M${x}
 function timeline() {
   const host = document.getElementById('timeline'); host.replaceChildren();
   const W = Math.max(320, host.clientWidth), H = 280, m = { l: 34, r: 8, t: 34, b: 30 };
-  const bins = Array.from({ length: 36 }, () => ({ J: 0, X: 0, M: 0 }));
-  ROWS.forEach(r => { const i = Math.min(35, Math.floor((51 + Math.max(0, r.h) * 60) / 60)); bins[i][r.cat]++; });
+  const NB = Math.ceil(51 / 60 + Math.max(...ROWS.map(r => r.h)));
+  const bins = Array.from({ length: NB }, () => ({ J: 0, X: 0, M: 0 }));
+  ROWS.forEach(r => { const i = Math.min(NB - 1, Math.floor((51 + Math.max(0, r.h) * 60) / 60)); bins[i][r.cat]++; });
   const max = Math.ceil(Math.max(...bins.map(b => b.J + b.X + b.M)) / 10) * 10;
   const svg = S('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Commentaires hostiles par heure, par catégorie' });
-  const iw = W - m.l - m.r, ih = H - m.t - m.b, bw = iw / 36, y = v => m.t + ih - v / max * ih;
+  const iw = W - m.l - m.r, ih = H - m.t - m.b, bw = iw / NB, y = v => m.t + ih - v / max * ih;
   for (let v = 0; v <= max; v += max / 4) { svg.append(S('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: css('--grid'), 'stroke-width': 1 })); const t = S('text', { x: m.l - 8, y: y(v) + 4, 'text-anchor': 'end' }); t.textContent = v; svg.append(t); }
   bins.forEach((b, i) => {
     const x = m.l + i * bw + 1, w = Math.max(1, bw - 2);
