@@ -131,6 +131,19 @@ h2{margin:0;font-family:var(--display);font-stretch:116%;font-weight:650;color:v
 /* infobulle */
 #tip{position:fixed;z-index:40;max-width:320px;background:var(--tip-bg);color:var(--tip-ink);padding:12px 14px;border-radius:4px;font-size:.85rem;line-height:1.4;pointer-events:none;opacity:0;transition:opacity .12s;transform:translate(14px,14px)}
 #tip.on{opacity:1}
+#wordPop{position:absolute;z-index:45;width:min(380px,calc(100vw - 32px));background:var(--tip-bg);color:var(--tip-ink);padding:14px 16px 12px;border-radius:4px;display:none}
+#wordPop.on{display:block}
+#wordPop .hd{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font:400 13px/1.4 var(--mono);color:#3d4a45;margin-bottom:4px}
+#wordPop .hd b{font-weight:400;color:var(--tip-ink)}
+#wordPop .x{all:unset;cursor:pointer;font:400 18px/1 var(--mono);color:#3d4a45;padding:0 2px}
+#wordPop ol{list-style:none;margin:0;padding:0}
+#wordPop li{padding:9px 0;border-top:1px solid rgba(11,20,18,.12)}
+#wordPop li:first-child{border-top:0}
+#wordPop .q{font:500 15px/1.35 var(--display);letter-spacing:-.01em}
+#wordPop mark{background:none;color:inherit;box-shadow:inset 0 -.38em 0 rgba(127,189,186,.55)}
+#wordPop .m{display:flex;gap:6px;align-items:center;margin-top:3px;font:400 12px/1.4 var(--mono);color:#3d4a45}
+#wordPop .all{all:unset;cursor:pointer;display:inline-block;margin-top:6px;font:400 13px/1.4 var(--mono);color:var(--tip-ink);border-bottom:1px solid currentColor}
+#wordPop :is(.x,.all):focus-visible{outline:2px solid #2f6f6c;outline-offset:2px}
 #tip .q{font:500 1rem/1.35 var(--display);margin-bottom:8px}
 #tip .meta{font:400 12px/1.5 var(--mono);color:#3d4a45;display:flex;flex-wrap:wrap;gap:2px 12px}
 #tip .row{display:flex;gap:8px;align-items:center;font:400 13px/1.6 var(--mono)}
@@ -236,7 +249,7 @@ footer.end{padding-top:96px;padding-bottom:56px}
   <div class="wrap hero-in">
     <p class="opened">Dossier ouvert le 14.11.2026 à 00 h 51</p>
     <h1>On m'a insulté 640&nbsp;fois.<span>J'en ai fait un jeu de données.</span></h1>
-    <p class="lede">Deux comptes ont publié ma photo et mon tarif journalier, sur Instagram puis sur Facebook, parce que j'avais lancé la pétition « Supprimer CNews de l'audiovisuel français », signée par 1&nbsp;060&nbsp;000 personnes. En 40 heures, des centaines de personnes sont venues me dire ce qu'elles pensaient de moi. Plutôt que de les lire une par une, j'ai fait ce que je sais faire de mieux, de l'analyse de données.</p>
+    <p class="lede">J'ai lancé la pétition « Supprimer CNews de l'audiovisuel français », signée par 1&nbsp;060&nbsp;000 personnes. Deux comptes ont moyennement apprécié et ont publié ma photo et mon tarif journalier, sur Instagram puis sur Facebook. En 40 heures, des centaines d'inconnus sont venus me donner leur avis sur ma tête, ma mère et mes tarifs. On conseille toujours de ne pas lire les commentaires. Je ne les ai pas lus, je les ai classés, comptés et mis en graphiques. Déformation professionnelle.</p>
   </div>
 </div>
 
@@ -328,6 +341,7 @@ footer.end{padding-top:96px;padding-bottom:56px}
   <p class="small">Aucun pseudo, nom ni identifiant n'est publié ici et les mentions de tiers sont masquées. Les données nominatives sont entre les mains de mon avocat. Thèmes et gravité sont attribués par des règles sur le texte, puis relus, le score reste indicatif.</p>
 </footer>
 <div id="tip" role="status" aria-live="polite"></div>
+<div id="wordPop" role="dialog" aria-label="Commentaires qui emploient ce mot"></div>
 
 <script src="/anatomie-d-un-raid/data.js"></script>
 <script type="importmap">
@@ -707,7 +721,7 @@ function hbars(id, items, total, opt = {}) {
     svg.append(S('path', { d: roundRight(lw, cy - bh / 2, w, bh, 4), fill: css(d.color || '--bar'), opacity: dim }));
     const v = S('text', { x: lw + w + 8, y: cy + 5, class: 'val', opacity: dim }); v.textContent = d.n; svg.append(v);
     const hit = S('rect', { x: 0, y: yy, width: W, height: row, fill: 'transparent', tabindex: 0 });
-    const show = ev => showTip(ev.clientX ?? hit.getBoundingClientRect().right - 40, ev.clientY ?? hit.getBoundingClientRect().y, t => {
+    const show = ev => pop.classList.contains('on') ? null : showTip(ev.clientX ?? hit.getBoundingClientRect().right - 40, ev.clientY ?? hit.getBoundingClientRect().y, t => {
       t.append(el('div', { className: 'row' }, [el('b', { textContent: d.n }), d.label + ` · ${Math.round(d.n / total * 100)} %`]));
       if (d.ex) t.append(el('div', { className: 'q', style: 'margin:6px 0 0;font-size:15px', textContent: '« ' + d.ex + ' »' }));
     });
@@ -795,6 +809,37 @@ document.querySelectorAll('#tbl th').forEach(th => th.onclick = () => {
 table();
 /* ---------- nuage de mots ---------- */
 const STOP = new Set(`le la les un une des de du et ou au aux en dans sur pour par avec sans ce cet cette ces se sa son ses mon ma mes ton ta tes leur leurs lui il ils elle elles on nous vous je tu me te ne pas plus que qui quoi dont est sont etait ete etre avoir as ai ont avait fait faire va vont ca cela ceci comme mais donc car si tout tous toute toutes bien tres trop encore aussi meme alors quand oui non deja ici bon bonne quel quelle quels quelles peu peut faut veux veut vais doit cest nest quil quils quon jai cette ceux celui celle sera serait avec rien moi toi eux dit dire voir voila vraiment juste fois jamais toujours apres avant chez entre depuis sont sous lors tant autre autres faites font allez etc vos nos notre votre ils elles leur mais aussi qu'il ceux c'est d'un d'une qu'on bel beau cas vie aime bref cher deux jour gens vrai vraie aller donne merci mieux place prend temps maintenant mettre partout moins nom espere parle ans bonjour pareil chose choses ainsi veulent gars mal peux bas sait savoir pense crois mois prochain vient dois devrait faudra cre vure doutait`.split(/\s+/));
+const pop = document.getElementById('wordPop');
+function marked(text, k) {
+  const low = text.toLowerCase(), out = []; let last = 0;
+  for (const m of low.matchAll(/[a-zà-ÿœ]+/g)) {
+    if (nrm(m[0]) !== k) continue;
+    out.push(text.slice(last, m.index), el('mark', { textContent: text.slice(m.index, m.index + m[0].length) })); last = m.index + m[0].length;
+  }
+  out.push(text.slice(last)); return out;
+}
+function openPop(b, k, form, w) {
+  if (pop.classList.contains('on') && pop.dataset.k === k) return closePop();
+  const rs = w.rows.slice().sort((a, c) => (c.text.length < 150) - (a.text.length < 150) || c.likes - a.likes).slice(0, 4);
+  pop.dataset.k = k; pop.replaceChildren(
+    el('div', { className: 'hd' }, [el('span', {}, [el('b', { textContent: w.n }), ` commentaire${w.n > 1 ? 's' : ''} avec « ${form} »`]), el('button', { className: 'x', textContent: '×', ariaLabel: 'Fermer', onclick: closePop })]),
+    el('ol', {}, rs.map(r => el('li', {}, [
+      el('div', { className: 'q' }, ['« ', ...marked(r.text, k), ' »']),
+      el('div', { className: 'm' }, [el('span', { className: 'key', style: `background:var(${CAT[r.cat].v})` }), CAT[r.cat].name + ' · ' + (r.post === 'F' ? 'Facebook' : r.likes + ' j’aime')]),
+    ]))),
+  );
+  if (w.n > rs.length) pop.append(el('button', { className: 'all', textContent: `Voir les ${w.n} dans le registre`, onclick: () => { closePop(); q.value = form; fcat.value = ''; fth.value = ''; table(); document.getElementById('tout').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); } }));
+  pop.classList.add('on');
+  const r = b.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+  const left = Math.max(16, Math.min(r.left + r.width / 2 - pw / 2, document.documentElement.clientWidth - pw - 16));
+  const below = r.bottom + 10 + ph < innerHeight || r.top < ph + 10;
+  pop.style.left = left + 'px';
+  pop.style.top = (scrollY + (below ? r.bottom + 10 : r.top - ph - 10)) + 'px';
+}
+function closePop() { pop.classList.remove('on'); pop.dataset.k = ''; }
+document.addEventListener('pointerdown', e => { if (pop.classList.contains('on') && !pop.contains(e.target) && !e.target.closest('#cloud button')) closePop(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
+addEventListener('resize', closePop);
 function buildCloud() {
   const src = pickedTheme ? ROWS.filter(r => r.theme === pickedTheme) : ROWS;
   const words = new Map();
@@ -824,7 +869,7 @@ function buildCloud() {
       t.append(el('div', { className: 'q', style: 'margin:6px 0 0;font-size:15px', textContent: '« ' + ex.text + ' »' }));
     });
     b.addEventListener('pointermove', show); b.addEventListener('focus', show); b.addEventListener('pointerleave', hideTip); b.addEventListener('blur', hideTip);
-    b.onclick = () => { hideTip(); q.value = form; fcat.value = ''; fth.value = ''; table(); document.getElementById('tout').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); };
+    b.onclick = ev => { ev.stopPropagation(); hideTip(); openPop(b, k, form, w); };
     cloud.append(b);
   });
 }
