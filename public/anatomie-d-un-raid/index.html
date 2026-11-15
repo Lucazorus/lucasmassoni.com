@@ -263,7 +263,7 @@ footer.end{padding-top:96px;padding-bottom:56px}
       <h2>Le palmarès</h2>
       <p id="podiumNote"></p>
     </header>
-    <div id="podium" role="group" aria-label="Classement"><button data-k="likes" aria-pressed="true">Les plus aimés</button><button data-k="sev" aria-pressed="false">Les plus violents</button><button data-k="fun" aria-pressed="false">Les plus drôles</button></div>
+    <div id="podium" role="group" aria-label="Classement"><button data-k="sev" aria-pressed="true">Les plus violents</button><button data-k="likes" aria-pressed="false">Les plus aimés</button><button data-k="fun" aria-pressed="false">Les plus drôles</button></div>
     <ol id="quotes"></ol>
   </section>
 
@@ -786,7 +786,7 @@ function podium(k) {
   });
 }
 document.getElementById('podium').addEventListener('click', e => { const b = e.target.closest('button'); if (b) podium(b.dataset.k); });
-podium('likes');
+podium('sev');
 
 /* ---------- tableau ---------- */
 const fcat = document.getElementById('fcat'), fth = document.getElementById('ftheme'), q = document.getElementById('q');
