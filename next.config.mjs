@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return [
+      // Étude de cas autonome (HTML statique dans public/)
+      { source: "/anatomie-d-un-raid", destination: "/anatomie-d-un-raid/index.html" },
+    ];
+  },
   async redirects() {
     return [
       // Lien court à partager : lucasmassoni.com/instagram
