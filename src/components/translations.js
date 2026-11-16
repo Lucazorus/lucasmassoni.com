@@ -210,7 +210,7 @@ export const translations = {
         {
           key: "raid",
           name: "Anatomie d'un raid",
-          desc: "756 commentaires haineux reçus après ma pétition contre CNews, collectés, classés et à explorer en 3D.",
+          desc: "875 commentaires haineux reçus après ma pétition contre CNews, collectés, classés et à explorer en 3D.",
           url: "/anatomie-d-un-raid",
           host: "lucasmassoni.com",
           image: "/anatomie-d-un-raid-preview.png",
@@ -533,7 +533,7 @@ export const translations = {
         {
           key: "raid",
           name: "Anatomy of a pile-on",
-          desc: "756 hateful comments received after my petition against CNews, collected, classified and explorable in 3D (in French).",
+          desc: "875 hateful comments received after my petition against CNews, collected, classified and explorable in 3D (in French).",
           url: "/anatomie-d-un-raid",
           host: "lucasmassoni.com",
           image: "/anatomie-d-un-raid-preview.png",
