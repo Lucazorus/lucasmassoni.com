@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anatomie d'un raid</title>
-<meta name="description" content="875 commentaires hostiles reçus en deux jours et demi, collectés, classés et visualisés. Une étude de cas de Lucas Massoni.">
+<meta name="description" content="1 012 commentaires hostiles reçus en moins de trois jours, collectés, classés et visualisés. Une étude de cas de Lucas Massoni.">
 <link rel="canonical" href="https://www.lucasmassoni.com/anatomie-d-un-raid">
 <link rel="icon" href="/favicon.ico">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Anatomie d'un raid">
-<meta property="og:description" content="On m'a insulté 875 fois. J'en ai fait un jeu de données.">
+<meta property="og:description" content="On m'a insulté 1 012 fois. J'en ai fait un jeu de données.">
 <meta property="og:url" content="https://www.lucasmassoni.com/anatomie-d-un-raid">
-<meta property="og:image" content="https://www.lucasmassoni.com/anatomie-d-un-raid-og-875.png">
+<meta property="og:image" content="https://www.lucasmassoni.com/anatomie-d-un-raid-og-1012.png">
 <meta property="og:image:width" content="2400">
 <meta property="og:image:height" content="1254">
 <meta name="twitter:card" content="summary_large_image">
@@ -249,7 +249,7 @@ footer.end{padding-top:96px;padding-bottom:56px}
   <div id="wall" aria-hidden="true"></div>
   <div class="wrap hero-in">
     <p class="opened">Dossier ouvert le 14.11.2026 à 00 h 51</p>
-    <h1>On m'a insulté 875&nbsp;fois.<span>J'en ai fait un jeu de données.</span></h1>
+    <h1>On m'a insulté 1&nbsp;012&nbsp;fois.<span>J'en ai fait un jeu de données.</span></h1>
     <p class="lede">J'ai lancé la pétition « Supprimer CNews de l'audiovisuel français », qui a réuni plus d'un million de signatures. L'initiative a moyennement plu à treize comptes, au bas mot, qui ont décidé de publier sur Instagram et Facebook ma photo ainsi que mon tarif journalier de consultant, récupérés sur Malt.</p>
     <p class="lede" style="margin-top:1em">En moins de deux jours, des centaines d'inconnus ont afflué pour commenter les moindres détails dévoilés de ma vie professionnelle et personnelle, de mes tarifs de consultant jusqu'aux insultes sur ma mère. On conseille toujours de ne pas lire les commentaires sous ce genre de posts. Je ne les ai pas simplement lus&nbsp;: je les ai classés, comptés et mis en graphiques. Déformation professionnelle.</p>
   </div>
@@ -296,8 +296,8 @@ footer.end{padding-top:96px;padding-bottom:56px}
 
   <section id="rythme">
     <header class="piece">
-      <h2>Cinquante-sept heures</h2>
-      <p>Chaque barre, c'est une heure de commentaires, à l'heure de Paris. Le post Menbase tombe à 00&nbsp;h&nbsp;51 et fait le plein dès 7&nbsp;h. Mojo.fr le reprend à 20&nbsp;h&nbsp;07 et relance la vague, alors que les menaces s'affichaient déjà sous le premier. Une dizaine d'autres comptes reprennent ensuite le visuel, leurs commentaires sont rangés sous « Reprises ». Le dimanche soir, une nouvelle vague arrive sous Mojo.fr, puis dans la nuit sous un reel humoristique qui reprend le visuel. <span class="only-wide">Cliquez sur une barre pour lire ses commentaires.</span><span class="only-narrow">Touchez une barre pour lire ses commentaires.</span></p>
+      <h2>Soixante-cinq heures</h2>
+      <p>Chaque barre, c'est une heure de commentaires, à l'heure de Paris. Le post Menbase tombe à 00&nbsp;h&nbsp;51 et fait le plein dès 7&nbsp;h. Mojo.fr le reprend à 20&nbsp;h&nbsp;07 et relance la vague, alors que les menaces s'affichaient déjà sous le premier. Une dizaine d'autres comptes reprennent ensuite le visuel, leurs commentaires sont rangés sous « Reprises ». Le dimanche soir, une nouvelle vague arrive sous Mojo.fr, puis dans la nuit sous un reel humoristique qui reprend le visuel, et le lundi ce reel déborde toute la journée. <span class="only-wide">Cliquez sur une barre pour lire ses commentaires.</span><span class="only-narrow">Touchez une barre pour lire ses commentaires.</span></p>
     </header>
     <div class="legend" id="tlLegend"></div>
     <div class="chart" id="timeline"></div>
@@ -393,7 +393,7 @@ function commentTip(t, r) {
 const nCat = k => ROWS.filter(r => r.cat === k).length;
 {
   const b = (n, c) => `<b${c ? ` class="${c}"` : ''}>${fmt(n)}</b>`;
-  document.getElementById('kpis').innerHTML = `${b(D.meta.accounts)} comptes. ${b(ROWS.length)} commentaires hostiles retenus sur 3&nbsp;206 récupérés. Parmi eux, ${b(nCat('M'), 'm')} menaces et ${b(nCat('X'), 'x')} appels à me retrouver, à me dénoncer ou à me boycotter. Le reste, ${b(nCat('J'), 'j')} injures, plus ou moins inventives.`;
+  document.getElementById('kpis').innerHTML = `${b(D.meta.accounts)} comptes. ${b(ROWS.length)} commentaires hostiles retenus sur 3&nbsp;638 récupérés. Parmi eux, ${b(nCat('M'), 'm')} menaces et ${b(nCat('X'), 'x')} appels à me retrouver, à me dénoncer ou à me boycotter. Le reste, ${b(nCat('J'), 'j')} injures, plus ou moins inventives.`;
   const w = document.getElementById('wall');
   ROWS.slice().sort((a, c) => a.h - c.h).forEach(r => w.append(el(r.cat === 'M' ? 'b' : 'span', { textContent: r.text }), el('i', { textContent: '/' })));
 }
